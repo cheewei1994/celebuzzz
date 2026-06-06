@@ -1,30 +1,25 @@
 import type { MetadataRoute } from "next";
+import { articles } from "@/lib/articles";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [
-    {
-      url: "https://celebuzzz.com",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://celebuzzz.com/about",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://celebuzzz.com/contact",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://celebuzzz.com/privacy-policy",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://celebuzzz.com/disclaimer",
-      lastModified: new Date(),
-    },
-    {
-      url: "https://celebuzzz.com/dmca",
-      lastModified: new Date(),
-    },
-  ];
+  const baseUrl = "https://celebuzzz.com";
+
+  const staticPages = [
+    "",
+    "/about",
+    "/contact",
+    "/privacy-policy",
+    "/disclaimer",
+    "/dmca",
+  ].map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+  }));
+
+  const articlePages = articles.map((article) => ({
+    url: `${baseUrl}/article/${article.id}`,
+    lastModified: new Date(article.date),
+  }));
+
+  return [...staticPages, ...articlePages];
 }
