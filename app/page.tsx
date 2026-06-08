@@ -17,7 +17,7 @@ export default function HomePage() {
       {/* Navigation */}
       <nav className="bg-white border-b">
         <div className="max-w-7xl mx-auto">
-          <ul className="flex overflow-x-auto whitespace-nowrap gap-6 py-4 px-4 text-sm font-medium">
+          <ul className="flex justify-start lg:justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-base font-medium [&::-webkit-scrollbar]:hidden">
             <li><Link href="/">首頁</Link></li>
             <li><Link href="/category/台灣">台灣</Link></li>
             <li><Link href="/category/娛樂">娛樂</Link></li>
