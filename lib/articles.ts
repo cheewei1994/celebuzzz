@@ -60,7 +60,7 @@ export const articles = [
   `,
   views: "15.2K",
   date: "2026-06-05",
-  image: "/images/article-4.jpg" 
+  image: "https://picsum.photos/1200/700?4" 
 },
 
 {
