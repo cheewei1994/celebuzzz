@@ -30,7 +30,7 @@ export const articles = [
     content: "第二篇文章內容...",
     views: "8.9K",
     date: "2026-06-03",
-    image: "/images/article-2.jpg"
+    image: "https://picsum.photos/1200/700?2"
   },
 
   {
@@ -41,7 +41,7 @@ export const articles = [
     content: "第三篇文章內容...",
     views: "21.3K",
     date: "2026-06-02",
-    image: "/images/article-3.jpg"
+    image: "https://picsum.photos/1200/700?3"
   },
 
   {
