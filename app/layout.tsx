@@ -62,7 +62,7 @@ export default function RootLayout({
         {/* Navigation */}
         <nav className="bg-white border-b">
           <div className="max-w-7xl mx-auto">
-            <ul className="flex justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-lg font-medium [&::-webkit-scrollbar]:hidden">
+            <ul className="flex justify-start lg:justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-lg font-medium px-4 [&::-webkit-scrollbar]:hidden">
               <li>
                 <Link href="/"
                    className="hover:text-red-600 transition-colors duration-200">
