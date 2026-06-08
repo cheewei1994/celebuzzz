@@ -23,6 +23,7 @@ export const articles = [
 
   {
     id: "12346",
+    category: "兩性",
     title: "妻子偷偷轉走存款後，我終於醒悟",
     excerpt: "結婚二十年，我一直以為信任是婚姻最堅固的基礎……",
     content: "第二篇文章內容...",
@@ -33,6 +34,7 @@ export const articles = [
 
   {
     id: "12347",
+    category: "健康",
     title: "醫生提醒：這3種早餐別天天吃",
     excerpt: "不少人以為很健康，其實長期食用可能影響身體狀況……",
     content: "第三篇文章內容...",

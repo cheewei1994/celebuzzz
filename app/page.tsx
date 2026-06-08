@@ -6,7 +6,7 @@ export default function HomePage() {
     <main className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b">
-        <div className="max-w-6xl mx-auto py-10 text-center">
+        <div className="max-w-7xl mx-auto py-10 text-center">
           <h1 className="text-4xl font-bold"> 喵喵網</h1>
           <p className="text-gray-500 mt-2">
             每天分享值得閱讀的好文章
@@ -16,20 +16,24 @@ export default function HomePage() {
 
       {/* Navigation */}
       <nav className="bg-white border-b">
-        <div className="max-w-6xl mx-auto">
-          <ul className="flex justify-center gap-8 py-4 text-sm font-medium">
-            <li>首頁</li>
-            <li>情感</li>
-            <li>家庭</li>
-            <li>健康</li>
-            <li>奇聞</li>
-            <li>美食</li>
+        <div className="max-w-7xl mx-auto">
+          <ul className="flex overflow-x-auto whitespace-nowrap gap-6 py-4 px-4 text-sm font-medium">
+            <li><Link href="/">首頁</Link></li>
+            <li><Link href="/category/台灣">台灣</Link></li>
+            <li><Link href="/category/娛樂">娛樂</Link></li>
+            <li><Link href="/category/情感">情感</Link></li>
+            <li><Link href="/category/命理">命理</Link></li>
+            <li><Link href="/category/健康">健康</Link></li>
+            <li><Link href="/category/美食">美食</Link></li>
+            <li><Link href="/category/奇聞">奇聞</Link></li>
+            <li><Link href="/category/生活">生活</Link></li>
+            <li><Link href="/category/寵物">寵物</Link></li>
           </ul>
         </div>
       </nav>
 
       {/* Content */}
-      <section className="max-w-6xl mx-auto px-4 py-10">
+      <section className="max-w-7xl mx-auto px-4 py-10">
         <h2 className="text-2xl font-bold mb-8">
           🔥 最新文章
         </h2>
@@ -45,10 +49,13 @@ export default function HomePage() {
       <img
         src={article.image}
         alt={article.title}
-        className="w-full h-52 object-cover"
+        className="w-full h-64 object-cover"
       />
 
       <div className="p-5">
+        <span className="inline-flex items-center px-3 py-1 text-xs font-bold bg-red-50 text-red-600 rounded-full border border-red-200 mb-3">
+          #{article.category}
+        </span>
         <h3 className="font-bold text-lg leading-7 mb-3">
           {article.title}
         </h3>
