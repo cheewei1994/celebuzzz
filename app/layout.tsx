@@ -51,8 +51,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {/* Header */}
         <header className="bg-white border-b">
-          <div className="max-w-7xl mx-auto py-10 text-center">
-            <h1 className="text-4xl font-bold">喵喵網</h1>
+          <div className="max-w-7xl mx-auto py-6 text-center">
+            <h1 className="text-3xl font-bold">喵喵網</h1>
             <p className="text-gray-500 mt-2">
               每天分享值得閱讀的好文章
             </p>
@@ -62,16 +62,21 @@ export default function RootLayout({
         {/* Navigation */}
         <nav className="bg-white border-b">
           <div className="max-w-7xl mx-auto">
-            <ul className="flex justify-start lg:justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-base font-medium [&::-webkit-scrollbar]:hidden">
+            <ul className="flex justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-lg font-medium [&::-webkit-scrollbar]:hidden">
               <li>
-                <Link href="/">首頁</Link>
+                <Link href="/"
+                   className="hover:text-red-600 transition-colors duration-200">
+                  首頁
+                </Link>
               </li>
 
               {categories.map((item) => (
-               <li key={item.slug}>
-                 <Link href={`/category/${item.slug}`}>
-                   {item.name}
-                 </Link>
+                <li key={item.slug}>
+                 <Link
+                    href={`/category/${item.slug}`}
+                    className="hover:text-red-600 transition-colors duration-200">
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
