@@ -24,7 +24,7 @@ export const articles = [
 
   {
     id: "12346",
-    category: "情感",
+    category: "lifestyle",
     title: "妻子偷偷轉走存款後，我終於醒悟",
     excerpt: "結婚二十年，我一直以為信任是婚姻最堅固的基礎……",
     content: "第二篇文章內容...",
@@ -35,7 +35,7 @@ export const articles = [
 
   {
     id: "12347",
-    category: "健康",
+    category: "health",
     title: "醫生提醒：這3種早餐別天天吃",
     excerpt: "不少人以為很健康，其實長期食用可能影響身體狀況……",
     content: "第三篇文章內容...",
@@ -46,7 +46,7 @@ export const articles = [
 
   {
   id: "12348",
-  category: "生活",
+  category: "lifestyle",
   title: "60歲後才明白，存款比面子重要",
   excerpt: "年輕時總想活給別人看，退休後才發現真正重要的是自己……",
   content: `
@@ -65,7 +65,7 @@ export const articles = [
 
 {
   id: "12349",
-  category: "情感",
+  category: "relationships",
   title: "老同學聚會後，我刪掉了所有聯絡方式",
   excerpt:
     "原以為多年不見會格外親切，沒想到一場聚會讓我看清了許多人情冷暖……",
@@ -92,7 +92,7 @@ export const articles = [
 
 {
   id: "12350",
-  category: "生活",
+  category: "lifestyle",
   title: "退休金只有20萬，我卻活得比以前快樂",
   excerpt:
     "很多人擔心退休後沒錢，其實真正決定幸福感的，未必只是存款數字……",
@@ -119,7 +119,7 @@ export const articles = [
 
 {
   id: "12351",
-  category: "健康",
+  category: "health",
   title: "醫生提醒：睡前這個習慣可能影響健康",
   excerpt:
     "不少人每天都在做，卻不知道長期下來可能影響睡眠品質……",
@@ -142,7 +142,7 @@ export const articles = [
 
 {
   id: "12352",
-  category: "情感",
+  category: "relationships",
   title: "女兒出嫁那天，我在婚禮上偷偷哭了",
   excerpt:
     "養育二十多年的孩子終於成家，那一刻才明白父母心中的不捨……",
@@ -166,7 +166,7 @@ export const articles = [
 
 {
   id: "12353",
-  category: "美食",
+  category: "food",
   title: "超市員工透露：這些商品最好別太晚買",
   excerpt:
     "很多消費者不知道，其實某些商品在特定時間購買會更新鮮……",
@@ -189,7 +189,7 @@ export const articles = [
 
 {
   id: "12354",
-  category: "健康",
+  category: "health",
   title: "60歲後才懂：健康才是真正的財富",
   excerpt:
     "年輕時拼命追求名利，到了晚年才發現健康的重要遠超過想像……",
@@ -216,7 +216,7 @@ export const articles = [
 
 {
   id: "20001",
-  category: "台灣",
+  category: "taiwan",
   title: "台灣這座小鎮爆紅，吸引大量遊客朝聖",
   excerpt: "原本低調的小鎮，最近因為獨特景色在網路上掀起熱議……",
   content: `
@@ -236,7 +236,7 @@ export const articles = [
 
 {
   id: "20002",
-  category: "娛樂",
+  category: "entertainment",
   title: "知名藝人罕見分享近況，引發粉絲關注",
   excerpt: "多年來鮮少公開露面的他，近日終於更新動態……",
   content: `
@@ -255,7 +255,7 @@ export const articles = [
 
 {
   id: "20003",
-  category: "命理",
+  category: "fortune",
   title: "命理師提醒：下半年運勢較旺的生肖",
   excerpt: "不少民眾關心運勢變化，專家提出觀察與建議……",
   content: `
@@ -276,7 +276,7 @@ export const articles = [
 
 {
   id: "20004",
-  category: "奇聞",
+  category: "oddities",
   title: "男子整理老屋時，意外發現神秘收藏",
   excerpt: "原本不起眼的角落，竟藏著令人意想不到的物品……",
   content: `
@@ -296,7 +296,7 @@ export const articles = [
 
 {
   id: "20005",
-  category: "寵物",
+  category: "pets",
   title: "貓咪每天做這個動作，原來是在表達愛意",
   excerpt: "許多飼主每天都看到，卻不知道背後的真正含義……",
   content: `

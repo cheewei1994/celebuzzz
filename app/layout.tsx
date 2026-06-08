@@ -1,3 +1,4 @@
+import { categories } from "@/lib/categories";
 import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
@@ -62,16 +63,17 @@ export default function RootLayout({
         <nav className="bg-white border-b">
           <div className="max-w-7xl mx-auto">
             <ul className="flex justify-start lg:justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-base font-medium [&::-webkit-scrollbar]:hidden">
-              <li><Link href="/">首頁</Link></li>
-              <li><Link href="/category/台灣">台灣</Link></li>
-              <li><Link href="/category/娛樂">娛樂</Link></li>
-              <li><Link href="/category/情感">情感</Link></li>
-              <li><Link href="/category/命理">命理</Link></li>
-              <li><Link href="/category/健康">健康</Link></li>
-              <li><Link href="/category/美食">美食</Link></li>
-              <li><Link href="/category/奇聞">奇聞</Link></li>
-              <li><Link href="/category/生活">生活</Link></li>
-              <li><Link href="/category/寵物">寵物</Link></li>
+              <li>
+                <Link href="/">首頁</Link>
+              </li>
+
+              {categories.map((item) => (
+               <li key={item.slug}>
+                 <Link href={`/category/${item.slug}`}>
+                   {item.name}
+                 </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </nav>
