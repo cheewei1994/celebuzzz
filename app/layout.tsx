@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Script from "next/script";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -15,10 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "喵喵網 - 每天分享值得閱讀的好文章",
-
   description:
     "喵喵網提供情感、家庭、健康、奇聞、美食等優質內容，每天分享值得閱讀的文章。",
-
   keywords: [
     "情感文章",
     "家庭故事",
@@ -28,6 +27,7 @@ export const metadata: Metadata = {
     "喵喵網",
   ],
 };
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -35,21 +35,49 @@ export default function RootLayout({
 }>) {
   return (
     <html
-    lang="zh-Hant"
-    className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-  >
-    <head>
-      <Script
-        async
-        strategy="afterInteractive"
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206647366547356"
-        crossOrigin="anonymous"
-      />
-    </head>
+      lang="zh-Hant"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <head>
+        <Script
+          async
+          strategy="afterInteractive"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206647366547356"
+          crossOrigin="anonymous"
+        />
+      </head>
 
-    <body className="min-h-full flex flex-col">
-      {children}
-    </body>
-  </html>
-);
+      <body className="min-h-full flex flex-col">
+        {/* Header */}
+        <header className="bg-white border-b">
+          <div className="max-w-7xl mx-auto py-10 text-center">
+            <h1 className="text-4xl font-bold">喵喵網</h1>
+            <p className="text-gray-500 mt-2">
+              每天分享值得閱讀的好文章
+            </p>
+          </div>
+        </header>
+
+        {/* Navigation */}
+        <nav className="bg-white border-b">
+          <div className="max-w-7xl mx-auto">
+            <ul className="flex justify-start lg:justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-base font-medium [&::-webkit-scrollbar]:hidden">
+              <li><Link href="/">首頁</Link></li>
+              <li><Link href="/category/台灣">台灣</Link></li>
+              <li><Link href="/category/娛樂">娛樂</Link></li>
+              <li><Link href="/category/情感">情感</Link></li>
+              <li><Link href="/category/命理">命理</Link></li>
+              <li><Link href="/category/健康">健康</Link></li>
+              <li><Link href="/category/美食">美食</Link></li>
+              <li><Link href="/category/奇聞">奇聞</Link></li>
+              <li><Link href="/category/生活">生活</Link></li>
+              <li><Link href="/category/寵物">寵物</Link></li>
+            </ul>
+          </div>
+        </nav>
+
+        {children}
+      </body>
+    </html>
+  );
 }
