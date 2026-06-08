@@ -51,29 +51,47 @@ export default function HomePage() {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center items-center gap-4 mt-12">
-          <button className="px-4 py-2 border rounded-lg">
-            ← 上一頁
+        <div className="flex justify-center items-center gap-2 mt-12">
+
+          {/* 上一页 */}
+          <button className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition">
+            <span className="hidden md:inline">
+               ← 上一頁
+            </span>
+
+            <span className="md:hidden text-lg">
+               ‹
+            </span>
           </button>
 
-          <div className="flex gap-2">
-            <button className="w-10 h-10 rounded-lg bg-blue-600 text-white">
-              1
-            </button>
-            <button className="w-10 h-10 rounded-lg border">
-              2
-            </button>
-            <button className="w-10 h-10 rounded-lg border">
-              3
-            </button>
-            <button className="w-10 h-10 rounded-lg border">
-              4
-            </button>
-          </div>
-
-          <button className="px-4 py-2 border rounded-lg">
-            下一頁 →
+          {/* 页码 */}
+           <button className="w-10 h-10 rounded-lg bg-blue-600 text-white">
+            1
           </button>
+
+          <button className="w-10 h-10 border rounded-lg hover:bg-gray-100 transition">
+            2
+          </button>
+
+          <button className="w-10 h-10 border rounded-lg hover:bg-gray-100 transition">
+            3
+          </button>
+
+          <button className="w-10 h-10 border rounded-lg hover:bg-gray-100 transition">
+            4
+          </button>
+
+          {/* 下一页 */}
+          <button className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition">
+            <span className="hidden md:inline">
+              下一頁 →
+            </span>
+
+            <span className="md:hidden text-lg">
+              ›
+            </span>
+          </button>
+
         </div>
       </section>
 
