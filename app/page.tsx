@@ -1,3 +1,4 @@
+import { categories } from "@/lib/categories";
 import Link from "next/link";
 import { articles } from "@/lib/articles";
 
@@ -27,7 +28,9 @@ export default function HomePage() {
 
       <div className="p-5">
         <span className="inline-flex items-center px-3 py-1 text-xs font-bold bg-red-50 text-red-600 rounded-full border border-red-200 mb-3">
-          #{article.category}
+          #{categories.find(
+            (c) => c.slug === article.category
+          )?.name || article.category}
         </span>
         <h3 className="font-bold text-lg leading-7 mb-3">
           {article.title}
