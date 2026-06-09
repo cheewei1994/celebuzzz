@@ -16,7 +16,7 @@ export default function HomePage() {
   </h2>
 </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {articles.map((article) => (
   <Link
     key={article.id}
@@ -27,20 +27,20 @@ export default function HomePage() {
       <img
         src={article.image}
         alt={article.title}
-        className="w-full h-64 object-cover"
+        className="w-full h-32 md:h-64 object-cover"
       />
 
-      <div className="p-5">
+      <div className="p-3 md:p-5">
         <span className="inline-flex items-center px-3 py-1 text-xs font-bold bg-red-50 text-red-600 rounded-full border border-red-200 mb-3">
           #{categories.find(
             (c) => c.slug === article.category
           )?.name || article.category}
         </span>
-        <h3 className="font-bold text-lg leading-7 mb-3">
+        <h3 className="font-bold text-sm md:text-lg leading-5 md:leading-7 mb-2">
           {article.title}
         </h3>
 
-        <p className="text-gray-600 text-sm leading-6 line-clamp-3">
+        <p className="hidden md:block text-gray-600 text-sm leading-6 line-clamp-3">
           {article.excerpt}
         </p>
 

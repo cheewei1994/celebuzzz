@@ -1,3 +1,4 @@
+import MobileHeader from "./components/MobileHeader";
 import Image from "next/image";
 import { categories } from "@/lib/categories";
 import Link from "next/link";
@@ -51,8 +52,12 @@ export default function RootLayout({
 
       <body className="min-h-full flex flex-col">
         {/* Header */}
+      
       <header className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-500 text-white shadow-md">
-  <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+
+        <MobileHeader />
+
+  <div className="hidden md:flex max-w-7xl mx-auto items-center justify-between px-4 py-2 md:px-6 md:py-3">
 
     <Link
   href="/"
@@ -64,15 +69,16 @@ export default function RootLayout({
     width={60}
     height={42}
     priority
+    className="md:w-[60px]"
   />
 
-  <div className="font-bold text-xl md:text-2xl">
+  <div className="font-bold text-base md:text-2xl">
     喵喵網
   </div>
 </Link>
 
     <nav>
-      <ul className="flex items-center gap-8 overflow-x-auto whitespace-nowrap text-base md:text-lg font-medium [&::-webkit-scrollbar]:hidden">
+      <ul className="flex items-center gap-4 md:gap-8 overflow-x-auto whitespace-nowrap text-sm md:text-lg font-medium [&::-webkit-scrollbar]:hidden">
         <li>
           <Link href="/" className="hover:text-purple-200">
             首頁
