@@ -11,7 +11,7 @@ export default function HomePage() {
         <div className="flex items-center gap-3 mb-5">
   <div className="w-1.5 h-6 bg-violet-600 rounded-full"></div>
 
-  <h2 className="text-2xl font-semibold text-gray-900">
+  <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
     最新文章
   </h2>
 </div>
@@ -31,12 +31,12 @@ export default function HomePage() {
       />
 
       <div className="p-3 md:p-5">
-        <span className="inline-flex items-center px-3 py-1 text-xs font-bold bg-red-50 text-red-600 rounded-full border border-red-200 mb-3">
+        <span className="hidden md:inline-flex items-center px-3 py-1 text-xs font-bold bg-red-50 text-red-600 rounded-full border border-red-200 mb-3">
           #{categories.find(
             (c) => c.slug === article.category
           )?.name || article.category}
         </span>
-        <h3 className="font-bold text-sm md:text-lg leading-5 md:leading-7 mb-2">
+        <h3 className="font-bold text-sm md:text-lg leading-5 md:leading-7 mb-1 line-clamp-2">
           {article.title}
         </h3>
 
@@ -44,9 +44,11 @@ export default function HomePage() {
           {article.excerpt}
         </p>
 
-        <div className="flex justify-between text-xs text-gray-500 mt-5">
+        <div className="flex justify-between text-xs text-gray-500 mt-2 md:mt-5">
           <span>👁️ {article.views} 閱讀</span>
-          <span>📅 {article.date}</span>
+          <span className="hidden md:inline">
+            📅 {article.date}
+          </span>
         </div>
       </div>
     </article>

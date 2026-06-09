@@ -20,15 +20,21 @@ export default async function CategoryPage({
   
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
-      <div className="mb-10">
-        <h1 className="text-4xl font-bold mb-2">
-          {currentCategory?.name}
-        </h1>
+      <div className="bg-white rounded-3xl p-5 md:p-6 mb-6 shadow-sm border">
+  <div className="flex items-center gap-3">
+    <div className="w-1.5 h-8 bg-amber-500 rounded-full"></div>
 
-        <p className="text-gray-500">
-          共 {filteredArticles.length} 篇文章
-        </p>
-      </div>
+    <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
+      {currentCategory?.name}
+    </h1>
+  </div>
+
+  <div className="mt-2 ml-[18px]">
+    <p className="text-gray-500 text-sm">
+      共 {filteredArticles.length} 篇文章
+    </p>
+  </div>
+</div>
 
         {filteredArticles.length === 0 && (
           <div className="bg-white rounded-2xl p-10 text-center border">
@@ -37,7 +43,7 @@ export default async function CategoryPage({
             </p>
           </div>
 )}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredArticles.map((article) => (
           <Link
             key={article.id}
@@ -47,22 +53,24 @@ export default async function CategoryPage({
               <img
                 src={article.image}
                 alt={article.title}
-                className="w-full h-64 object-cover"
+                className="w-full h-32 md:h-64 object-cover"
               />
 
-             <div className="p-5">
+             <div className="p-3 md:p-5">
               
-              <h2 className="font-bold text-lg leading-7 mb-3">
+              <h2 className="font-bold text-sm md:text-lg leading-5 md:leading-7 mb-1 line-clamp-2">
                 {article.title}
               </h2>
 
-              <p className="text-gray-600 text-sm leading-6 line-clamp-3">
+              <p className="hidden md:block text-gray-600 text-sm leading-6 line-clamp-3">
                 {article.excerpt}
               </p>
 
-              <div className="flex justify-between text-xs text-gray-500 mt-5">
+              <div className="flex justify-between text-xs text-gray-500 mt-2 md:mt-5">
                 <span>👁️ {article.views} 閱讀</span>
-                <span>📅 {article.date}</span>
+                <span className="hidden md:inline">
+                  📅 {article.date}
+                </span>
               </div>
             </div>
             </article>
