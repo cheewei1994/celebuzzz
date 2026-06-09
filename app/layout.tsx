@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { categories } from "@/lib/categories";
 import Link from "next/link";
 import Script from "next/script";
@@ -50,38 +51,49 @@ export default function RootLayout({
 
       <body className="min-h-full flex flex-col">
         {/* Header */}
-        <header className="bg-white border-b">
-          <div className="max-w-7xl mx-auto py-6 text-center">
-            <h1 className="text-3xl font-bold">喵喵網</h1>
-            <p className="text-gray-500 mt-2">
-              每天分享值得閱讀的好文章
-            </p>
-          </div>
-        </header>
+      <header className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-500 text-white shadow-md">
+  <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
 
-        {/* Navigation */}
-        <nav className="bg-white border-b">
-          <div className="max-w-7xl mx-auto">
-            <ul className="flex justify-start lg:justify-center overflow-x-auto whitespace-nowrap gap-8 py-4 text-lg font-medium px-4 [&::-webkit-scrollbar]:hidden">
-              <li>
-                <Link href="/"
-                   className="hover:text-red-600 transition-colors duration-200">
-                  首頁
-                </Link>
-              </li>
+    <Link
+  href="/"
+  className="flex items-center gap-1 shrink-0"
+>
+  <Image
+    src="/logo.png"
+    alt="喵喵網"
+    width={60}
+    height={42}
+    priority
+  />
 
-              {categories.map((item) => (
-                <li key={item.slug}>
-                 <Link
-                    href={`/category/${item.slug}`}
-                    className="hover:text-red-600 transition-colors duration-200">
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
+  <div className="font-bold text-xl md:text-2xl">
+    喵喵網
+  </div>
+</Link>
+
+    <nav>
+      <ul className="flex items-center gap-8 overflow-x-auto whitespace-nowrap text-base md:text-lg font-medium [&::-webkit-scrollbar]:hidden">
+        <li>
+          <Link href="/" className="hover:text-purple-200">
+            首頁
+          </Link>
+        </li>
+
+        {categories.map((item) => (
+          <li key={item.slug}>
+            <Link
+              href={`/category/${item.slug}`}
+              className="hover:text-purple-200"
+            >
+              {item.name}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+  </div>
+</header>
 
         {children}
       </body>

@@ -7,12 +7,16 @@ export default function HomePage() {
     <main className="min-h-screen bg-gray-50">
     
       {/* Content */}
-      <section className="max-w-7xl mx-auto px-4 py-10">
-        <h2 className="text-2xl font-bold mb-8">
-          🔥 最新文章
-        </h2>
+      <section className="max-w-7xl mx-auto px-4 pt-5 pb-10">
+        <div className="flex items-center gap-3 mb-5">
+  <div className="w-1.5 h-6 bg-violet-600 rounded-full"></div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+  <h2 className="text-2xl font-semibold text-gray-900">
+    最新文章
+  </h2>
+</div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {articles.map((article) => (
   <Link
     key={article.id}
