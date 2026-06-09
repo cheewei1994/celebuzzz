@@ -1,3 +1,4 @@
+import { categories } from "@/lib/categories";
 import Link from "next/link";
 import { articles } from "@/lib/articles";
 export default async function ArticlePage({
@@ -14,23 +15,27 @@ if (!article) {
   return <div>文章不存在</div>
 }
 
+  const categoryName =
+  categories.find(
+    (c) => c.slug === article.category
+  )?.name || article.category;
+
+  const relatedArticles = articles
+  .filter(
+    (item) =>
+      item.category === article.category &&
+      item.id !== article.id
+  )
+  .slice(0, 3);
+
   return (
     <main className="max-w-4xl mx-auto px-4 py-10">
 
     <div className="text-sm text-gray-500 mb-4">
-      首頁 ＞ 情感 ＞ 文章
+      首頁 ＞ {categoryName} ＞ 文章
     </div>
 
-    <div className="mb-6">
-      <Link
-        href="/"
-        className="text-blue-600 hover:underline"
-      >
-        ← 返回首頁
-      </Link>
-    </div>
-
-    <h1 className="text-4xl font-bold mb-4">
+    <h1 className="text-3xl md:text-4xl font-bold leading-tight mb-4">
       {article.title}
     </h1>
 
@@ -43,9 +48,9 @@ if (!article) {
       alt={article.title}
       className="w-full rounded-xl mb-8"
     />
-
+   
     <div className="prose max-w-none">
-      <div className="whitespace-pre-line">
+      <div className="whitespace-pre-line text-lg leading-10 text-gray-800">
         {article.content}
       </div>
     </div>
@@ -57,19 +62,17 @@ if (!article) {
     </h2>
 
     <div className="space-y-4">
-      <Link
-        href="/article/12346"
-        className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
-      >
-        妻子偷偷轉走存款後，我終於醒悟
-      </Link>
-
-      <Link
-        href="/article/12347"
-        className="block p-4 bg-gray-50 rounded-lg hover:bg-gray-100"
-      >
-        醫生提醒：這3種早餐別天天吃
-      </Link>
+      {relatedArticles.map((item) => (
+        <Link
+          key={item.id}
+          href={`/article/${item.id}`}
+          className="block p-4 bg-gray-50 rounded-xl hover:bg-gray-100 hover:translate-x-1 transition-all duration-200"
+        >
+          <h3 className="font-medium line-clamp-2">
+            {item.title}
+          </h3>
+        </Link>
+      ))}
     </div>
 
   </main>

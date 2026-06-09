@@ -17,34 +17,54 @@ export default async function CategoryPage({
     (article) => article.category === slug
   );
 
+  
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-8">
-        {currentCategory?.name ?? slug}
-      </h1>
+      <div className="mb-10">
+        <h1 className="text-4xl font-bold mb-2">
+          {currentCategory?.name}
+        </h1>
 
+        <p className="text-gray-500">
+          共 {filteredArticles.length} 篇文章
+        </p>
+      </div>
+
+        {filteredArticles.length === 0 && (
+          <div className="bg-white rounded-2xl p-10 text-center border">
+            <p className="text-gray-500">
+              暫時沒有文章
+            </p>
+          </div>
+)}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
         {filteredArticles.map((article) => (
           <Link
             key={article.id}
             href={`/article/${article.id}`}
           >
-            <article className="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition">
+            <article className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
               <img
                 src={article.image}
                 alt={article.title}
-                className="w-full h-52 object-cover"
+                className="w-full h-64 object-cover"
               />
 
-              <div className="p-4">
-                <h2 className="font-bold text-lg">
-                  {article.title}
-                </h2>
+             <div className="p-5">
+              
+              <h2 className="font-bold text-lg leading-7 mb-3">
+                {article.title}
+              </h2>
 
-                <p className="text-gray-500 text-sm mt-2">
-                  {article.date}
-                </p>
+              <p className="text-gray-600 text-sm leading-6 line-clamp-3">
+                {article.excerpt}
+              </p>
+
+              <div className="flex justify-between text-xs text-gray-500 mt-5">
+                <span>👁️ {article.views} 閱讀</span>
+                <span>📅 {article.date}</span>
               </div>
+            </div>
             </article>
           </Link>
         ))}
