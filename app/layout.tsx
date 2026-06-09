@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   title: "喵喵網 - 每天分享值得閱讀的好文章",
   description:
     "喵喵網提供情感、家庭、健康、奇聞、美食等優質內容，每天分享值得閱讀的文章。",
+
+  icons: {
+    icon: "/icon.png",
+  },
+
   keywords: [
     "情感文章",
     "家庭故事",
