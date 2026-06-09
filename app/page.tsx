@@ -40,11 +40,11 @@ export default function HomePage() {
           {article.title}
         </h3>
 
-        <p className="hidden md:block text-gray-600 text-sm leading-6 line-clamp-3">
+        <p className="hidden md:block text-gray-600 text-sm leading-6 line-clamp-2 min-h-[48px]">
           {article.excerpt}
         </p>
 
-        <div className="flex justify-between text-xs text-gray-500 mt-2 md:mt-5">
+        <div className="flex justify-between text-xs text-gray-500 mt-4">
           <span>👁️ {article.views} 閱讀</span>
           <span className="hidden md:inline">
             📅 {article.date}
