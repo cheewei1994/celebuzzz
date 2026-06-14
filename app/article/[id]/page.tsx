@@ -13,13 +13,12 @@ export default async function ArticlePage({
   const { data: article } = await supabase
   .from("articles")
   .select(`
-    id,
-    title,
-    category,
-    created_at,
-    views,
-    blocks
-  `)
+  id,
+  title,
+  category,
+  created_at,
+  views
+`)
   .eq("id", Number(id))
   .single();
 
@@ -72,9 +71,9 @@ if (!article) {
     </div>
 
    
-    <ArticleSlider
-  blocks={article.blocks || []}
-/>
+    <div className="p-10 bg-yellow-100">
+      TEST PAGE
+    </div>
 <hr className="my-10" />
 
 <h2 className="text-2xl font-bold mb-6">
