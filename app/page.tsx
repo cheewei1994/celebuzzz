@@ -26,10 +26,6 @@ export default async function HomePage() {
   </h2>
 </div>
 
-<h1 className="text-4xl text-red-500">
-  Articles: {articles?.length}
-</h1>
-
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {articles?.map((article) => (
   <Link
