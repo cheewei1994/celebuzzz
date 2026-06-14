@@ -14,7 +14,13 @@ const { search = "" } = await searchParams;
 
   let query = supabase
   .from("articles")
-  .select("*")
+  .select(`
+    id,
+    title,
+    category,
+    created_at
+    views
+  `)
   .eq("status", "published");
 
 if (search) {

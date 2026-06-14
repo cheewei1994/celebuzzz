@@ -10,20 +10,20 @@ export default async function ArticlePage({
   const { id } = await params
   const { data: article } = await supabase
   .from("articles")
-  .select("*")
+  .select(`
+    id,
+    title,
+    category,
+    created_at,
+    views,
+    blocks
+  `)
   .eq("id", Number(id))
   .single();
 
   if (!article) {
   return <div>文章不存在</div>;
 }
-
-supabase
-  .from("articles")
-  .update({
-    views: (article.views || 0) + 1,
-  })
-  .eq("id", article.id);
 
   const categoryName =
   categories.find(
@@ -32,7 +32,10 @@ supabase
 
   const { data: relatedArticles } = await supabase
   .from("articles")
-  .select("*")
+  .select(`
+    id,
+    title
+  `)
   .eq("category", article.category)
   .eq("status", "published")
   .neq("id", article.id)
@@ -76,9 +79,9 @@ supabase
     </div>
 
    
-    <div className="bg-green-100 p-10 text-center">
-  TEST ARTICLE
-</div>
+    <ArticleSlider
+  blocks={article.blocks || []}
+/>
 
 <hr className="my-10" />
 

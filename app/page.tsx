@@ -2,6 +2,8 @@ import { categories } from "@/lib/categories";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 
+export const revalidate = 3600;
+
 export default async function HomePage() {
 
   const { data: articles, error } = await supabase

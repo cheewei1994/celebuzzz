@@ -12,7 +12,13 @@ export default async function DraftsPage({
   const { search = "" } = await searchParams;
   let query = supabase
   .from("articles")
-  .select("*")
+  .select(`
+    id,
+    title,
+    category,
+    status,
+    created_at
+  `)
   .eq("status", "draft");
 
 if (search) {
