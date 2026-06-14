@@ -10,6 +10,9 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+
+  console.timeEnd("article-query");
+
   const { data: article } = await supabase
   .from("articles")
   .select(`
