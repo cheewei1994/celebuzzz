@@ -5,9 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ArticleSlider({
   blocks,
+  
 }: {
   blocks: any[];
 }) {
+  console.log("ArticleSlider Loaded", Date.now());
   const router = useRouter();
   const searchParams = useSearchParams();
   const [page, setPage] = useState(() => {

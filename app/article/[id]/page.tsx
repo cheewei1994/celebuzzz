@@ -80,9 +80,9 @@ export default async function ArticlePage({
     </div>
 
    
-    <ArticleSlider
-  blocks={article.blocks || []}
-/>
+    <div className="p-10 bg-yellow-100">
+  TEST PAGE
+</div>
 
 <hr className="my-10" />
 
