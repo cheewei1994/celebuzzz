@@ -76,9 +76,9 @@ supabase
     </div>
 
    
-    <ArticleSlider
-  blocks={article.blocks || []}
-/>
+    <div className="bg-green-100 p-10 text-center">
+  TEST ARTICLE
+</div>
 
 <hr className="my-10" />
 
