@@ -2,6 +2,7 @@ import { categories } from "@/lib/categories";
 import Link from "next/link";
 import ArticleSlider from "./ArticleSlider";
 import { supabase } from "@/lib/supabase";
+export const revalidate = 3600;
 
 export default async function ArticlePage({
   params,
