@@ -11,6 +11,8 @@ export default async function ArticlePage({
 }) {
   const { id } = await params
   
+console.time("article-query");
+
   const { data: article } = await supabase
   .from("articles")
   .select(`
@@ -24,7 +26,9 @@ export default async function ArticlePage({
   .eq("id", Number(id))
   .single();
 
-if (!article) {
+  console.timeEnd("article-query");
+
+  if (!article) {
   return <div>文章不存在</div>;
 }
 
