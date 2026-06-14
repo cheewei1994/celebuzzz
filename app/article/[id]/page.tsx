@@ -10,6 +10,8 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+
+  console.log("HELLO TEST");
   
 console.time("article-query");
 
