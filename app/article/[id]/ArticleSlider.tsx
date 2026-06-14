@@ -1,13 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ArticleSlider({
   blocks,
 }: {
   blocks: any[];
 }) {
-  const [page, setPage] = useState(0);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [page, setPage] = useState(() => {
+  const p = Number(searchParams.get("page"));
+
+  return !isNaN(p) && p > 0
+    ? p - 1
+    : 0;
+});
+
+  useEffect(() => {
+  const p = Number(searchParams.get("page"));
+
+  if (!isNaN(p) && p > 0) {
+    setPage(p - 1);
+  }
+}, [searchParams]);
 
   if (!blocks?.length) {
     return null;
@@ -115,7 +132,9 @@ export default function ArticleSlider({
 
         <button
           disabled={page === 0}
-          onClick={() => setPage(page - 1)}
+          onClick={() => {
+  router.push(`?page=${page}`);
+}}
           className="
             bg-gray-500
             text-white text-xl
@@ -141,7 +160,9 @@ export default function ArticleSlider({
 
         <button
           disabled={page === pages.length - 1}
-          onClick={() => setPage(page + 1)}
+          onClick={() => {
+  router.push(`?page=${page + 2}`);
+}}
           className="
             bg-blue-600
             text-white text-xl
