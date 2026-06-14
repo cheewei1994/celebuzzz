@@ -18,18 +18,6 @@ export default async function HomePage() {
       {/* Content */}
       <section className="max-w-7xl mx-auto px-4 pt-5 pb-10">
         
-        <pre className="bg-red-100 p-4 mb-4 text-xs overflow-auto">
-  {JSON.stringify(
-    {
-      count: articles?.length,
-      error,
-      first: articles?.[0],
-    },
-    null,
-    2
-  )}
-</pre>
-
         <div className="flex items-center gap-3 mb-5">
   <div className="w-1.5 h-6 bg-violet-600 rounded-full"></div>
 
@@ -37,6 +25,10 @@ export default async function HomePage() {
     最新文章
   </h2>
 </div>
+
+<h1 className="text-4xl text-red-500">
+  Articles: {articles?.length}
+</h1>
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {articles?.map((article) => (
