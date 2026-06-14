@@ -10,13 +10,22 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const article = {
-  id: 1,
-  title: "測試文章",
-  category: "news",
-  created_at: new Date().toISOString(),
-  views: 0,
-};
+  const { data: article } = await supabase
+  .from("articles")
+  .select(`
+    id,
+    title,
+    category,
+    created_at,
+    views,
+    blocks
+  `)
+  .eq("id", Number(id))
+  .single();
+
+if (!article) {
+  return <div>文章不存在</div>;
+}
 
   const categoryName =
   categories.find(
@@ -63,10 +72,9 @@ export default async function ArticlePage({
     </div>
 
    
-    <div className="p-10 bg-yellow-100">
-  TEST PAGE
-</div>
-
+    <ArticleSlider
+  blocks={article.blocks || []}
+/>
 <hr className="my-10" />
 
 <h2 className="text-2xl font-bold mb-6">
