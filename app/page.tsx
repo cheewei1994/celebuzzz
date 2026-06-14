@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabase";
 
 export default async function HomePage() {
 
-  const { data: articles } = await supabase
+  const { data: articles, error } = await supabase
   .from("articles")
   .select("*")
   .eq("status", "published")
@@ -17,6 +17,19 @@ export default async function HomePage() {
     
       {/* Content */}
       <section className="max-w-7xl mx-auto px-4 pt-5 pb-10">
+        
+        <pre className="bg-red-100 p-4 mb-4 text-xs overflow-auto">
+  {JSON.stringify(
+    {
+      count: articles?.length,
+      error,
+      first: articles?.[0],
+    },
+    null,
+    2
+  )}
+</pre>
+
         <div className="flex items-center gap-3 mb-5">
   <div className="w-1.5 h-6 bg-violet-600 rounded-full"></div>
 
