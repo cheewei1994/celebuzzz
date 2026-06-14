@@ -28,12 +28,16 @@ if (search) {
   );
 }
 
+console.time("query");
+
 const { data: articles } = await query.order(
   "created_at",
   {
     ascending: false,
   }
 );
+
+console.timeEnd("query");
 
   return (
     <main className="max-w-6xl mx-auto p-6">
