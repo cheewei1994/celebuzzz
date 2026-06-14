@@ -1,8 +1,17 @@
 import { categories } from "@/lib/categories";
 import Link from "next/link";
-import { articles } from "@/lib/articles";
+import { supabase } from "@/lib/supabase";
 
-export default function HomePage() {
+export default async function HomePage() {
+
+  const { data: articles } = await supabase
+  .from("articles")
+  .select("*")
+  .eq("status", "published")
+  .order("created_at", {
+    ascending: false,
+  });
+
   return (
     <main className="min-h-screen bg-gray-50">
     
@@ -17,18 +26,21 @@ export default function HomePage() {
 </div>
 
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {articles.map((article) => (
+          {articles?.map((article) => (
   <Link
     key={article.id}
     href={`/article/${article.id}`}
     className="block"
   >
     <article className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
+
+      {article.cover && (
       <img
-        src={article.image}
+        src={article.cover}
         alt={article.title}
         className="w-full h-32 md:h-64 object-cover"
       />
+      )}
 
       <div className="p-3 md:p-5">
         <span className="hidden md:inline-flex items-center px-3 py-1 text-xs font-bold bg-red-50 text-red-600 rounded-full border border-red-200 mb-3">
@@ -40,14 +52,21 @@ export default function HomePage() {
           {article.title}
         </h3>
 
-        <p className="hidden md:block text-gray-600 text-sm leading-6 line-clamp-2 min-h-[48px]">
-          {article.excerpt}
-        </p>
+        <p
+  className="hidden md:block text-gray-600 text-sm leading-6 overflow-hidden"
+  style={{
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+  }}
+>
+  {article.summary}
+</p>
 
         <div className="flex justify-between text-xs text-gray-500 mt-4">
-          <span>👁️ {article.views} 閱讀</span>
+          👁️ {article.views || 0} 閱讀
           <span className="hidden md:inline">
-            📅 {article.date}
+            {new Date(article.created_at).toLocaleDateString()}
           </span>
         </div>
       </div>

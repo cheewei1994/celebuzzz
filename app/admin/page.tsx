@@ -17,6 +17,7 @@ export default function AdminPage() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("台灣");
   const [summary, setSummary] = useState("");
+  const [sourceUrl, setSourceUrl] = useState("");
   
 
   const addBlock = () => {
@@ -45,7 +46,9 @@ const saveDraft = async () => {
         title,
         category,
         summary,
+        source_url: sourceUrl,
         cover: coverPreview,
+        blocks,
         status: "draft",
       },
     ]);
@@ -56,6 +59,105 @@ const saveDraft = async () => {
   }
 
   alert("草稿已保存");
+};
+
+const handleScrape = async () => {
+  if (!sourceUrl) {
+    alert("請輸入文章網址");
+    return;
+  }
+
+  const res = await fetch("/api/scrape", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      url: sourceUrl,
+    }),
+  });
+
+  const data = await res.json();
+
+console.log("COUNT =", data.blocks?.length);
+console.log("BLOCKS =", data.blocks);
+
+  if (!data.success) {
+    alert("採集失敗");
+    return;
+  }
+
+  setTitle(data.title || "");
+  setSummary(data.summary || "");
+
+  if (data.image) {
+  setCoverPreview(data.image);
+}
+
+if (data.blocks?.length) {
+  setBlocks(
+    data.blocks.map(
+      (item: string, index: number) => {
+        try {
+          const block = JSON.parse(item);
+
+          return {
+            id: Date.now() + index,
+            preview: block.imageUrl || "",
+            imageUrl: block.imageUrl || "",
+            content: block.content || "",
+          };
+        } catch {
+          return {
+            id: Date.now() + index,
+            preview: "",
+            imageUrl: "",
+            content: item,
+          };
+        }
+      }
+    )
+  );
+}
+if (data.content) {
+  setBlocks([
+    {
+      id: Date.now(),
+      preview: "",
+      imageUrl: "",
+      content: data.content,
+    },
+  ]);
+}
+
+alert("採集成功");
+};
+
+const publishArticle = async () => {
+  const { error } = await supabase
+    .from("articles")
+    .insert([
+      {
+        title,
+        category,
+        summary,
+        source_url: sourceUrl,
+        cover: coverPreview,
+        blocks,
+        status: "published",
+        views: 0,
+      },
+    ]);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  alert("文章發布成功");
+
+  window.location.href =
+    "/admin/articles";
 };
 
   return (
@@ -147,6 +249,29 @@ const saveDraft = async () => {
   />
 )}
         </div>
+<div>
+  <label className="block mb-2 font-medium">
+    採集文章原網址
+  </label>
+
+  <div className="flex gap-3 items-center">
+    <input
+      type="text"
+      value={sourceUrl}
+      onChange={(e) => setSourceUrl(e.target.value)}
+      className="flex-1 border rounded-lg p-3"
+      placeholder="https://example.com/article"
+    />
+
+    <button
+      type="button"
+      onClick={handleScrape}
+      className="bg-blue-600 text-white px-6 py-3 rounded-lg whitespace-nowrap"
+    >
+      採集文章
+    </button>
+  </div>
+</div>
 
         {/* 摘要 */}
         <div>
@@ -275,15 +400,12 @@ const saveDraft = async () => {
 
   <button
     type="button"
-    onClick={() => {
-      console.log("發布", {
-        blocks,
-      });
-    }}
+    onClick={publishArticle}
     className="bg-violet-600 text-white px-8 py-3 rounded-lg hover:bg-violet-700"
   >
     發布文章
-  </button>
+</button>
+
 </div>
 
       </div>
