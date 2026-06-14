@@ -7,25 +7,31 @@ export default async function ArticlePage({
 }) {
   const { id } = await params;
 
-  console.log("HELLO TEST");
-
-  console.time("article-query");
-
   const { data: article } = await supabase
     .from("articles")
     .select(`
-      id,
-      title
-    `)
+  id,
+  title,
+  category,
+  created_at,
+  views,
+  blocks
+`)
     .eq("id", Number(id))
     .single();
 
-  console.timeEnd("article-query");
+  if (!article) {
+  return <div>文章不存在</div>;
+}
 
-  return (
-    <main>
-      <h1>{article?.title}</h1>
-      <div>TEST</div>
-    </main>
-  );
+return (
+  <main>
+    <h1>{article.title}</h1>
+
+    <div>
+      文章恢复中...
+    </div>
+  </main>
+);
+  
 }
