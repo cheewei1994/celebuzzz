@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import DeleteButton from "./DeleteButton";
+
 export default async function ArticlesPage({
   searchParams,
 }: {
@@ -9,18 +10,11 @@ export default async function ArticlesPage({
   }>;
 }) {
 
-    console.time("page");
-
 const { search = "" } = await searchParams;
 
   let query = supabase
   .from("articles")
-  .select(`
-    id,
-    title,
-    category,
-    created_at
-  `)
+  .select("*")
   .eq("status", "published");
 
 if (search) {
@@ -29,17 +23,12 @@ if (search) {
   );
 }
 
-console.time("query");
-
 const { data: articles } = await query.order(
   "created_at",
   {
     ascending: false,
   }
 );
-
-console.timeEnd("query");
-console.timeEnd("page");
 
   return (
     <main className="max-w-6xl mx-auto p-6">
