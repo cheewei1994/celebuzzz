@@ -10,8 +10,7 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  console.time("article-query");
-
+  
   const { data: article } = await supabase
   .from("articles")
   .select(`
@@ -19,12 +18,11 @@ export default async function ArticlePage({
   title,
   category,
   created_at,
-  views
+  views,
+  blocks
 `)
   .eq("id", Number(id))
   .single();
-
-  console.timeEnd("article-query");
 
 if (!article) {
   return <div>文章不存在</div>;
@@ -35,7 +33,16 @@ if (!article) {
     (c) => c.slug === article.category
   )?.name || article.category;
 
-  const relatedArticles: any[] = [];
+  const { data: relatedArticles } = await supabase
+  .from("articles")
+  .select(`
+    id,
+    title
+  `)
+  .eq("category", article.category)
+  .eq("status", "published")
+  .neq("id", article.id)
+  .limit(3);
 
   return (
     <main className="max-w-[900px] mx-auto px-4 py-10">
@@ -75,9 +82,9 @@ if (!article) {
     </div>
 
    
-    <div className="p-10 bg-yellow-100">
-      TEST PAGE
-    </div>
+    <ArticleSlider
+  blocks={article.blocks || []}
+/>
 <hr className="my-10" />
 
 <h2 className="text-2xl font-bold mb-6">
