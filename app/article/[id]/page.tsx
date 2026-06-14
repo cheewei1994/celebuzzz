@@ -17,23 +17,22 @@ export default async function ArticlePage({
 const { data: article } = await supabase
   .from("articles")
   .select(`
-      id,
-      title
-    `)
+  id,
+  title,
+  blocks
+`)
   .eq("id", Number(id))
   .single();
 
 console.timeEnd("article-query");
 
-  if (!article) {
+if (!article) {
   return <div>文章不存在</div>;
 }
 
 return (
-  <main className="p-10">
-    <h1>{article.title}</h1>
-    <div>TEST</div>
-  </main>
+  <ArticleSlider
+    blocks={article.blocks || []}
+  />
 );
-  
 }
