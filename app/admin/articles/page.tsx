@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import DeleteButton from "./DeleteButton";
-
+console.time("page");
 export default async function ArticlesPage({
   searchParams,
 }: {
@@ -29,6 +29,8 @@ if (search) {
 }
 
 console.time("query");
+
+console.timeEnd("page");
 
 const { data: articles } = await query.order(
   "created_at",
