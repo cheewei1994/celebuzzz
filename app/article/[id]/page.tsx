@@ -10,38 +10,20 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const { data: article } = await supabase
-  .from("articles")
-  .select(`
-    id,
-    title,
-    category,
-    created_at,
-    views,
-    blocks
-  `)
-  .eq("id", Number(id))
-  .single();
-
-  if (!article) {
-  return <div>文章不存在</div>;
-}
+  const article = {
+  id: 1,
+  title: "測試文章",
+  category: "news",
+  created_at: new Date().toISOString(),
+  views: 0,
+};
 
   const categoryName =
   categories.find(
     (c) => c.slug === article.category
   )?.name || article.category;
 
-  const { data: relatedArticles } = await supabase
-  .from("articles")
-  .select(`
-    id,
-    title
-  `)
-  .eq("category", article.category)
-  .eq("status", "published")
-  .neq("id", article.id)
-  .limit(3);
+  const relatedArticles: any[] = [];
 
   return (
     <main className="max-w-[900px] mx-auto px-4 py-10">
