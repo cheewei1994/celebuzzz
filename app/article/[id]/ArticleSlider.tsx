@@ -10,7 +10,6 @@ export default function ArticleSlider({
   blocks: any[];
 }) {
   console.log("ArticleSlider Loaded", Date.now());
-  console.time("slider");
   const router = useRouter();
   const searchParams = useSearchParams();
   const [page, setPage] = useState(() => {
@@ -68,7 +67,6 @@ export default function ArticleSlider({
     currentPage.pageNumber -
     pageBlocks.length +
     1;
-    console.timeEnd("slider");
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
