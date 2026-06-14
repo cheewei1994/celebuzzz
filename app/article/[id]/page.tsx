@@ -14,14 +14,11 @@ export default async function ArticlePage({
   .eq("id", Number(id))
   .single();
 
-console.log(article);
-console.log(article.blocks);
-
   if (!article) {
   return <div>文章不存在</div>;
 }
 
-await supabase
+supabase
   .from("articles")
   .update({
     views: (article.views || 0) + 1,
