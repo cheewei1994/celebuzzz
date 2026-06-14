@@ -133,7 +133,7 @@ export default function ArticleSlider({
         <button
           disabled={page === 0}
           onClick={() => {
-  router.push(`?page=${page}`);
+   window.location.href = `?page=${page}`;
 }}
           className="
             bg-gray-500
@@ -161,7 +161,7 @@ export default function ArticleSlider({
         <button
           disabled={page === pages.length - 1}
           onClick={() => {
-  router.push(`?page=${page + 2}`);
+  window.location.href = `?page=${page + 2}`;
 }}
           className="
             bg-blue-600
