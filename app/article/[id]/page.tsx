@@ -10,8 +10,7 @@ export default async function ArticlePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-
-  console.timeEnd("article-query");
+  console.time("article-query");
 
   const { data: article } = await supabase
   .from("articles")
@@ -24,6 +23,8 @@ export default async function ArticlePage({
 `)
   .eq("id", Number(id))
   .single();
+
+  console.timeEnd("article-query");
 
 if (!article) {
   return <div>文章不存在</div>;
