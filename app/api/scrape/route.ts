@@ -258,15 +258,12 @@ console.log(
     "";
 
   const content =
-  $("body").text().trim();
-
-blocks.push(content);
+    $("#node-content").html() || "";
 
   return NextResponse.json({
-    success: true,
     title,
     image,
-    blocks,
+    content,
   });
 }
    
