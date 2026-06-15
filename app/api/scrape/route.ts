@@ -5,14 +5,26 @@ export async function POST(req: Request) {
   try {
      const { url } = await req.json();
 
-   const jinaUrl =
-  `https://r.jina.ai/http://${url.replace(
-    /^https?:\/\//,
-    ""
-  )}`;
+   const workerUrl =
+`https://celebuzzz-scraper.cheewei5915.workers.dev/?url=${encodeURIComponent(url)}`;
 
-    const response = await fetch(jinaUrl);
-    const html = await response.text();
+const response =
+  await fetch(workerUrl);
+
+const html =
+  await response.text();
+
+  const $ = cheerio.load(html);
+
+console.log(
+  "TITLE =",
+  $("title").text()
+);
+
+console.log(
+  "BODY =",
+  $("body").text().slice(0, 5000)
+);
 
    const titleMatch =
   html.match(/Title:\s*(.+)/);
@@ -42,7 +54,7 @@ const lines = markdown
 
   console.log("LUCKYELSE DETECTED");
 
-  for (let page = 1; page <= 1; page++) {
+  for (let page = 1; page <= 50; page++) {
 
     const pageUrl =
       page === 1
@@ -248,7 +260,7 @@ console.log(
         pageUrl = url;
       }
 
-      /* const response = await fetch(pageUrl, {
+      const response = await fetch(pageUrl, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
@@ -263,63 +275,49 @@ console.log(
       
       console.log("HTML LENGTH", html.length);
 
-      const $ = cheerio.load(html); */
+      const $ = cheerio.load(html);
 
-      const $ = cheerio.load("");
+      return NextResponse.json({
+  title: $("title").text(),
+  body: $("body").html()?.slice(0, 5000),
+});
 
-      
+      if (page === 1) {
+        title =
+          $('meta[property="og:title"]').attr("content") ||
+          $("title").text().trim();
+
+        image =
+          $('meta[property="og:image"]').attr("content") ||
+          "";
+      }
 
       let pageContent = "";
 
       if (url.includes("limte.net")) {
 
-  title =
-    titleMatch?.[1]?.trim() || "";
-    image = "";
-  console.log(lines);
-  return NextResponse.json({
-  lines: lines.slice(0, 300),
-});
-  const contentLines = lines.filter(line => {
+        const paragraphs = $("#node-content p")
+          .map((_, el) =>
+            $(el).text().trim()
+          )
+          .get()
+          .filter(Boolean);
 
-   if (line.startsWith("[")) return false;
-if (line.includes("Published Time")) return false;
-if (line.includes("URL Source")) return false;
-if (line.includes("Markdown Content")) return false;
-if (line.includes("NEXT VIDEO")) return false;
-if (line.includes("Advertisement")) return false;
-if (line.includes("Powered by")) return false;
-if (line.includes("Pause Play")) return false;
-if (line.includes("Mute")) return false;
-if (/^\d{4}年\d{2}月\d{2}日$/.test(line)) return false;
+        pageContent =
+          paragraphs.join("\n\n");
 
-if (line.includes("limte.net")) return false;
+      } else {
 
-if (line.startsWith("[](")) return false;
+        const paragraphs = $("article p")
+          .map((_, el) =>
+            $(el).text().trim()
+          )
+          .get()
+          .filter(Boolean);
 
-if (line.includes("mail")) return false;
-
-if (line.includes("第一页")) return false;
-
-if (line.includes("第二页")) return false;
-
-if (line.includes("close")) return false;
-
-if (line.includes("Image")) return false;
-
-    return true;
-  });
-
-  pageContent =
-  contentLines
-    .join("\n\n")
-    .replace(/^#+\s*/gm, "")
-    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
-    .replace(/\*\s*/g, "")
-    .trim();
-console.log("CONTENT LINES =", contentLines.length);
-console.log(contentLines.slice(0, 20));
-}
+        pageContent =
+          paragraphs.join("\n\n");
+      }
 
       if (!pageContent) {
         break;
