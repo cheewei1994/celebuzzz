@@ -3,11 +3,22 @@ import * as cheerio from "cheerio";
 
 export async function POST(req: Request) {
   try {
-    const { url } = await req.json();
-    return NextResponse.json({
-  test: "CHEEWAI999",
-});
+     const { url } = await req.json();
 
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+      },
+    });
+
+    const html = await response.text();
+
+    return NextResponse.json({
+      url,
+      status: response.status,
+      html: html.slice(0, 2000),
+    });
     const blocks: string[] = [];
 
     let title = "";
