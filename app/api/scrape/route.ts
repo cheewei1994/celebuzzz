@@ -258,9 +258,9 @@ console.log(
     "";
 
   const content =
-    $("#node-content").text().trim();
+  $("body").text().trim();
 
-  blocks.push(content);
+blocks.push(content);
 
   return NextResponse.json({
     success: true,
