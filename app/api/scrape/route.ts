@@ -26,6 +26,11 @@ console.log(
   $("body").text().slice(0, 5000)
 );
 
+return NextResponse.json({
+  title: $("title").text(),
+  body: $("body").text().slice(0, 5000),
+});
+
    const titleMatch =
   html.match(/Title:\s*(.+)/);
 
