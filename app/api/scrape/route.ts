@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
 export async function POST(req: Request) {
-   throw new Error("TEST DEPLOY");
   try {
     const { url } = await req.json();
 
@@ -39,6 +38,10 @@ export async function POST(req: Request) {
     }
 
     const html = await response.text();
+
+    return NextResponse.json({
+  debug: html.slice(0, 1000),
+});
 
     const $ = cheerio.load(html);
 
