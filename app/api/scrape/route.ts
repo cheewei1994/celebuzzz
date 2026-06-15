@@ -14,8 +14,12 @@ export async function POST(req: Request) {
     const response = await fetch(jinaUrl);
     const html = await response.text();
 
-    return NextResponse.json({
+   const titleMatch =
+  html.match(/Title:\s*(.+)/);
+
+return NextResponse.json({
   success: true,
+  title: titleMatch?.[1] || "",
   html: html.slice(0, 5000),
 });
 
