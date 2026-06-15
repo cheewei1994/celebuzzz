@@ -28,7 +28,7 @@ console.log(
 
 return NextResponse.json({
   title: $("title").text(),
-  body: $("body").text().slice(0, 5000),
+  body: $("body").html()?.slice(0, 10000),
 });
 
    const titleMatch =
