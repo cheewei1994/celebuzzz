@@ -293,7 +293,12 @@ if (line.includes("Mute")) return false;
   });
 
   pageContent =
-    contentLines.join("\n\n");
+  contentLines
+    .join("\n\n")
+    .replace(/^#+\s*/gm, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\*\s*/g, "")
+    .trim();
 
 }
 
