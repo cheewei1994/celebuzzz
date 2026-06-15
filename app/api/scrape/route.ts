@@ -236,11 +236,16 @@ console.log(
 
       const html = await response.text();
 
-      return NextResponse.json({
-  debug: html.slice(0, 5000),
-});
-
       const $ = cheerio.load(html);
+
+      return NextResponse.json({
+  title: $("title").text(),
+  h1: $("h1").first().text(),
+  nodeContent: $("#node-content").length,
+  article: $("article").length,
+  main: $("main").length,
+  pCount: $("p").length,
+});
 
       if (page === 1) {
         title =
