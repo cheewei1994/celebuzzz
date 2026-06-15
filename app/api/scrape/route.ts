@@ -238,6 +238,12 @@ console.log(
 
       const $ = cheerio.load(html);
 
+      return NextResponse.json({
+  title: $("title").text(),
+  pCount: $("p").length,
+  bodyLength: $("body").text().length,
+});
+
       if (page === 1) {
         title =
           $('meta[property="og:title"]').attr("content") ||
