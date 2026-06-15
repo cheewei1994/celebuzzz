@@ -285,6 +285,12 @@ console.log(
     if (line.includes("Published Time")) return false;
     if (line.includes("URL Source")) return false;
     if (line.length < 8) return false;
+    if (line.includes("Markdown Content")) return false;
+    if (line.includes("NEXT VIDEO")) return false;
+    if (line.includes("Advertisement")) return false;
+    if (line.includes("Powered by")) return false;
+    if (line.includes("Pause Play")) return false;
+    if (line.includes("Mute")) return false;
 
     return true;
   });
