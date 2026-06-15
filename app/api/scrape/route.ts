@@ -235,6 +235,11 @@ console.log(
       }
 
       const html = await response.text();
+      return NextResponse.json({
+  success: true,
+  html: html.slice(0, 10000),
+});
+      console.log("HTML LENGTH", html.length);
 
       const $ = cheerio.load(html);
 
