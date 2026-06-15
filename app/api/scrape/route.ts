@@ -26,11 +26,6 @@ console.log(
   $("body").text().slice(0, 5000)
 );
 
-return NextResponse.json({
-  title: $("title").text(),
-  body: $("body").html()?.slice(0, 10000),
-});
-
    const titleMatch =
   html.match(/Title:\s*(.+)/);
 
@@ -252,91 +247,29 @@ console.log(
 
     const seenContents = new Set<string>();
 
-    for (let page = 1; page <= 50; page++) {
+    if (url.includes("limte.net")) {
 
-      let pageUrl = "";
+  title =
+    $('meta[property="og:title"]').attr("content") ||
+    $("title").text().trim();
 
-      if (url.includes("limte.net")) {
-        pageUrl =
-          page === 1
-            ? url
-            : `${url}/page/${page - 1}`;
-      } else {
-        pageUrl = url;
-      }
+  image =
+    $('meta[property="og:image"]').attr("content") ||
+    "";
 
-      const response = await fetch(pageUrl, {
-        headers: {
-          "User-Agent":
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-        },
-      });
+  const content =
+    $("#node-content").text().trim();
 
-      if (!response.ok) {
-        break;
-      }
+  blocks.push(content);
 
-      const html = await response.text();
-      
-      console.log("HTML LENGTH", html.length);
-
-      const $ = cheerio.load(html);
-
-      return NextResponse.json({
-  title: $("title").text(),
-  body: $("body").html()?.slice(0, 5000),
-});
-
-      if (page === 1) {
-        title =
-          $('meta[property="og:title"]').attr("content") ||
-          $("title").text().trim();
-
-        image =
-          $('meta[property="og:image"]').attr("content") ||
-          "";
-      }
-
-      let pageContent = "";
-
-      if (url.includes("limte.net")) {
-
-        const paragraphs = $("#node-content p")
-          .map((_, el) =>
-            $(el).text().trim()
-          )
-          .get()
-          .filter(Boolean);
-
-        pageContent =
-          paragraphs.join("\n\n");
-
-      } else {
-
-        const paragraphs = $("article p")
-          .map((_, el) =>
-            $(el).text().trim()
-          )
-          .get()
-          .filter(Boolean);
-
-        pageContent =
-          paragraphs.join("\n\n");
-      }
-
-      if (!pageContent) {
-        break;
-      }
-
-      if (seenContents.has(pageContent)) {
-        continue;
-      }
-
-      seenContents.add(pageContent);
-
-      blocks.push(pageContent);
-    }
-
+  return NextResponse.json({
+    success: true,
+    title,
+    image,
+    blocks,
+  });
+}
+   
     const summary =
   (blocks[0] || "")
     .replace(/\n/g, " ")
