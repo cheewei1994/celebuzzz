@@ -17,10 +17,16 @@ export async function POST(req: Request) {
    const titleMatch =
   html.match(/Title:\s*(.+)/);
 
+const contentStart =
+  html.indexOf("Markdown Content:");
+
 return NextResponse.json({
   success: true,
   title: titleMatch?.[1] || "",
-  html: html.slice(0, 5000),
+  content:
+    contentStart > -1
+      ? html.slice(contentStart, contentStart + 3000)
+      : html.slice(0, 3000),
 });
 
     const blocks: string[] = [];
