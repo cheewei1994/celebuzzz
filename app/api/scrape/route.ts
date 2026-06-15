@@ -277,6 +277,9 @@ console.log(
     titleMatch?.[1]?.trim() || "";
     image = "";
   console.log(lines);
+  return NextResponse.json({
+  lines: lines.slice(0, 300),
+});
   const contentLines = lines.filter(line => {
 
    if (line.startsWith("[")) return false;
@@ -288,6 +291,21 @@ if (line.includes("Advertisement")) return false;
 if (line.includes("Powered by")) return false;
 if (line.includes("Pause Play")) return false;
 if (line.includes("Mute")) return false;
+if (/^\d{4}年\d{2}月\d{2}日$/.test(line)) return false;
+
+if (line.includes("limte.net")) return false;
+
+if (line.startsWith("[](")) return false;
+
+if (line.includes("mail")) return false;
+
+if (line.includes("第一页")) return false;
+
+if (line.includes("第二页")) return false;
+
+if (line.includes("close")) return false;
+
+if (line.includes("Image")) return false;
 
     return true;
   });
@@ -299,7 +317,8 @@ if (line.includes("Mute")) return false;
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/\*\s*/g, "")
     .trim();
-
+console.log("CONTENT LINES =", contentLines.length);
+console.log(contentLines.slice(0, 20));
 }
 
       if (!pageContent) {
