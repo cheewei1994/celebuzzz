@@ -6,11 +6,29 @@ export async function POST(req: Request) {
      const { url } = await req.json();
 
     const response = await fetch(url, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-      },
-    });
+  headers: {
+    "User-Agent":
+      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+
+    "Accept":
+      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+
+    "Accept-Language":
+      "zh-CN,zh;q=0.9,en;q=0.8",
+
+    "Cache-Control":
+      "no-cache",
+
+    "Pragma":
+      "no-cache",
+
+    "Referer":
+      "https://www.google.com/",
+
+    "Upgrade-Insecure-Requests":
+      "1",
+  },
+});
 
     const html = await response.text();
 
