@@ -238,9 +238,6 @@ console.log(
 
       const $ = cheerio.load(html);
 
-      return NextResponse.json({
-  TEST: "HELLO_999",
-});
       if (page === 1) {
         title =
           $('meta[property="og:title"]').attr("content") ||
