@@ -20,14 +20,15 @@ export async function POST(req: Request) {
 const contentStart =
   html.indexOf("Markdown Content:");
 
-return NextResponse.json({
-  success: true,
-  title: titleMatch?.[1] || "",
-  content:
-    contentStart > -1
-      ? html.slice(contentStart, contentStart + 3000)
-      : html.slice(0, 3000),
-});
+const markdown =
+  contentStart > -1
+    ? html.slice(contentStart)
+    : html;
+
+const lines = markdown
+  .split("\n")
+  .map(v => v.trim())
+  .filter(Boolean);
 
     const blocks: string[] = [];
 
@@ -41,7 +42,7 @@ return NextResponse.json({
 
   console.log("LUCKYELSE DETECTED");
 
-  for (let page = 1; page <= 50; page++) {
+  for (let page = 1; page <= 1; page++) {
 
     const pageUrl =
       page === 1
@@ -247,7 +248,7 @@ console.log(
         pageUrl = url;
       }
 
-      const response = await fetch(pageUrl, {
+      /* const response = await fetch(pageUrl, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
@@ -259,55 +260,39 @@ console.log(
       }
 
       const html = await response.text();
-      return NextResponse.json({
-  success: true,
-  html: html.slice(0, 10000),
-});
+      
       console.log("HTML LENGTH", html.length);
 
-      const $ = cheerio.load(html);
+      const $ = cheerio.load(html); */
 
-      return NextResponse.json({
-  title: $("title").text(),
-  body: $("body").html()?.slice(0, 5000),
-});
+      const $ = cheerio.load("");
 
-      if (page === 1) {
-        title =
-          $('meta[property="og:title"]').attr("content") ||
-          $("title").text().trim();
-
-        image =
-          $('meta[property="og:image"]').attr("content") ||
-          "";
-      }
+      
 
       let pageContent = "";
 
       if (url.includes("limte.net")) {
 
-        const paragraphs = $("#node-content p")
-          .map((_, el) =>
-            $(el).text().trim()
-          )
-          .get()
-          .filter(Boolean);
+  title =
+    titleMatch?.[1]?.trim() || "";
+    image = "";
 
-        pageContent =
-          paragraphs.join("\n\n");
+  const contentLines = lines.filter(line => {
 
-      } else {
+    if (line.startsWith("#")) return false;
+    if (line.startsWith("[")) return false;
+    if (line.includes("http")) return false;
+    if (line.includes("Published Time")) return false;
+    if (line.includes("URL Source")) return false;
+    if (line.length < 8) return false;
 
-        const paragraphs = $("article p")
-          .map((_, el) =>
-            $(el).text().trim()
-          )
-          .get()
-          .filter(Boolean);
+    return true;
+  });
 
-        pageContent =
-          paragraphs.join("\n\n");
-      }
+  pageContent =
+    contentLines.join("\n\n");
+
+}
 
       if (!pageContent) {
         break;
