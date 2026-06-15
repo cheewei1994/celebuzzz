@@ -5,38 +5,20 @@ export async function POST(req: Request) {
   try {
      const { url } = await req.json();
 
-    const response = await fetch(url, {
-  headers: {
-    "User-Agent":
-      "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+   const jinaUrl =
+  `https://r.jina.ai/http://${url.replace(
+    /^https?:\/\//,
+    ""
+  )}`;
 
-    "Accept":
-      "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-
-    "Accept-Language":
-      "zh-CN,zh;q=0.9,en;q=0.8",
-
-    "Cache-Control":
-      "no-cache",
-
-    "Pragma":
-      "no-cache",
-
-    "Referer":
-      "https://www.google.com/",
-
-    "Upgrade-Insecure-Requests":
-      "1",
-  },
-});
-
+    const response = await fetch(jinaUrl);
     const html = await response.text();
 
     return NextResponse.json({
-      url,
-      status: response.status,
-      html: html.slice(0, 2000),
-    });
+  success: true,
+  html: html.slice(0, 5000),
+});
+
     const blocks: string[] = [];
 
     let title = "";
