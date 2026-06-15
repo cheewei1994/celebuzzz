@@ -39,10 +39,6 @@ export async function POST(req: Request) {
 
     const html = await response.text();
 
-    return NextResponse.json({
-  debug: html.slice(0, 1000),
-});
-
     const $ = cheerio.load(html);
 
     if (page === 1) {
