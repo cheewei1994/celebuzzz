@@ -240,8 +240,7 @@ console.log(
 
       return NextResponse.json({
   title: $("title").text(),
-  pCount: $("p").length,
-  bodyLength: $("body").text().length,
+  body: $("body").html()?.slice(0, 5000),
 });
 
       if (page === 1) {
