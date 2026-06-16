@@ -1,21 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
-  const router = useRouter();
+  const [username, setUsername] =
+    useState("");
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [password, setPassword] =
+    useState("");
 
   async function handleLogin(
     e: React.FormEvent
   ) {
     e.preventDefault();
-
-    setLoading(true);
 
     const res = await fetch(
       "/api/admin/login",
@@ -32,68 +30,90 @@ export default function LoginPage() {
       }
     );
 
-    setLoading(false);
-
     if (res.ok) {
-  alert("登入成功");
-
-  console.log(
-    "GOING TO ARTICLES"
-  );
-
-  window.location.href =
-    "/admin/articles";
-}
-
-else {
-  alert("帳號或密碼錯誤");
-}
+      window.location.href =
+        "/admin";
+    } else {
+      alert("帳號或密碼錯誤");
+    }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleLogin}
-        className="bg-white p-8 rounded-xl shadow-md w-[400px]"
-      >
-        <h1 className="text-2xl font-bold mb-6 text-center">
-          管理員登入
-        </h1>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
 
-        <h2 className="text-red-600 text-center mb-4">
-  TEST 123456
-</h2>
+      <div className="bg-white border rounded-xl shadow-sm w-full max-w-md p-8">
 
-        <input
-          type="text"
-          placeholder="帳號"
-          value={username}
-          onChange={(e) =>
-            setUsername(e.target.value)
-          }
-          className="w-full border p-3 rounded mb-4"
-        />
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-green-600 text-xl">
+            🔒
+          </span>
 
-        <input
-          type="password"
-          placeholder="密碼"
-          value={password}
-          onChange={(e) =>
-            setPassword(e.target.value)
-          }
-          className="w-full border p-3 rounded mb-4"
-        />
+          <h1 className="text-xl font-bold">
+            後台登入
+          </h1>
+        </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-600 text-white p-3 rounded"
+        <p className="text-gray-500 text-sm mb-6">
+          本管理員登入
+        </p>
+
+        <form
+          onSubmit={handleLogin}
+          className="space-y-4"
         >
-          {loading
-            ? "登入中..."
-            : "登入"}
-        </button>
-      </form>
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              電子郵件
+            </label>
+
+            <input
+              type="text"
+              value={username}
+              onChange={(e) =>
+                setUsername(
+                  e.target.value
+                )
+              }
+              className="w-full border rounded-lg p-3"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">
+              密碼
+            </label>
+
+            <input
+              type="password"
+              value={password}
+              onChange={(e) =>
+                setPassword(
+                  e.target.value
+                )
+              }
+              className="w-full border rounded-lg p-3"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium"
+          >
+            登入
+          </button>
+
+<div className="text-center mt-4">
+  <Link
+    href="/admin/forgot-password"
+    className="text-sm text-blue-600 hover:underline"
+  >
+    忘記密碼？
+  </Link>
+</div>
+
+        </form>
+
+      </div>
     </div>
   );
 }
