@@ -3,44 +3,7 @@ import * as cheerio from "cheerio";
 
 export async function POST(req: Request) {
   try {
-     const { url } = await req.json();
-
-   const workerUrl =
-`https://celebuzzz-scraper.cheewei5915.workers.dev/?url=${encodeURIComponent(url)}`;
-
-const response =
-  await fetch(workerUrl);
-
-const html =
-  await response.text();
-
-  const $ = cheerio.load(html);
-
-console.log(
-  "TITLE =",
-  $("title").text()
-);
-
-console.log(
-  "BODY =",
-  $("body").text().slice(0, 5000)
-);
-
-   const titleMatch =
-  html.match(/Title:\s*(.+)/);
-
-const contentStart =
-  html.indexOf("Markdown Content:");
-
-const markdown =
-  contentStart > -1
-    ? html.slice(contentStart)
-    : html;
-
-const lines = markdown
-  .split("\n")
-  .map(v => v.trim())
-  .filter(Boolean);
+    const { url } = await req.json();
 
     const blocks: string[] = [];
 
@@ -247,26 +210,84 @@ console.log(
 
     const seenContents = new Set<string>();
 
-    if (url.includes("limte.net")) {
+    for (let page = 1; page <= 50; page++) {
 
-  title =
-    $('meta[property="og:title"]').attr("content") ||
-    $("title").text().trim();
+      let pageUrl = "";
 
-  image =
-    $('meta[property="og:image"]').attr("content") ||
-    "";
+      if (url.includes("limte.net")) {
+        pageUrl =
+          page === 1
+            ? url
+            : `${url}/page/${page - 1}`;
+      } else {
+        pageUrl = url;
+      }
 
-  const content =
-    $("#node-content").html() || "";
+      const response = await fetch(pageUrl, {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+        },
+      });
 
-  return NextResponse.json({
-    title,
-    image,
-    content,
-  });
-}
-   
+      if (!response.ok) {
+        break;
+      }
+
+      const html = await response.text();
+
+      const $ = cheerio.load(html);
+
+      if (page === 1) {
+        title =
+          $('meta[property="og:title"]').attr("content") ||
+          $("title").text().trim();
+
+        image =
+          $('meta[property="og:image"]').attr("content") ||
+          "";
+      }
+
+      let pageContent = "";
+
+      if (url.includes("limte.net")) {
+
+        const paragraphs = $("#node-content p")
+          .map((_, el) =>
+            $(el).text().trim()
+          )
+          .get()
+          .filter(Boolean);
+
+        pageContent =
+          paragraphs.join("\n\n");
+
+      } else {
+
+        const paragraphs = $("article p")
+          .map((_, el) =>
+            $(el).text().trim()
+          )
+          .get()
+          .filter(Boolean);
+
+        pageContent =
+          paragraphs.join("\n\n");
+      }
+
+      if (!pageContent) {
+        break;
+      }
+
+      if (seenContents.has(pageContent)) {
+        continue;
+      }
+
+      seenContents.add(pageContent);
+
+      blocks.push(pageContent);
+    }
+
     const summary =
   (blocks[0] || "")
     .replace(/\n/g, " ")
