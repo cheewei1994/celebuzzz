@@ -1,0 +1,70 @@
+import { supabase } from "@/lib/supabase";
+import bcrypt from "bcryptjs";
+
+export async function POST(req: Request) {
+  try {
+    const { username, password } =
+      await req.json();
+
+    const { data: admin, error } =
+      await supabase
+        .from("admins")
+        .select("*")
+        .eq("username", username)
+        .single();
+
+    if (error || !admin) {
+      return Response.json(
+        {
+          error: "帳號不存在",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
+    const valid =
+      await bcrypt.compare(
+        password,
+        admin.password_hash
+      );
+
+console.log("===== LOGIN DEBUG =====");
+console.log("username:", username);
+console.log("password:", password);
+console.log("db hash:", admin.password_hash);
+console.log("valid:", valid);
+
+    if (!valid) {
+      return Response.json(
+        {
+          error: "密碼錯誤",
+        },
+        {
+          status: 401,
+        }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      user: {
+        id: admin.id,
+        username: admin.username,
+        role: admin.role,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+
+    return Response.json(
+      {
+        error: "Server Error",
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+}

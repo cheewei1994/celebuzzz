@@ -1,22 +1,29 @@
 import Link from "next/link";
+import { headers } from "next/headers";
 
-export default function AdminLayout({
+export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+
+  const pathname =
+    headersList.get("next-url") || "";
+
+  // 登入頁不顯示 Sidebar
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex min-h-screen">
-
-      {/* 左侧菜单 */}
       <aside className="w-64 bg-gray-900 text-white p-6">
-
         <h2 className="text-2xl font-bold mb-8">
           CMS 後台
         </h2>
 
         <nav className="space-y-3">
-
           <Link
             href="/admin/dashboard"
             className="block p-3 rounded-lg hover:bg-gray-800"
@@ -51,16 +58,12 @@ export default function AdminLayout({
           >
             🔥 熱門文章
           </Link>
-
         </nav>
-
       </aside>
 
-      {/* 右侧内容 */}
       <main className="flex-1 bg-gray-50">
         {children}
       </main>
-
     </div>
   );
 }

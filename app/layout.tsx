@@ -36,11 +36,12 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
+  
   return (
     <html
   lang="zh-Hant"
@@ -57,57 +58,10 @@ export default function RootLayout({
       </head>
 
       <body className="min-h-full flex flex-col">
-        {/* Header */}
-      
-      <header className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-500 text-white shadow-md">
 
-        <MobileHeader />
+    
 
-  <div className="hidden md:flex max-w-7xl mx-auto items-center justify-between px-4 py-2 md:px-6 md:py-3">
-
-    <Link
-  href="/"
-  className="flex items-center gap-1 shrink-0"
->
-  <Image
-    src="/logo.png"
-    alt="喵喵網"
-    width={60}
-    height={42}
-    priority
-    className="md:w-[60px]"
-  />
-
-  <div className="font-bold text-base md:text-2xl">
-    喵喵網
-  </div>
-</Link>
-
-    <nav>
-      <ul className="flex items-center gap-4 md:gap-8 overflow-x-auto whitespace-nowrap text-sm md:text-lg font-medium [&::-webkit-scrollbar]:hidden">
-        <li>
-          <Link href="/" className="hover:text-purple-200">
-            首頁
-          </Link>
-        </li>
-
-        {categories.map((item) => (
-          <li key={item.slug}>
-            <Link
-              href={`/category/${item.slug}`}
-              className="hover:text-purple-200"
-            >
-              {item.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </nav>
-
-  </div>
-</header>
-
-        {children}
+  {children}
       </body>
     </html>
   );
