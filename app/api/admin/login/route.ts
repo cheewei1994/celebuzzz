@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import bcrypt from "bcryptjs";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -47,14 +48,26 @@ console.log("valid:", valid);
       );
     }
 
-    return Response.json({
-      success: true,
-      user: {
-        id: admin.id,
-        username: admin.username,
-        role: admin.role,
-      },
-    });
+    const response = NextResponse.json({
+  success: true,
+  user: {
+    id: admin.id,
+    username: admin.username,
+    role: admin.role,
+  },
+});
+
+response.cookies.set(
+  "admin_token",
+  "logged_in",
+  {
+    httpOnly: true,
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7,
+  }
+);
+
+return response;
   } catch (err) {
     console.error(err);
 

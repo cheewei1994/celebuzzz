@@ -3,16 +3,48 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 export const dynamic = "force-dynamic";
 
-export default async function HomePage() {
+export default async function HomePage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    page?: string;
+  }>;
+}) {
 
-  const { data: articles, error } = await supabase
+  const params = await searchParams;
+
+const currentPage = Number(
+  params.page || 1
+);
+
+const pageSize = 12;
+
+const from =
+  (currentPage - 1) * pageSize;
+
+const to =
+  from + pageSize - 1;
+
+  const {
+  data: articles,
+  count,
+  error,
+} = await supabase
   .from("articles")
-  .select("*")
-  .eq("status", "published")
+  .select("*", {
+    count: "exact",
+  })
+  
+   .eq("status", "published")
   .order("created_at", {
     ascending: false,
-  });
+  })
+  .range(from, to);
 
+  const totalPages = Math.ceil(
+  (count || 0) / pageSize
+);
+  
   return (
     <main className="min-h-screen bg-gray-50">
     
@@ -78,49 +110,44 @@ export default async function HomePage() {
 ))}
         </div>
 
-        {/* Pagination */}
-        <div className="flex justify-center items-center gap-2 mt-12">
+       <div className="flex justify-center items-center gap-2 mt-12">
 
-          {/* 上一页 */}
-          <button className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition">
-            <span className="hidden md:inline">
-               ← 上一頁
-            </span>
+  {currentPage > 1 && (
+    <Link
+      href={`/?page=${currentPage - 1}`}
+      className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+    >
+      ← 上一頁
+    </Link>
+  )}
 
-            <span className="md:hidden text-lg">
-               ‹
-            </span>
-          </button>
+  {Array.from(
+    { length: totalPages },
+    (_, i) => i + 1
+  ).map((page) => (
+    <Link
+      key={page}
+      href={`/?page=${page}`}
+      className={`w-10 h-10 flex items-center justify-center rounded-lg border ${
+        currentPage === page
+          ? "bg-blue-600 text-white border-blue-600"
+          : "hover:bg-gray-100"
+      }`}
+    >
+      {page}
+    </Link>
+  ))}
 
-          {/* 页码 */}
-           <button className="w-10 h-10 rounded-lg bg-blue-600 text-white">
-            1
-          </button>
+  {currentPage < totalPages && (
+    <Link
+      href={`/?page=${currentPage + 1}`}
+      className="px-4 py-2 border rounded-lg hover:bg-gray-100"
+    >
+      下一頁 →
+    </Link>
+  )}
 
-          <button className="w-10 h-10 border rounded-lg hover:bg-gray-100 transition">
-            2
-          </button>
-
-          <button className="w-10 h-10 border rounded-lg hover:bg-gray-100 transition">
-            3
-          </button>
-
-          <button className="w-10 h-10 border rounded-lg hover:bg-gray-100 transition">
-            4
-          </button>
-
-          {/* 下一页 */}
-          <button className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition">
-            <span className="hidden md:inline">
-              下一頁 →
-            </span>
-
-            <span className="md:hidden text-lg">
-              ›
-            </span>
-          </button>
-
-        </div>
+</div>
       </section>
 
       {/* Footer */}

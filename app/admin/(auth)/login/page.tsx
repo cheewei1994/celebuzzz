@@ -35,12 +35,19 @@ export default function LoginPage() {
     setLoading(false);
 
     if (res.ok) {
-      router.push(
-        "/admin/articles"
-      );
-    } else {
-      alert("帳號或密碼錯誤");
-    }
+  alert("登入成功");
+
+  console.log(
+    "GOING TO ARTICLES"
+  );
+
+  window.location.href =
+    "/admin/articles";
+}
+
+else {
+  alert("帳號或密碼錯誤");
+}
   }
 
   return (
@@ -52,6 +59,10 @@ export default function LoginPage() {
         <h1 className="text-2xl font-bold mb-6 text-center">
           管理員登入
         </h1>
+
+        <h2 className="text-red-600 text-center mb-4">
+  TEST 123456
+</h2>
 
         <input
           type="text"
