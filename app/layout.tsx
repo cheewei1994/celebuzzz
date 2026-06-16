@@ -43,9 +43,10 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="zh-Hant"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+  lang="zh-Hant"
+  suppressHydrationWarning
+  className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+>
       <head>
         <Script
           async

@@ -139,6 +139,8 @@ else if (url.includes("kimishare.org")) {
       },
     });
 
+    console.log("STATUS =", response.status);
+
     if (!response.ok) {
       break;
     }
@@ -222,6 +224,9 @@ console.log(
       } else {
         pageUrl = url;
       }
+
+      console.log("PAGE =", page);
+console.log("PAGE URL =", pageUrl);
 
       const response = await fetch(pageUrl, {
         headers: {
