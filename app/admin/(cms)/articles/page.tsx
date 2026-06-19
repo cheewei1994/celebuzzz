@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import DeleteButton from "./DeleteButton";
+import CopyButtons from "./CopyButtons";
 
 export default async function ArticlesPage({
   searchParams,
@@ -172,96 +173,98 @@ const { data: articles } = await query
     
   </form>
 
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-4 text-left">
-                ID
-              </th>
+      <div className="space-y-4">
+  {articles?.map((article) => (
+    <div
+      key={article.id}
+      className="bg-white rounded-xl shadow p-4 flex items-center gap-4"
+    >
+      {/* Cover */}
+      <div className="shrink-0">
+        <img
+          src={article.cover}
+          alt=""
+          className="w-40 h-24 rounded object-cover border"
+        />
+      </div>
 
-              <th className="p-4 text-left">
-                標題
-              </th>
+      {/* Long Image */}
+      <div className="shrink-0">
+        {article.long_image ? (
+          <img
+            src={article.long_image}
+            alt=""
+            className="w-19 h-24 rounded object-cover border"
+          />
+        ) : (
+          <div className="w-19 h-24 rounded border bg-gray-100 flex items-center justify-center text-xs text-gray-400">
+            待上傳
+          </div>
+        )}
+      </div>
 
-              <th className="p-4 text-left">
-                閱讀數
-              </th>
+      {/* Content */}
+      <div className="flex-1 min-w-0">
+        <Link
+          href={`/article/${article.id}`}
+          target="_blank"
+          className="font-bold text-lg hover:text-blue-600 line-clamp-2"
+        >
+          {article.title}
+        </Link>
 
-              <th className="p-4 text-left">
-                分類
-              </th>
+        <p className="text-gray-500 text-sm mt-2 line-clamp-2">
+          {article.summary || "暫無摘要"}
+        </p>
 
-              <th className="p-4 text-left">
-                日期
-              </th>
+        <div className="mt-3 text-sm text-gray-500 flex gap-4">
+  <span>📂 {article.category}</span>
 
-              <th className="p-4 text-left">
-                操作
-              </th>
-            </tr>
-          </thead>
+  <span>
+    👁️ {article.views || 0}
+  </span>
 
-          <tbody>
-            {articles?.map((article) => (
-              <tr
-                key={article.id}
-                className="border-t"
-              >
-                <td className="p-4">
-                  {article.id}
-                </td>
+  <span>
+    📅 {article.created_at?.slice(0, 10)}
+  </span>
 
-                <td className="p-4 font-medium max-w-[500px]">
-                  <Link
-  href={`/article/${article.id}`}
-  target="_blank"
-  className="text-blue-600 hover:underline line-clamp-2"
->
-                    {article.title}
-                  </Link>
-                </td>
-
-                <td className="p-4">
-  👁️ {article.views || 0}
-</td>
-
-<td className="p-4 min-w-[80px]">
-  {article.category}
-</td>
-
-<td className="p-4">
-  {article.created_at?.slice(0, 10)}
-</td>
-
-                <td className="p-4">
-                  <div className="flex gap-2">
-
-  <Link
-    href={`/article/${article.id}`}
-    target="_blank"
-    className="bg-green-600 text-white px-3 py-1 rounded"
-  >
-    查看
-  </Link>
-
-  <Link
-    href={`/admin/edit/${article.id}`}
-    className="bg-blue-600 text-white px-3 py-1 rounded"
-  >
-    編輯
-  </Link>
-
-  <DeleteButton
-    id={article.id}
-  />
+  <span className="text-gray-400">
+  ID:{article.id}
+</span>
 </div>
+      </div>
 
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* 管理區 */}
+      <div className="w-32 flex flex-col gap-2">
+        <div className="flex gap-2">
+          <Link
+            href={`/article/${article.id}`}
+            target="_blank"
+            className="bg-green-600 text-white px-3 py-1 rounded text-sm"
+          >
+            查看
+          </Link>
+
+          <Link
+            href={`/admin/edit/${article.id}`}
+            className="bg-blue-600 text-white px-3 py-1 rounded text-sm"
+          >
+            編輯
+          </Link>
+        </div>
+
+        <div className="flex items-center gap-4">
+  <DeleteButton id={article.id} />
+</div>
+      </div>
+
+      {/* 推廣工具 */}
+<div className="w-44">
+  <CopyButtons article={article} />
+</div>
+    </div>
+  ))}
+</div>
 
 <div className="flex justify-center gap-4 py-6">
   {currentPage > 1 && (
@@ -291,7 +294,6 @@ const { data: articles } = await query
   )}
 </div>
 
-      </div>
     </main>
   );
 }

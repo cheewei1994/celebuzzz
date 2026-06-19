@@ -35,7 +35,7 @@ export default function DeleteButton({
   return (
     <button
       onClick={deleteArticle}
-      className="bg-red-600 text-white px-3 py-1 rounded"
+      className="bg-red-600 text-white px-3 py-1 rounded text-sm"
     >
       刪除
     </button>
