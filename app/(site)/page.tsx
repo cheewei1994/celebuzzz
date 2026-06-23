@@ -46,7 +46,7 @@ const to =
 );
   
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="bg-gray-50">
     
       {/* Content */}
       <section className="max-w-7xl mx-auto px-4 pt-5 pb-10">
@@ -59,7 +59,7 @@ const to =
   </h2>
 </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {articles?.map((article) => (
   <Link
     key={article.id}
@@ -70,20 +70,28 @@ const to =
     <article className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
 
       {article.cover && (
-      <img
-        src={article.cover}
-        alt={article.title}
-        className="w-full h-32 md:h-64 object-cover"
-      />
+     <div className="aspect-[16/10] overflow-hidden">
+  <img
+    src={article.cover}
+    alt={article.title}
+    className="w-full h-full object-cover"
+  />
+</div>
       )}
 
       <div className="p-3 md:p-5">
-        <span className="hidden md:inline-flex items-center px-3 py-1 text-xs font-bold bg-red-50 text-red-600 rounded-full border border-red-200 mb-3">
-          #{categories.find(
-            (c) => c.slug === article.category
-          )?.name || article.category}
-        </span>
-        <h3 className="font-bold text-sm md:text-lg leading-5 md:leading-7 mb-1 line-clamp-2">
+  
+        <h3
+  className="
+  font-bold
+  text-base
+  md:text-xl
+  leading-6
+  md:leading-8
+  line-clamp-2
+  mb-2
+"
+>
           {article.title}
         </h3>
 
@@ -150,22 +158,7 @@ const to =
 </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white border-t mt-20">
-        <div className="max-w-7xl mx-auto py-10 text-center">
-          <p className="text-gray-500 text-sm">
-            Copyright © 2026 喵喵網 All rights reserved.
-          </p>
-
-          <div className="flex justify-center gap-6 mt-4 text-sm text-gray-600">
-            <Link href="/about"className="hover:text-blue-600">關於我們</Link>
-            <Link href="/contact"className="hover:text-blue-600">聯絡我們</Link>
-            <Link href="/privacy-policy"className="hover:text-blue-600">隱私政策</Link>
-            <Link href="/disclaimer"className="hover:text-blue-600">免責聲明</Link>
-            <Link href="/dmca"className="hover:text-blue-600">DMCA</Link>
-          </div>
-        </div>
-      </footer>
+      
     </main>
   );
 }

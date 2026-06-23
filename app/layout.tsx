@@ -58,13 +58,15 @@ export default async function RootLayout({
         />
       </head>
 
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-screen flex flex-col">
 
-        {children}
+  <main className="flex-1">
+    {children}
+  </main>
 
-        <Toaster position="top-center" />
+  <Toaster position="top-center" />
 
-      </body>
+</body>
     </html>
   );
 }

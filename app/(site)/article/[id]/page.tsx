@@ -2,8 +2,9 @@ import { categories } from "@/lib/categories";
 import Link from "next/link";
 import ArticleSlider from "./ArticleSlider";
 import { supabase } from "@/lib/supabase";
+import AdSlot from "@/app/components/AdSlot";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export default async function ArticlePage({
   params,
@@ -29,25 +30,41 @@ export default async function ArticlePage({
     return <div>文章不存在</div>;
   }
 
-  const categoryName =
-    categories.find(
-      (c) => c.slug === article.category
-    )?.name || article.category;
+  await supabase
+  .from("articles")
+  .update({
+    views: (article.views || 0) + 1,
+  })
+  .eq("id", article.id);
 
-  const { data: relatedArticles } = await supabase
-    .from("articles")
-    .select(`
-      id,
-      title
-    `)
-    .eq("category", article.category)
-    .eq("status", "published")
-    .neq("id", article.id)
-    .limit(3);
+
+  const currentCategory = categories.find(
+  (c) => c.name === article.category
+);
+
+const categoryName =
+  currentCategory?.name || article.category;
+
+ const { data: relatedArticles } = await supabase
+  .from("articles")
+  .select(`
+    id,
+    title,
+    cover,
+    created_at,
+    views
+  `)
+  .eq("status", "published")
+  .neq("id", article.id)
+  .order("views", {
+    ascending: false,
+  })
+  .limit(15);
 
   return (
     <main className="max-w-[900px] mx-auto px-4 py-10">
 
+     
       <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
 
         <Link
@@ -60,11 +77,11 @@ export default async function ArticlePage({
         <span>＞</span>
 
         <Link
-          href={`/category/${article.category}`}
-          className="hover:text-purple-600 hover:underline transition"
-        >
-          {categoryName}
-        </Link>
+  href={`/category/${currentCategory?.slug}`}
+  className="hover:text-purple-600 hover:underline transition"
+>
+  {categoryName}
+</Link>
 
         <span>＞</span>
 
@@ -78,35 +95,81 @@ export default async function ArticlePage({
         {article.title}
       </h1>
 
-      <div className="text-gray-500 mb-6">
-        👁️ {(article.views || 0) + 1} 閱讀
-        {" "}
-        📅 {new Date(article.created_at).toLocaleDateString()}
-      </div>
+      <div className="flex items-center gap-3 text-sm text-gray-500 border-b border-gray-200 pb-3 mb-6">
+  <span>
+    📅 {new Date(article.created_at).toLocaleString("zh-TW", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+    })}
+  </span>
+</div>
+      <AdSlot position="article-top" />
 
       <ArticleSlider
         blocks={article.blocks || []}
       />
+      <AdSlot position="article-middle" />
 
       <hr className="my-10" />
+      <AdSlot position="article-bottom" />
 
-      <h2 className="text-2xl font-bold mb-6">
-        🔥 相關文章
-      </h2>
+     <h2 className="text-lg font-bold mb-4">
+  🔥 推薦文章
+</h2>
 
-      <div className="space-y-4">
-        {relatedArticles?.map((item) => (
-          <Link
-            key={item.id}
-            href={`/article/${item.id}`}
-            className="block p-4 bg-gray-50 rounded-xl hover:bg-gray-100 hover:translate-x-1 transition-all duration-200"
-          >
-            <h3 className="font-medium line-clamp-2">
-              {item.title}
-            </h3>
-          </Link>
-        ))}
+<div className="space-y-0">
+  {relatedArticles?.map((item) => (
+    <Link
+      key={item.id}
+      href={`/article/${item.id}`}
+      className="
+  grid
+  grid-cols-[1fr_220px]
+  gap-5
+  py-4
+  border-b
+  border-gray-100
+  hover:bg-gray-50
+  transition-all
+"
+    >
+      <div className="flex flex-col justify-between">
+        <h3
+  className="
+    text-lg
+    font-semibold
+    text-gray-900
+    leading-7
+    line-clamp-2
+    hover:text-violet-900
+    transition-colors
+  "
+>
+
+          {item.title}
+        </h3>
+
+        <p className="text-sm text-gray-600 mt-8">
+          {new Date(item.created_at).toLocaleDateString("zh-TW")}
+        </p>
       </div>
+
+      <img
+        src={item.cover}
+        alt={item.title}
+        className="
+  w-[220px]
+  h-[124px]
+  object-cover
+  rounded-lg
+"
+      />
+    </Link>
+  ))}
+</div>
 
     </main>
   );

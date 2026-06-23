@@ -4,7 +4,6 @@ export const categories = [
   { slug: "relationships", name: "情感" },
   { slug: "fortune", name: "命理" },
   { slug: "health", name: "健康" },
-  { slug: "food", name: "美食" },
   { slug: "oddities", name: "奇聞" },
   { slug: "lifestyle", name: "生活" },
   { slug: "pets", name: "寵物" },

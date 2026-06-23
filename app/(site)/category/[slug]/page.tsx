@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { articles } from "@/lib/articles";
+import { supabase } from "@/lib/supabase";
 import { categories } from "@/lib/categories";
 
 export default async function CategoryPage({
@@ -10,19 +10,34 @@ export default async function CategoryPage({
   const { slug } = await params;
 
   const currentCategory = categories.find(
-    (item) => item.slug === slug
-  );
+  (item) => item.slug === slug
+);
 
-  const filteredArticles = articles.filter(
-    (article) => article.category === slug
-  );
+const categoryName =
+  currentCategory?.name;
+
+const { data: filteredArticles } =
+  await supabase
+    .from("articles")
+    .select("*")
+    .eq("category", categoryName)
+    .order("created_at", {
+      ascending: false,
+    });
 
   
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
-      <div className="bg-white rounded-3xl p-5 md:p-6 mb-6 shadow-sm border">
+      <div className="
+bg-violet-50
+border
+border-violet-100
+rounded-2xl
+p-6
+mb-8
+">
   <div className="flex items-center gap-3">
-    <div className="w-1.5 h-8 bg-amber-500 rounded-full"></div>
+    <div className="w-1.5 h-8 bg-violet-600 rounded-full"></div>
 
     <h1 className="text-2xl md:text-4xl font-bold text-gray-900">
       {currentCategory?.name}
@@ -31,32 +46,48 @@ export default async function CategoryPage({
 
   <div className="mt-2 ml-[18px]">
     <p className="text-gray-500 text-sm">
-      共 {filteredArticles.length} 篇文章
+      共 {filteredArticles?.length || 0} 篇文章
     </p>
   </div>
 </div>
 
-        {filteredArticles.length === 0 && (
+        {(!filteredArticles ||
+  filteredArticles.length === 0) && (
           <div className="bg-white rounded-2xl p-10 text-center border">
             <p className="text-gray-500">
               暫時沒有文章
             </p>
           </div>
 )}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredArticles.map((article) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {filteredArticles?.map((article) => (
           <Link
             key={article.id}
             href={`/article/${article.id}`}
           >
-            <article className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
-              <img
-                src={article.image}
-                alt={article.title}
-                className="w-full h-32 md:h-64 object-cover"
-              />
+            <article className="
+bg-white
+rounded-2xl
+overflow-hidden
+border
+border-gray-100
+shadow-sm
+hover:border-violet-300
+hover:shadow-md
+hover:-translate-y-1
+transition-all
+duration-300
+">
 
-             <div className="p-3 md:p-5">
+  <div className="aspect-[16/10] overflow-hidden rounded-t-2xl">
+  <img
+    src={article.cover}
+    alt={article.title}
+    className="w-full h-full object-cover"
+  />
+</div>
+
+  <div className="p-3 md:p-5">
               
               <h2 className="font-bold text-sm md:text-lg leading-5 md:leading-7 mb-1 line-clamp-2">
                 {article.title}
@@ -66,10 +97,22 @@ export default async function CategoryPage({
                 {article.excerpt}
               </p>
 
-              <div className="flex justify-between text-xs text-gray-500 mt-2 md:mt-5">
+              <div className="
+flex
+justify-between
+items-center
+text-xs
+text-gray-500
+mt-4
+pt-3
+border-t
+">
                 <span>👁️ {article.views} 閱讀</span>
                 <span className="hidden md:inline">
-                  📅 {article.date}
+                  📅 {
+  new Date(article.created_at)
+    .toLocaleDateString("zh-TW")
+}
                 </span>
               </div>
             </div>

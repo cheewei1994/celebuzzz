@@ -2,6 +2,7 @@ import Link from "next/link";
 import { headers } from "next/headers";
 import LogoutButton from "@/app/components/LogoutButton";
 
+
 export default async function AdminLayout({
   children,
 }: {
@@ -20,7 +21,7 @@ export default async function AdminLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-64 bg-gray-900 text-white p-6">
+      <aside className="w-64 bg-gray-900 text-white p-6 min-h-screen">
         <div className="mb-10">
   <h2 className="text-2xl font-bold">
     🐱 喵喵網 CMS
@@ -67,6 +68,20 @@ export default async function AdminLayout({
           >
             🔥 熱門文章
           </Link>
+
+          <Link
+  href="/admin/ads"
+  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all duration-200"
+>
+  💰 廣告管理
+</Link>
+
+<Link
+  href="/admin/settings"
+  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/10 transition-all duration-200"
+>
+  ⚙️ 網站設定
+</Link>
 
 <div className="pt-8">
   <LogoutButton />

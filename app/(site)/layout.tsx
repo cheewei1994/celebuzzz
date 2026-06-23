@@ -2,6 +2,7 @@ import MobileHeader from "@/app/components/MobileHeader";
 import Image from "next/image";
 import Link from "next/link";
 import { categories } from "@/lib/categories";
+import Footer from "@/app/components/Footer";
 
 export default function SiteLayout({
   children,
@@ -9,7 +10,7 @@ export default function SiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       <header className="bg-gradient-to-r from-violet-700 via-purple-600 to-indigo-500 text-white shadow-md">
         <MobileHeader />
 
@@ -34,9 +35,7 @@ export default function SiteLayout({
           <nav>
             <ul className="flex items-center gap-4 md:gap-8 overflow-x-auto whitespace-nowrap text-sm md:text-lg font-medium">
               <li>
-                <Link href="/">
-                  首頁
-                </Link>
+                <Link href="/">首頁</Link>
               </li>
 
               {categories.map((item) => (
@@ -51,7 +50,11 @@ export default function SiteLayout({
         </div>
       </header>
 
-      {children}
-    </>
+      <main className="flex-1">
+        {children}
+      </main>
+<Footer />
+      
+    </div>
   );
 }
