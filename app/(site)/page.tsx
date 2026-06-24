@@ -61,12 +61,11 @@ const to =
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
           {articles?.map((article) => (
-  <Link
-    key={article.id}
-    href={`/article/${article.id}`}
-    prefetch={false}
-    className="block"
-  >
+  <a
+  key={article.id}
+  href={`/article/${article.id}`}
+  className="block"
+>
     <article className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-200">
 
       {article.cover && (
@@ -114,7 +113,7 @@ const to =
         </div>
       </div>
     </article>
-  </Link>
+  </a>
 ))}
         </div>
 

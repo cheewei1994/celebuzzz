@@ -123,7 +123,7 @@ const categoryName =
 
 <div className="space-y-4 md:space-y-0">
   {relatedArticles?.map((item, index) => (
-    <Link
+    <a
   key={item.id}
   href={`/article/${item.id}`}
   className={`
@@ -206,7 +206,7 @@ const categoryName =
   </div>
 </div>
       
-    </Link>
+    </a>
   ))}
 </div>
 
