@@ -3,6 +3,7 @@ import Link from "next/link";
 import ArticleSlider from "./ArticleSlider";
 import { supabase } from "@/lib/supabase";
 import AdSlot from "@/app/components/AdSlot";
+import { ImageIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -116,30 +117,41 @@ const categoryName =
       <hr className="my-10" />
       <AdSlot position="article-bottom" />
 
-     <h2 className="text-lg font-bold mb-4">
-  🔥 推薦文章
+     <h2 className="text-xl font-bold mb-5">
+  🔥 推薦圖集
 </h2>
 
-<div className="space-y-0">
-  {relatedArticles?.map((item) => (
+<div className="space-y-4 md:space-y-0">
+  {relatedArticles?.map((item, index) => (
     <Link
-      key={item.id}
-      href={`/article/${item.id}`}
-      className="
-  grid
-  grid-cols-[1fr_220px]
-  gap-5
-  py-4
-  border-b
-  border-gray-100
-  hover:bg-gray-50
-  transition-all
-"
+  key={item.id}
+  href={`/article/${item.id}`}
+  className={`
+    ${
+      index >= 6
+        ? "hidden md:grid"
+        : ""
+    }
+
+    flex
+    flex-col
+    md:grid
+    md:grid-cols-[1fr_220px]
+    gap-3
+    md:gap-5
+    py-1
+    md:py-4
+    border-b
+    border-gray-100
+    hover:bg-gray-50
+    transition-all
+  `}
     >
-      <div className="flex flex-col justify-between">
+      <div className="order-2 md:order-1 flex flex-col justify-between">
         <h3
   className="
     text-lg
+    md:text-lg
     font-semibold
     text-gray-900
     leading-7
@@ -152,21 +164,48 @@ const categoryName =
           {item.title}
         </h3>
 
-        <p className="text-sm text-gray-600 mt-8">
-          {new Date(item.created_at).toLocaleDateString("zh-TW")}
-        </p>
+        <p className="hidden md:block text-sm text-gray-600 mt-8">
+  {new Date(item.created_at).toLocaleDateString("zh-TW")}
+</p>
       </div>
 
-      <img
-        src={item.cover}
-        alt={item.title}
-        className="
-  w-[220px]
-  h-[124px]
-  object-cover
-  rounded-lg
-"
-      />
+      
+  <div className="order-1 md:order-2 relative">
+  <img
+  src={item.cover}
+  alt={item.title}
+  className="
+    w-full
+    h-[190px]
+    md:w-[220px]
+    md:h-[124px]
+    object-cover
+    rounded-lg
+  "
+/>
+
+ <div
+  className="
+    absolute
+    bottom-1
+    right-1
+    bg-black
+    w-6
+    h-6
+    md:w-7
+    md:h-7
+    flex
+    items-center
+    justify-center
+  "
+>
+    <ImageIcon
+  size={16}
+  className="text-white"
+/>
+  </div>
+</div>
+      
     </Link>
   ))}
 </div>

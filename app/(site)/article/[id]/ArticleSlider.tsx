@@ -84,21 +84,44 @@ export default function ArticleSlider({
           )}
 
           {/* 内容 */}
-          <div className="relative px-8 py-4">
+          <div className="relative px-3 md:px-8 pt-6 pb-4">
 
-            {/* 红色标记 */}
-            <div className="absolute left-4 top-4 flex items-center">
-              <span className="text-red-500 text-5xl font-black leading-none">
-                /
-              </span>
+  {/* 红色标记 */}
+<div
+  className="
+    absolute
+    left-0
+    top-2
+    md:left-4
+    md:top-4
+  "
+>
+              <span className="text-red-500 text-3xl md:text-5xl font-bold leading-none">
+  /
+</span>
 
-              <span className="text-gray-400 text-5xl font-black leading-none -ml-1">
-                /
-              </span>
+<span className="text-red-300 text-3xl md:text-5xl font-bold leading-none -ml-1">
+  /
+</span>
             </div>
 
             {/* 区块页码 */}
-            <div className="absolute right-4 top-4 text-lg text-gray-700">
+           <div
+  className="
+    absolute
+    right-0
+    top-2
+    md:right-4
+    md:top-4
+    bg-transparent
+    px-2
+    py-1
+    text-base
+    md:text-xl
+    font-bold
+    text-gray-700
+  "
+>
               <span>{startPageNumber + idx}</span>
 
               <span className="relative -top-0.5 mx-[1px] text-gray-700">
@@ -109,18 +132,22 @@ export default function ArticleSlider({
             </div>
 
             <div
-              className="
-                max-w-4xl
-                mx-auto
-                pl-8
-                pr-8
-                whitespace-pre-line
-                text-[22px]
-                font-semibold
-                leading-9
-                text-gray-800
-              "
-            >
+  className="
+    max-w-4xl
+    mx-auto
+    pl-2
+    pr-2
+    md:pl-8
+    md:pr-8
+    whitespace-pre-line
+    text-[20px]
+    md:text-[22px]
+    font-semibold
+    leading-9
+    md:leading-9
+    text-gray-800
+  "
+>
               {block.content}
             </div>
 
@@ -137,20 +164,24 @@ export default function ArticleSlider({
           onClick={() => {
    window.location.href = `?page=${page}`;
 }}
-          className="
-            bg-gray-500
-            text-white text-xl
-            w-40
-            h-18
-            rounded-r-full
-            rounded-l-md
-            disabled:opacity-50
-          "
-        >
+           className={`
+    ${
+      page === 0
+        ? "bg-gray-500"
+        : "bg-blue-600"
+    }
+    text-white
+    text-base md:text-xl
+    w-28 md:w-40
+    h-12 md:h-18
+    rounded-r-full
+    rounded-l-md
+  `}
+>
           上一頁
         </button>
 
-        <div className="text-5xl font-light">
+        <div className="text-2xl md:text-5xl font-light">
           <span className="text-red-500 relative -top-1">
             {currentPage.pageNumber}
           </span>
@@ -165,16 +196,20 @@ export default function ArticleSlider({
           onClick={() => {
   window.location.href = `?page=${page + 2}`;
 }}
-          className="
-            bg-blue-600
-            text-white text-xl
-            w-40
-            h-18
-            rounded-l-full
-            rounded-r-md
-            disabled:opacity-50
-          "
-        >
+          className={`
+    ${
+      page === pages.length - 1
+        ? "bg-gray-500"
+        : "bg-blue-600"
+    }
+    text-white
+    text-base md:text-xl
+    w-28 md:w-40
+    h-12 md:h-18
+    rounded-l-full
+    rounded-r-md
+  `}
+>
           下一頁
         </button>
 

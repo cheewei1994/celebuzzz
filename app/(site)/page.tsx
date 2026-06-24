@@ -55,7 +55,7 @@ const to =
   <div className="w-1.5 h-6 bg-violet-600 rounded-full"></div>
 
   <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
-    最新文章
+    最新圖集
   </h2>
 </div>
 

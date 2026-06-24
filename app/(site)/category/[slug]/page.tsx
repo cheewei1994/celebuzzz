@@ -46,7 +46,7 @@ mb-8
 
   <div className="mt-2 ml-[18px]">
     <p className="text-gray-500 text-sm">
-      共 {filteredArticles?.length || 0} 篇文章
+      共 {filteredArticles?.length || 0} 篇圖集
     </p>
   </div>
 </div>
