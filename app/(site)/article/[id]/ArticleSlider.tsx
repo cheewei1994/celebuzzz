@@ -190,8 +190,8 @@ export default function ArticleSlider({
     }
     text-white
     text-base md:text-xl
-    w-28 md:w-40
-    h-12 md:h-18
+    w-28 md:w-38
+    h-12 md:h-16
     rounded-r-full
     rounded-l-md
   `}
@@ -199,7 +199,7 @@ export default function ArticleSlider({
           上一頁
         </button>
 
-        <div className="text-2xl md:text-5xl font-light">
+        <div className="text-2xl md:text-4xl font-light">
           <span className="text-red-500 relative -top-1">
             {currentPage.pageNumber}
           </span>
@@ -222,8 +222,8 @@ export default function ArticleSlider({
     }
     text-white
     text-base md:text-xl
-    w-28 md:w-40
-    h-12 md:h-18
+    w-28 md:w-38
+    h-12 md:h-16
     rounded-l-full
     rounded-r-md
   `}
