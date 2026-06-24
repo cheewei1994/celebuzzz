@@ -90,7 +90,7 @@ export default function ArticleSlider({
 <div
   className="
     absolute
-    left-1
+    left-2
     top-2
     md:left-4
     md:top-4
