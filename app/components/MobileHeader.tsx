@@ -43,21 +43,21 @@ export default function MobileHeader() {
       {/* 第二行分类 */}
       <div className="overflow-x-auto bg-black/20">
         <div className="flex gap-2 px-2 py-2 whitespace-nowrap text-sm font-medium">
-          <Link
+          <a
             href="/"
             className="bg-white/20 px-4 py-2 rounded-md font-semibold"
         >
             首頁
-        </Link>
+        </a>
 
           {categories.map((item) => (
-            <Link
+            <a
               key={item.slug}
               href={`/category/${item.slug}`}
               className="px-3 py-2"
             >
               {item.name}
-            </Link>
+            </a>
           ))}
         </div>
       </div>
