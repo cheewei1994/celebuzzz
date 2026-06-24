@@ -35,14 +35,14 @@ export default function SiteLayout({
           <nav>
             <ul className="flex items-center gap-4 md:gap-8 overflow-x-auto whitespace-nowrap text-sm md:text-lg font-medium">
               <li>
-                <Link href="/">首頁</Link>
+                  <a href="/">首頁</a>
               </li>
 
               {categories.map((item) => (
                 <li key={item.slug}>
-                  <Link href={`/category/${item.slug}`}>
-                    {item.name}
-                  </Link>
+                  <a href={`/category/${item.slug}`}>
+  {item.name}
+</a>
                 </li>
               ))}
             </ul>
