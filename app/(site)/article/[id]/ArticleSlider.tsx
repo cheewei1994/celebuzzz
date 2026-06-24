@@ -90,20 +90,38 @@ export default function ArticleSlider({
 <div
   className="
     absolute
-    left-0
+    left-1
     top-2
     md:left-4
     md:top-4
+    flex
+    items-center
+    gap-2
   "
 >
-              <span className="text-red-500 text-3xl md:text-5xl font-bold leading-none">
-  /
-</span>
+  <div
+    className="
+     w-1.5
+     h-6
+     md:h-8
+     bg-red-500
+     rotate-[22deg]
+     rounded-full
+    "
+  />
 
-<span className="text-red-300 text-3xl md:text-5xl font-bold leading-none -ml-1">
-  /
-</span>
-            </div>
+  <div
+    className="
+    w-1.5
+    h-5
+    md:h-7
+    bg-gray-500
+    rotate-[22deg]
+    rounded-full
+    -mt-1
+    "
+  />
+</div>
 
             {/* 区块页码 */}
            <div
