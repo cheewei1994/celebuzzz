@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import ClientAd from "@/app/components/ClientAd";
 
 export default function ArticleSlider({
   blocks,
@@ -62,6 +63,7 @@ export default function ArticleSlider({
 
   const currentPage = pages[page];
   const pageBlocks = currentPage.blocks;
+  console.log("pageBlocks:", pageBlocks);
 
   const startPageNumber =
     currentPage.pageNumber -
@@ -168,6 +170,10 @@ export default function ArticleSlider({
 >
               {block.content}
             </div>
+
+            <div className="mt-8">
+   <ClientAd position="article-auto" />
+</div>
 
           </div>
 
