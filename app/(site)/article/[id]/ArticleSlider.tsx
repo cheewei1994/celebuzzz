@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ClientAd from "@/app/components/ClientAd";
+import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 
 export default function ArticleSlider({
   blocks,
@@ -36,10 +37,10 @@ export default function ArticleSlider({
   const MIN_LENGTH = 200;
 
   const pages: {
-    blocks: any[];
-    pageNumber: number;
-  }[] = [];
-
+  blocks: any[];
+  pageNumber: number;
+  firstBlockIndex: number;
+}[] = [];
   for (let i = 0; i < blocks.length; i++) {
     const current = blocks[i];
 
@@ -48,20 +49,23 @@ export default function ArticleSlider({
       blocks[i + 1]
     ) {
       pages.push({
-        blocks: [current, blocks[i + 1]],
-        pageNumber: i + 2,
-      });
+  blocks: [current, blocks[i + 1]],
+  pageNumber: i + 2,
+  firstBlockIndex: i,
+});
 
       i++;
     } else {
       pages.push({
-        blocks: [current],
-        pageNumber: i + 1,
-      });
+  blocks: [current],
+  pageNumber: i + 1,
+  firstBlockIndex: i,
+});
     }
   }
 
   const currentPage = pages[page];
+  const firstBlockIndex = currentPage.firstBlockIndex;
   const pageBlocks = currentPage.blocks;
   console.log("pageBlocks:", pageBlocks);
 
@@ -69,6 +73,20 @@ export default function ArticleSlider({
     currentPage.pageNumber -
     pageBlocks.length +
     1;
+
+    const adEngine = SmartAdEngine(blocks);
+
+console.log("========== Smart Ad ==========");
+
+console.log(adEngine);
+
+console.log("positions =", adEngine.positions);
+
+console.log("adCount =", adEngine.adCount);
+
+console.log("firstBlockIndex =", firstBlockIndex);
+
+  
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -171,9 +189,16 @@ export default function ArticleSlider({
               {block.content}
             </div>
 
-            <div className="mt-8">
-   <ClientAd position="article-auto" />
-</div>
+{console.log(
+  "Current Block:",
+  firstBlockIndex + idx + 1
+)}
+
+            {adEngine.positions.includes(firstBlockIndex + idx + 1) && (
+  <div className="mt-8">
+    <ClientAd position="article-auto" />
+  </div>
+)}
 
           </div>
 

@@ -2,46 +2,82 @@
 
 import { useEffect, useRef } from "react";
 
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+  }
+}
+
 export default function AdRenderer({
-  code,
   slot,
 }: {
   code: string;
   slot: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!ref.current || !slot) return;
+    if (!slot || !containerRef.current) return;
 
-    // 每次重新建立廣告容器
-    ref.current.innerHTML = `
-      <ins
-        class="adsbygoogle"
-        style="display:block"
-        data-ad-client="ca-pub-5206647366547356"
-        data-ad-slot="${slot}"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      ></ins>
-    `;
+    // 清空舊廣告
+    containerRef.current.innerHTML = "";
 
-    // 等 DOM 建立完成後再初始化
-    setTimeout(() => {
-      try {
-        (window as any).adsbygoogle =
-          (window as any).adsbygoogle || [];
+    // 建立新的 ins
+    const ins = document.createElement("ins");
 
-        (window as any).adsbygoogle.push({});
-      } catch (err) {
-        console.error("AdSense Error:", err);
-      }
-    }, 100);
+    ins.className = "adsbygoogle";
+
+    ins.style.display = "block";
+
+    ins.setAttribute(
+      "data-ad-client",
+      "ca-pub-5206647366547356"
+    );
+
+    ins.setAttribute(
+      "data-ad-slot",
+      slot
+    );
+
+    ins.setAttribute(
+      "data-ad-format",
+      "auto"
+    );
+
+    ins.setAttribute(
+      "data-full-width-responsive",
+      "true"
+    );
+
+    containerRef.current.appendChild(ins);
+
+    requestAnimationFrame(() => {
+  if (!containerRef.current) return;
+
+  const ins = containerRef.current.querySelector(
+    ".adsbygoogle"
+  ) as HTMLElement | null;
+
+  if (!ins) return;
+
+  // 已經初始化過，不再 push
+  if (ins.getAttribute("data-adsbygoogle-status")) {
+    return;
+  }
+
+  try {
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+    return () => {};
   }, [slot]);
 
   return (
     <div
-      ref={ref}
+      ref={containerRef}
       className="my-6"
     />
   );
