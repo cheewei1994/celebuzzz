@@ -1,48 +1,45 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
+import AdRenderer from "./AdRenderer";
 
-export default function AdRenderer({
-  code,
-  slot,
+export default function ClientAd({
+  position,
 }: {
-  code: string;
-  slot: string;
+  position: string;
 }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const [code, setCode] = useState("");
+const [slot, setSlot] = useState("");
 
   useEffect(() => {
-    if (!ref.current || !slot) return;
+    console.log("ClientAd position =", position);
 
-    // 每次重新建立廣告容器
-    ref.current.innerHTML = `
-      <ins
-        class="adsbygoogle"
-        style="display:block"
-        data-ad-client="ca-pub-5206647366547356"
-        data-ad-slot="${slot}"
-        data-ad-format="auto"
-        data-full-width-responsive="true"
-      ></ins>
-    `;
+    async function load() {
+      console.log("Fetching...");
 
-    // 等 DOM 建立完成後再初始化
-    setTimeout(() => {
-      try {
-        (window as any).adsbygoogle =
-          (window as any).adsbygoogle || [];
+      const res = await fetch(
+        `/api/ads?position=${position}`
+      );
 
-        (window as any).adsbygoogle.push({});
-      } catch (err) {
-        console.error("AdSense Error:", err);
-      }
-    }, 100);
-  }, [slot]);
+      const data = await res.json();
 
-  return (
-    <div
-      ref={ref}
-      className="my-6"
-    />
-  );
+      console.log("API Result:", data);
+
+      setCode(data.code || "");
+setSlot(data.slot || "");
+    }
+
+    load();
+  }, [position]);
+
+  console.log("Current code:", code);
+
+  if (!slot) return null;
+
+return (
+  <AdRenderer
+    code={code}
+    slot={slot}
+  />
+);
 }

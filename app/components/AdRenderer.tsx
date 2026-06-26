@@ -1,36 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import AdRenderer from "./AdRenderer";
+import { useEffect, useRef } from "react";
 
-export default function ClientAd({
-  position,
+export default function AdRenderer({
+  code,
+  slot,
 }: {
-  position: string;
+  code: string;
+  slot: string;
 }) {
-  const [code, setCode] = useState("");
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log("ClientAd Mounted");
+    if (!ref.current || !slot) return;
 
-    async function load() {
-      console.log("Fetching:", position);
+    // 每次重新建立廣告容器
+    ref.current.innerHTML = `
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-5206647366547356"
+        data-ad-slot="${slot}"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      ></ins>
+    `;
 
-      const res = await fetch(`/api/ads?position=${position}`);
+    // 等 DOM 建立完成後再初始化
+    setTimeout(() => {
+      try {
+        (window as any).adsbygoogle =
+          (window as any).adsbygoogle || [];
 
-      const data = await res.json();
+        (window as any).adsbygoogle.push({});
+      } catch (err) {
+        console.error("AdSense Error:", err);
+      }
+    }, 100);
+  }, [slot]);
 
-      console.log("API Result:", data);
-
-      setCode(data.code || "");
-    }
-
-    load();
-  }, [position]);
-
-  console.log("Current code:", code);
-
-  if (!code) return <div>Loading Ad...</div>;
-
-  return <AdRenderer code={code} />;
+  return (
+    <div
+      ref={ref}
+      className="my-6"
+    />
+  );
 }

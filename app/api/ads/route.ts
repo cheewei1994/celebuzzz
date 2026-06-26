@@ -8,12 +8,13 @@ export async function GET(request: Request) {
 
   const { data } = await supabase
     .from("ads")
-    .select("code")
+    .select("code, slot")
     .eq("position", position)
     .eq("active", true)
     .single();
 
   return NextResponse.json({
-    code: data?.code ?? "",
-  });
+  code: data?.code ?? "",
+  slot: data?.slot ?? "",
+});
 }

@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import AdRenderer from "./AdRenderer";
 
 export default async function AdSlot({
   position,
@@ -7,19 +8,12 @@ export default async function AdSlot({
 }) {
   const { data } = await supabase
     .from("ads")
-    .select("*")
+    .select("code")
     .eq("position", position)
     .eq("active", true)
     .single();
 
   if (!data) return null;
 
-  return (
-    <div
-      className="my-6"
-      dangerouslySetInnerHTML={{
-        __html: data.code,
-      }}
-    />
-  );
+  return <AdRenderer code={data.code} />;
 }
