@@ -1,4 +1,4 @@
-import { ArticleBlock } from "./calculateAdPositions";
+import { ArticleBlock } from "./rules";
 
 export function analyzeArticle(blocks: ArticleBlock[]) {
   const paragraphs = blocks.filter(
