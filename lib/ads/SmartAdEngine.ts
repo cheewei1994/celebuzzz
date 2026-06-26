@@ -1,8 +1,7 @@
 import { analyzeArticle } from "./analyzeArticle";
 import { calculateAdCount } from "./calculateAdCount";
 import { calculatePositions } from "./calculatePositions";
-import { applyRules } from "./rules";
-import { ArticleBlock } from "./calculateAdPositions";
+import { ArticleBlock, applyRules } from "./rules";
 
 export function SmartAdEngine(
   blocks: ArticleBlock[]

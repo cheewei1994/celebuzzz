@@ -1,4 +1,7 @@
-import { ArticleBlock } from "./calculateAdPositions";
+export interface ArticleBlock {
+  content?: string;
+  imageUrl?: string;
+}
 
 export function applyRules(
   positions: number[],
