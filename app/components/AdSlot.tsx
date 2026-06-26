@@ -8,12 +8,17 @@ export default async function AdSlot({
 }) {
   const { data } = await supabase
     .from("ads")
-    .select("code")
+    .select("code, slot")
     .eq("position", position)
     .eq("active", true)
     .single();
 
   if (!data) return null;
 
-  return <AdRenderer code={data.code} />;
+  return (
+    <AdRenderer
+      code={data.code}
+      slot={data.slot}
+    />
+  );
 }
