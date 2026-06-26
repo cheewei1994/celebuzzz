@@ -189,11 +189,6 @@ console.log("firstBlockIndex =", firstBlockIndex);
               {block.content}
             </div>
 
-{console.log(
-  "Current Block:",
-  firstBlockIndex + idx + 1
-)}
-
             {adEngine.positions.includes(firstBlockIndex + idx + 1) && (
   <div className="mt-8">
     <ClientAd position="article-auto" />
