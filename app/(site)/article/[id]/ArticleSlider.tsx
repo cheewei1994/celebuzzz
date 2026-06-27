@@ -126,11 +126,11 @@ console.log("firstBlockIndex =", firstBlockIndex);
       {pageBlocks.map((block, idx) => (
         <div
   key={idx}
-  className="flex flex-col items-center"
+  className="flex flex-col items-center w-full"
 >
 
           {/* 图片 */}
-<div className="w-full max-w-[900px]">
+<div className="w-full max-w-[900px] relative">
   {block.imageUrl && (
     <img
       src={block.imageUrl}

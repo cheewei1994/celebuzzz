@@ -10,9 +10,11 @@ declare global {
 
 export default function AdRenderer({
   slot,
+  position,
 }: {
   code: string;
   slot: string;
+  position: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -78,8 +80,12 @@ export default function AdRenderer({
 
   return (
   <div
-    ref={containerRef}
-    className="my-6"
-  />
+  ref={containerRef}
+  className={`my-6 ${
+    position === "article-auto"
+      ? "w-screen relative left-1/2 -translate-x-1/2"
+      : ""
+  }`}
+/>
 );
 }

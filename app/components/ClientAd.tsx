@@ -38,8 +38,9 @@ setSlot(data.slot || "");
 
 return (
   <AdRenderer
-    code={code}
-    slot={slot}
-  />
+  code={code}
+  slot={slot}
+  position={position}
+/>
 );
 }
