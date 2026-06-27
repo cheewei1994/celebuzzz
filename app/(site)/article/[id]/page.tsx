@@ -120,9 +120,6 @@ const categoryName =
   blocks={article.blocks || []}
 />
 
-<div className="my-8">
-  <AdSlot position="article-pagination-bottom" />
-</div>
 
 <hr className="my-10" />
 
