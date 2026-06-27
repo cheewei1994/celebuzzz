@@ -107,17 +107,18 @@ const categoryName =
     })}
   </span>
 </div>
-      <AdSlot position="article-top" />
 
-      <ArticleSlider
-        blocks={article.blocks || []}
-      />
-      <AdSlot position="article-middle" />
+<AdSlot position="article-top" />
 
-      <hr className="my-10" />
-      <AdSlot position="article-bottom" />
+<ArticleSlider
+  blocks={article.blocks || []}
+/>
 
-     <h2 className="text-xl font-bold mb-5">
+<hr className="my-10" />
+
+<AdSlot position="article-bottom" />
+
+<h2 className="text-xl font-bold mb-5">
   🔥 推薦圖集
 </h2>
 

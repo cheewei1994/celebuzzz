@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ClientAd from "@/app/components/ClientAd";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
+import { ADS_CONFIG } from "@/lib/ads/config";
 
 export default function ArticleSlider({
   blocks,
@@ -34,24 +35,25 @@ export default function ArticleSlider({
     return null;
   }
 
-  const MIN_LENGTH = 200;
 
   const pages: {
   blocks: any[];
   pageNumber: number;
   firstBlockIndex: number;
+  merged: boolean;
 }[] = [];
   for (let i = 0; i < blocks.length; i++) {
     const current = blocks[i];
 
     if (
-      current.content?.trim().length < MIN_LENGTH &&
+      current.content?.trim().length < ADS_CONFIG.MERGE_LENGTH &&
       blocks[i + 1]
     ) {
       pages.push({
   blocks: [current, blocks[i + 1]],
   pageNumber: i + 2,
   firstBlockIndex: i,
+  merged: true,
 });
 
       i++;
@@ -60,13 +62,29 @@ export default function ArticleSlider({
   blocks: [current],
   pageNumber: i + 1,
   firstBlockIndex: i,
+  merged: false,
 });
     }
   }
 
   const currentPage = pages[page];
+  const merged = currentPage.merged;
   const firstBlockIndex = currentPage.firstBlockIndex;
   const pageBlocks = currentPage.blocks;
+  const firstBlockLength =
+  pageBlocks[0]?.content?.trim().length ?? 0;
+
+let pageAdMode: "normal" | "merged" | "merged-split";
+
+if (!merged) {
+  pageAdMode = "normal";
+} else if (
+  firstBlockLength >= ADS_CONFIG.MERGED_FIRST_BLOCK_AD
+) {
+  pageAdMode = "merged-split";
+} else {
+  pageAdMode = "merged";
+}
   console.log("pageBlocks:", pageBlocks);
 
   const startPageNumber =
@@ -78,7 +96,12 @@ export default function ArticleSlider({
 
 console.log("========== Smart Ad ==========");
 
-console.log(adEngine);
+console.log("SmartAdEngine", {
+  isImageArticle: adEngine.isImageArticle,
+  isTextArticle: adEngine.isTextArticle,
+  positions: adEngine.positions,
+  adCount: adEngine.adCount,
+});
 
 console.log("positions =", adEngine.positions);
 
@@ -95,13 +118,13 @@ console.log("firstBlockIndex =", firstBlockIndex);
         <div key={idx}>
 
           {/* 图片 */}
-          {block.imageUrl && (
-            <img
-              src={block.imageUrl}
-              alt=""
-              className="w-full"
-            />
-          )}
+{block.imageUrl && (
+  <img
+    src={block.imageUrl}
+    alt=""
+    className="w-full"
+  />
+)}
 
           {/* 内容 */}
           <div className="relative px-3 md:px-8 pt-6 pb-4">
@@ -189,12 +212,28 @@ console.log("firstBlockIndex =", firstBlockIndex);
               {block.content}
             </div>
 
-            {adEngine.positions.includes(firstBlockIndex + idx + 1) && (
+            {/* 一般頁：每個 Block 後都放廣告 */}
+{pageAdMode === "normal" && (
   <div className="mt-8">
     <ClientAd position="article-auto" />
   </div>
 )}
 
+{/* 合併頁：第一個 Block 後插廣告 */}
+{pageAdMode === "merged-split" &&
+  idx === 0 && (
+    <div className="mt-8">
+      <ClientAd position="article-auto" />
+    </div>
+)}
+{/* 合併頁：最後一個 Block 後放廣告 */}
+{(pageAdMode === "merged" ||
+  pageAdMode === "merged-split") &&
+  idx === pageBlocks.length - 1 && (
+    <div className="mt-8">
+      <ClientAd position="article-auto" />
+    </div>
+)}
           </div>
 
         </div>
