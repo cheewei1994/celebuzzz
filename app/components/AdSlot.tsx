@@ -16,9 +16,11 @@ export default async function AdSlot({
   if (!data) return null;
 
   return (
-    <AdRenderer
-      code={data.code}
-      slot={data.slot}
-    />
-  );
+    return (
+  <AdRenderer
+    code={data.code}
+    slot={data.slot}
+    position={position}
+  />
+);
 }
