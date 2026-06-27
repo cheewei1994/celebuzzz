@@ -358,10 +358,6 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
       </div>
 
-      <div className="mt-8">
-  <ClientAd position="article-pagination-bottom" />
-</div>
-
     </div>
   );
 }
