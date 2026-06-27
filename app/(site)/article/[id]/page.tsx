@@ -96,7 +96,7 @@ const categoryName =
 
       </div>
 
-      <h1 className="text-3xl md:text-3xl font-bold leading-tight mb-4">
+      <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-4">
         {article.title}
       </h1>
 
@@ -123,9 +123,7 @@ const categoryName =
 
 <hr className="my-10" />
 
-<div className="relative left-1/2 -translate-x-1/2 w-screen my-10">
-  <AdSlot position="article-bottom" />
-</div>
+<AdSlot position="article-bottom" />
 
 <h2 className="text-xl font-bold mb-5">
   🔥 推薦圖集
