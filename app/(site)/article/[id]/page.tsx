@@ -67,7 +67,7 @@ const categoryName =
   .limit(15);
 
   return (
-    <main className="w-full md:max-w-[900px] md:mx-auto px-1 md:px-4 py-6 md:py-10">
+    <main className="max-w-[900px] mx-auto px-4 py-10">
 
      
       <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
@@ -120,9 +120,12 @@ const categoryName =
   blocks={article.blocks || []}
 />
 
+
 <hr className="my-10" />
 
-<AdSlot position="article-bottom" />
+<div className="relative left-1/2 -translate-x-1/2 w-screen my-10">
+  <AdSlot position="article-bottom" />
+</div>
 
 <h2 className="text-xl font-bold mb-5">
   🔥 推薦圖集
