@@ -332,6 +332,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
             /{blocks.length}
           </span>
         </div>
+        
 
         <button
           disabled={page === pages.length - 1}
@@ -356,6 +357,11 @@ console.log("firstBlockIndex =", firstBlockIndex);
         </button>
 
       </div>
+
+      <div className="mt-8 border-4 border-red-500 p-4">
+  <h2>Pagination Bottom Test</h2>
+  <ClientAd position="article-pagination-bottom" />
+</div>
 
     </div>
   );
