@@ -221,7 +221,8 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
         <div
           className="
-            w-full
+            max-w-4xl
+            mx-auto
             pl-2
             pr-2
             md:pl-8
@@ -246,7 +247,8 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
   <div
     className="
-      w-full
+      max-w-4xl
+      mx-auto
       pl-2
       pr-2
       md:pl-8
