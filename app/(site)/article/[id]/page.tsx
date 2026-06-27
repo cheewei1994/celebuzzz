@@ -3,6 +3,7 @@ import Link from "next/link";
 import ArticleSlider from "./ArticleSlider";
 import { supabase } from "@/lib/supabase";
 import AdSlot from "@/app/components/AdSlot";
+import PaginationBottomAd from "@/app/components/PaginationBottomAd";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 import { ImageIcon } from "lucide-react";
 
@@ -120,9 +121,7 @@ const categoryName =
   blocks={article.blocks || []}
 />
 
-<div className="my-8">
-  <AdSlot position="article-pagination-bottom" />
-</div>
+<PaginationBottomAd />
 
 <hr className="my-10" />
 
