@@ -119,11 +119,14 @@ const categoryName =
 </div>
 
 
+<div className="max-w-[900px] mx-auto px-4">
+
+<hr className="my-10" />
+
 <ArticleSlider
   blocks={article.blocks || []}
 />
 
-<div className="max-w-[900px] mx-auto px-4">
 
 <hr className="my-10" />
 

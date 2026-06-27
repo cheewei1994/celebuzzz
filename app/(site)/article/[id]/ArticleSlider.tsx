@@ -141,14 +141,14 @@ console.log("firstBlockIndex =", firstBlockIndex);
 </div>
 
           {/* 内容 */}
-          <div className="w-full max-w-[900px] px-3 md:px-0">
-  <div className="relative pt-6 pb-4">
+          <div className="w-full max-w-[900px] mx-auto px-3 md:px-0">
+  <div className="relative pt-2 pb-4">
 
   {/* 红色标记 */}
 <div
   className="
     absolute
-    left-2
+    left-0
     top-2
     md:left-4
     md:top-4
@@ -227,8 +227,10 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
         <div
   className="
-  w-full
+  max-w-[700px]
   mx-auto
+  pl-10
+  pr-10
   whitespace-pre-line
   text-[20px]
   md:text-[22px]
@@ -247,8 +249,10 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
   <div
   className="
-  w-full
+  max-w-[700px]
   mx-auto
+  pl-10
+  pr-10
   whitespace-pre-line
   text-[20px]
   md:text-[22px]
