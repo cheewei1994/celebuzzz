@@ -79,7 +79,7 @@ export default function AdRenderer({
   return (
   <div
     ref={containerRef}
-    className="my-6 px-3 md:px-0"
+    className="my-6"
   />
 );
 }
