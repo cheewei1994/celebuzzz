@@ -28,6 +28,7 @@ export default function AdRenderer({
     ins.className = "adsbygoogle";
 
     ins.style.display = "block";
+    ins.style.width = "100%";
 
     ins.setAttribute(
       "data-ad-client",

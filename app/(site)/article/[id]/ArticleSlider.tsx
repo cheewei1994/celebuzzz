@@ -136,7 +136,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
 )}
 
           {/* 内容 */}
-          <div className="relative pt-6 pb-4">
+          <div className="relative px-3 md:px-8 pt-6 pb-4">
 
   {/* 红色标记 */}
 <div
