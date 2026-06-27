@@ -3,7 +3,9 @@ import Link from "next/link";
 import ArticleSlider from "./ArticleSlider";
 import { supabase } from "@/lib/supabase";
 import AdSlot from "@/app/components/AdSlot";
+import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 import { ImageIcon } from "lucide-react";
+
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +32,8 @@ export default async function ArticlePage({
   if (!article) {
     return <div>文章不存在</div>;
   }
+
+  const adEngine = SmartAdEngine(article.blocks || []);
 
   await supabase
   .from("articles")
@@ -108,7 +112,9 @@ const categoryName =
   </span>
 </div>
 
-<AdSlot position="article-top" />
+<div className="my-6">
+  <AdSlot position="article-top" />
+</div>
 
 <ArticleSlider
   blocks={article.blocks || []}

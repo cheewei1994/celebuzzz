@@ -55,9 +55,9 @@ export function splitTextWithAds(
 );
 
     sections.push({
-      text: text.slice(start, end),
-      hasAdBefore: true,
-    });
+  text: text.slice(start, end),
+  hasAdBefore: sections.length > 0,
+});
 
     start = end;
   }
