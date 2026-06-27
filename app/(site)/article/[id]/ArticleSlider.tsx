@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ClientAd from "@/app/components/ClientAd";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 import { ADS_CONFIG } from "@/lib/ads/config";
+import { splitTextWithAds } from "@/lib/ads/splitTextWithAds";
 
 export default function ArticleSlider({
   blocks,
@@ -109,10 +110,18 @@ console.log("adCount =", adEngine.adCount);
 
 console.log("firstBlockIndex =", firstBlockIndex);
 
-  
+  const textSections = adEngine.isTextArticle
+  ? pageBlocks.map((block) => ({
+      ...block,
+      sections: splitTextWithAds(
+        block.content ?? ""
+      ),
+    }))
+  : [];
 
   return (
     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+
 
       {pageBlocks.map((block, idx) => (
         <div key={idx}>
@@ -192,43 +201,87 @@ console.log("firstBlockIndex =", firstBlockIndex);
               <span>{blocks.length}</span>
             </div>
 
-            <div
-  className="
-    max-w-4xl
-    mx-auto
-    pl-2
-    pr-2
-    md:pl-8
-    md:pr-8
-    whitespace-pre-line
-    text-[20px]
-    md:text-[22px]
-    font-semibold
-    leading-9
-    md:leading-9
-    text-gray-800
-  "
->
-              {block.content}
-            </div>
+            {adEngine.isTextArticle ? (
 
-            {/* 一般頁：每個 Block 後都放廣告 */}
-{pageAdMode === "normal" && (
+  textSections[idx].sections.map(
+    (section, sectionIndex) => (
+      <div key={sectionIndex}>
+
+        {section.hasAdBefore && (
+          <div className="mt-8 mb-8">
+            <ClientAd position="article-auto" />
+          </div>
+        )}
+
+        <div
+          className="
+            max-w-4xl
+            mx-auto
+            pl-2
+            pr-2
+            md:pl-8
+            md:pr-8
+            whitespace-pre-line
+            text-[20px]
+            md:text-[22px]
+            font-semibold
+            leading-9
+            md:leading-9
+            text-gray-800
+          "
+        >
+          {section.text}
+        </div>
+
+      </div>
+    )
+  )
+
+) : (
+
+  <div
+    className="
+      max-w-4xl
+      mx-auto
+      pl-2
+      pr-2
+      md:pl-8
+      md:pr-8
+      whitespace-pre-line
+      text-[20px]
+      md:text-[22px]
+      font-semibold
+      leading-9
+      md:leading-9
+      text-gray-800
+    "
+  >
+    {block.content}
+  </div>
+
+)}
+
+            {/* 圖文文章：每個 Block 後都放廣告 */}
+{adEngine.isImageArticle &&
+ pageAdMode === "normal" && (
   <div className="mt-8">
     <ClientAd position="article-auto" />
   </div>
 )}
 
-{/* 合併頁：第一個 Block 後插廣告 */}
-{pageAdMode === "merged-split" &&
+{/* 圖文文章：合併頁第一個 Block 後插廣告 */}
+{adEngine.isImageArticle &&
+  pageAdMode === "merged-split" &&
   idx === 0 && (
     <div className="mt-8">
       <ClientAd position="article-auto" />
     </div>
 )}
-{/* 合併頁：最後一個 Block 後放廣告 */}
-{(pageAdMode === "merged" ||
-  pageAdMode === "merged-split") &&
+
+{/* 圖文文章：合併頁最後一個 Block 後放廣告 */}
+{adEngine.isImageArticle &&
+  (pageAdMode === "merged" ||
+    pageAdMode === "merged-split") &&
   idx === pageBlocks.length - 1 && (
     <div className="mt-8">
       <ClientAd position="article-auto" />
