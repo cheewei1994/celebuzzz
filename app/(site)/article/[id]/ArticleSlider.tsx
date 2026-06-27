@@ -358,8 +358,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
       </div>
 
-      <div className="mt-8 border-4 border-red-500 p-4">
-  <h2>Pagination Bottom Test</h2>
+      <div className="mt-8">
   <ClientAd position="article-pagination-bottom" />
 </div>
 
