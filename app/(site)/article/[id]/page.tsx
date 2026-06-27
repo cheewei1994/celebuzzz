@@ -69,7 +69,7 @@ const categoryName =
   return (
     <main className="w-full py-10">
 
-     
+     <div className="max-w-[900px] mx-auto px-4">
       <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
 
         <Link
@@ -116,10 +116,14 @@ const categoryName =
   <AdSlot position="article-top" />
 </div>
 
+</div>
+
+
 <ArticleSlider
   blocks={article.blocks || []}
 />
 
+<div className="max-w-[900px] mx-auto px-4">
 
 <hr className="my-10" />
 
@@ -217,7 +221,7 @@ const categoryName =
     </a>
   ))}
 </div>
-
+</div>
     </main>
   );
 }
