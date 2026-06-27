@@ -15,7 +15,6 @@ export default async function AdSlot({
 
   if (!data) return null;
 
-  return (
     return (
   <AdRenderer
     code={data.code}
