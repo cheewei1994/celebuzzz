@@ -81,3 +81,4 @@ export default function AdRenderer({
     className="my-6 px-3 md:px-0"
   />
 );
+}
