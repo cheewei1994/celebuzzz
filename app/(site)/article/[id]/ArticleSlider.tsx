@@ -130,7 +130,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
 >
 
           {/* 图片 */}
-<div className="w-full max-w-[900px] relative">
+<div className="w-full max-w-[900px] px-3 md:px-0 relative">
   {block.imageUrl && (
     <img
       src={block.imageUrl}
@@ -141,7 +141,8 @@ console.log("firstBlockIndex =", firstBlockIndex);
 </div>
 
           {/* 内容 */}
-          <div className="relative px-3 md:px-8 pt-6 pb-4">
+          <div className="w-full max-w-[900px] px-3 md:px-0">
+  <div className="relative pt-6 pb-4">
 
   {/* 红色标记 */}
 <div
@@ -227,10 +228,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
         <div
   className="
   w-full
-  max-w-[900px]
   mx-auto
-  px-3
-  md:px-8
   whitespace-pre-line
   text-[20px]
   md:text-[22px]
@@ -239,9 +237,8 @@ console.log("firstBlockIndex =", firstBlockIndex);
   text-gray-800
 "
 >
-          {section.text}
-        </div>
-
+  {section.text}
+</div>
       </div>
     )
   )
@@ -251,10 +248,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
   <div
   className="
   w-full
-  max-w-[900px]
   mx-auto
-  px-3
-  md:px-8
   whitespace-pre-line
   text-[20px]
   md:text-[22px]
@@ -263,8 +257,8 @@ console.log("firstBlockIndex =", firstBlockIndex);
   text-gray-800
 "
 >
-    {block.content}
-  </div>
+  {block.content}
+</div>
 
 )}
 
@@ -295,6 +289,8 @@ console.log("firstBlockIndex =", firstBlockIndex);
     </div>
 )}
           </div>
+
+        </div>
 
         </div>
       ))}
