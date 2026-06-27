@@ -19,7 +19,7 @@ export function analyzeArticle(blocks: ArticleBlock[]) {
     totalParagraphs: paragraphs.length,
     totalImages,
     hasImage: totalImages > 0,
+    imageRatio:
+      totalImages / Math.max(paragraphs.length, 1),
   };
-  imageRatio:
-  totalImages / Math.max(paragraphs.length, 1),
 }
