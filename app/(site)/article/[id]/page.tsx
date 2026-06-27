@@ -67,7 +67,7 @@ const categoryName =
   .limit(15);
 
   return (
-    <main className="w-full md:max-w-[900px] md:mx-auto px-0 md:px-4 py-6 md:py-10">
+    <main className="w-full md:max-w-[900px] md:mx-auto px-2 md:px-4 py-6 md:py-10">
 
      
       <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
