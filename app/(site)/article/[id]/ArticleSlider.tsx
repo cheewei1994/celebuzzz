@@ -120,7 +120,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
   : [];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+  <div className="bg-white md:rounded-lg md:shadow-sm overflow-hidden">
 
 
       {pageBlocks.map((block, idx) => (
@@ -221,20 +221,18 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
         <div
           className="
-            max-w-4xl
-            mx-auto
-            pl-2
-            pr-2
-            md:pl-8
-            md:pr-8
-            whitespace-pre-line
-            text-[20px]
-            md:text-[22px]
-            font-semibold
-            leading-9
-            md:leading-9
-            text-gray-800
-          "
+  w-full
+  md:max-w-4xl
+  md:mx-auto
+  px-3
+  md:px-8
+  whitespace-pre-line
+  text-[20px]
+  md:text-[22px]
+  font-semibold
+  leading-9
+  text-gray-800
+"
         >
           {section.text}
         </div>
@@ -247,20 +245,18 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
   <div
     className="
-      max-w-4xl
-      mx-auto
-      pl-2
-      pr-2
-      md:pl-8
-      md:pr-8
-      whitespace-pre-line
-      text-[20px]
-      md:text-[22px]
-      font-semibold
-      leading-9
-      md:leading-9
-      text-gray-800
-    "
+  w-full
+  md:max-w-4xl
+  md:mx-auto
+  px-3
+  md:px-8
+  whitespace-pre-line
+  text-[20px]
+  md:text-[22px]
+  font-semibold
+  leading-9
+  text-gray-800
+"
   >
     {block.content}
   </div>
