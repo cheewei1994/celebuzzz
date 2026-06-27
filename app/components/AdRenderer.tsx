@@ -50,8 +50,7 @@ export default function AdRenderer({
     );
 
     containerRef.current.appendChild(ins);
-    console.log("INS Created:", ins.outerHTML);
-
+    
     requestAnimationFrame(() => {
   if (!containerRef.current) return;
 
@@ -69,12 +68,6 @@ export default function AdRenderer({
   try {
     (window.adsbygoogle = window.adsbygoogle || []).push({});
 
-    setTimeout(() => {
-  console.log(
-    "Status:",
-    ins.getAttribute("data-adsbygoogle-status")
-  );
-}, 1000);
   } catch (err) {
     console.error(err);
   }
