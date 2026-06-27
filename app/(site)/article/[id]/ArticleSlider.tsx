@@ -124,16 +124,21 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
 
       {pageBlocks.map((block, idx) => (
-        <div key={idx}>
+        <div
+  key={idx}
+  className="flex flex-col items-center"
+>
 
           {/* 图片 */}
-{block.imageUrl && (
-  <img
-    src={block.imageUrl}
-    alt=""
-    className="w-full"
-  />
-)}
+<div className="w-full max-w-[900px]">
+  {block.imageUrl && (
+    <img
+      src={block.imageUrl}
+      alt=""
+      className="w-full"
+    />
+  )}
+</div>
 
           {/* 内容 */}
           <div className="relative px-3 md:px-8 pt-6 pb-4">
@@ -220,10 +225,10 @@ console.log("firstBlockIndex =", firstBlockIndex);
         )}
 
         <div
-          className="
+  className="
   w-full
-  md:max-w-4xl
-  md:mx-auto
+  max-w-[900px]
+  mx-auto
   px-3
   md:px-8
   whitespace-pre-line
@@ -233,7 +238,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
   leading-9
   text-gray-800
 "
-        >
+>
           {section.text}
         </div>
 
@@ -244,10 +249,10 @@ console.log("firstBlockIndex =", firstBlockIndex);
 ) : (
 
   <div
-    className="
+  className="
   w-full
-  md:max-w-4xl
-  md:mx-auto
+  max-w-[900px]
+  mx-auto
   px-3
   md:px-8
   whitespace-pre-line
@@ -257,7 +262,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
   leading-9
   text-gray-800
 "
-  >
+>
     {block.content}
   </div>
 
