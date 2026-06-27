@@ -204,7 +204,13 @@ console.log("firstBlockIndex =", firstBlockIndex);
             {adEngine.isTextArticle ? (
 
   textSections[idx].sections.map(
-    (section, sectionIndex) => (
+  (
+    section: {
+      text: string;
+      hasAdBefore: boolean;
+    },
+    sectionIndex: number
+  ) => (
       <div key={sectionIndex}>
 
         {section.hasAdBefore && (
