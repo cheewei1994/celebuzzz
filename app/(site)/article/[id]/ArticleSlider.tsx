@@ -120,7 +120,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
   : [];
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm overflow-visible">
 
 
       {pageBlocks.map((block, idx) => (
@@ -142,7 +142,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
 <div
   className="
     absolute
-    left-1
+    left-
     top-3
     md:left-4
     md:top-4

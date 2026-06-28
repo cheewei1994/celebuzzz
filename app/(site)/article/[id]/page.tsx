@@ -127,6 +127,7 @@ const categoryName =
   blocks={article.blocks || []}
 />
 
+<div className="px-4">
 
 <hr className="my-10" />
 
@@ -225,6 +226,7 @@ const categoryName =
   ))}
 </div>
 </div>
+</div> 
     </main>
   );
 }

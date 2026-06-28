@@ -78,14 +78,14 @@ export default function AdRenderer({
     return () => {};
   }, [slot]);
 
-  return (
+ return (
   <div
-  ref={containerRef}
-  className={`my-6 ${
-    position === "article-auto"
-      ? "w-screen relative left-1/2 -translate-x-1/2"
-      : ""
-  }`}
-/>
+    ref={containerRef}
+    className={`my-6 ${
+      position === "article-auto"
+        ? "w-screen max-w-none md:w-auto relative left-1/2 -translate-x-1/2 md:left-0 md:translate-x-0 bg-red-200"
+        : ""
+    }`}
+  />
 );
 }
