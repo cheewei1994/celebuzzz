@@ -299,7 +299,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
       ))}
 
       {/* 底部分页 */}
-      <div className="flex justify-between items-center mt-8">
+      <div className="-mx-3 md:mx-0 flex justify-between items-center mt-8">
 
         <button
           disabled={page === 0}
