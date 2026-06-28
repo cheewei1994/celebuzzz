@@ -36,11 +36,52 @@ setSlot(data.slot || "");
 
   if (!slot) return null;
 
+  const showLabel =
+  position === "article-top" ||
+  position === "article-auto" ||
+  position === "article-bottom";
+
 return (
-  <AdRenderer
-  code={code}
-  slot={slot}
-  position={position}
-/>
+  <div className="my-6">
+
+    {showLabel && (
+  <div
+    className="
+      flex
+      items-center
+      justify-center
+      gap-3
+      bg-gray-100
+      rounded-md
+      py-2
+      mb-3
+    "
+  >
+    <div className="flex-1 h-px bg-gray-300" />
+
+    <span
+      className="
+        text-[11px]
+        font-medium
+        tracking-[3px]
+        uppercase
+        text-gray-500
+        whitespace-nowrap
+      "
+    >
+      ADVERTISEMENT
+    </span>
+
+    <div className="flex-1 h-px bg-gray-300" />
+  </div>
+)}
+
+    <AdRenderer
+      code={code}
+      slot={slot}
+      position={position}
+    />
+
+  </div>
 );
 }
