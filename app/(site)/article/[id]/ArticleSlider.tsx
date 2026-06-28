@@ -142,8 +142,8 @@ console.log("firstBlockIndex =", firstBlockIndex);
 <div
   className="
     absolute
-    left-2
-    top-2
+    left-1
+    top-3
     md:left-4
     md:top-4
     flex
@@ -223,7 +223,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
           className="
             max-w-4xl
             mx-auto
-            pl-2
+            pl-4
             pr-2
             md:pl-8
             md:pr-8
@@ -249,7 +249,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
     className="
       max-w-4xl
       mx-auto
-      pl-2
+      pl-4
       pr-2
       md:pl-8
       md:pr-8
