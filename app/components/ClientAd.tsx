@@ -47,23 +47,33 @@ return (
     {showLabel && (
   <div
     className="
-      flex
-      items-center
-      justify-center
-      gap-3
+      w-screen
+      relative
+      left-1/2
+      -translate-x-1/2
       bg-gray-100
-      rounded-md
       py-2
       mb-3
     "
   >
+    <div
+      className="
+        max-w-[900px]
+        mx-auto
+        px-4
+        flex
+        items-center
+        justify-center
+        gap-3
+      "
+    >
     <div className="flex-1 h-px bg-gray-300" />
 
     <span
       className="
         text-[11px]
         font-medium
-        tracking-[3px]
+        tracking-[5px]
         uppercase
         text-gray-500
         whitespace-nowrap
@@ -74,6 +84,7 @@ return (
 
     <div className="flex-1 h-px bg-gray-300" />
   </div>
+  </div>
 )}
 
     <AdRenderer
@@ -83,5 +94,6 @@ return (
     />
 
   </div>
+  
 );
 }
