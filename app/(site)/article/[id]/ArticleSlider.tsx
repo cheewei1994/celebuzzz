@@ -120,36 +120,30 @@ console.log("firstBlockIndex =", firstBlockIndex);
   : [];
 
   return (
-  <div className="overflow-hidden">
+    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
 
 
       {pageBlocks.map((block, idx) => (
-        <div
-  key={idx}
-  className="flex flex-col items-center w-full"
->
+        <div key={idx}>
 
           {/* 图片 */}
-<div className="w-full max-w-[900px] px-3 md:px-0 relative">
-  {block.imageUrl && (
-    <img
-      src={block.imageUrl}
-      alt=""
-      className="w-full"
-    />
-  )}
-</div>
+{block.imageUrl && (
+  <img
+    src={block.imageUrl}
+    alt=""
+    className="w-full"
+  />
+)}
 
           {/* 内容 */}
-          <div className="w-full max-w-[900px] mx-auto px-3 md:px-0">
-  <div className="relative pt-2 pb-4">
+          <div className="relative px-3 md:px-8 pt-6 pb-4">
 
   {/* 红色标记 */}
 <div
   className="
     absolute
-    left-0
-    top-2
+    left-1
+    top-3
     md:left-4
     md:top-4
     flex
@@ -220,27 +214,31 @@ console.log("firstBlockIndex =", firstBlockIndex);
       <div key={sectionIndex}>
 
         {section.hasAdBefore && (
-          <div className="mt-8">
-  <ClientAd position="article-auto" />
-</div>
+          <div className="mt-8 mb-8">
+            <ClientAd position="article-auto" />
+          </div>
         )}
 
         <div
-  className="
-  max-w-[700px]
-  mx-auto
-  pl-10
-  pr-10
-  whitespace-pre-line
-  text-[20px]
-  md:text-[22px]
-  font-semibold
-  leading-9
-  text-gray-800
-"
->
-  {section.text}
-</div>
+          className="
+            max-w-4xl
+            mx-auto
+            pl-2
+            pr-2
+            md:pl-8
+            md:pr-8
+            whitespace-pre-line
+            text-[20px]
+            md:text-[22px]
+            font-semibold
+            leading-9
+            md:leading-9
+            text-gray-800
+          "
+        >
+          {section.text}
+        </div>
+
       </div>
     )
   )
@@ -248,21 +246,24 @@ console.log("firstBlockIndex =", firstBlockIndex);
 ) : (
 
   <div
-  className="
-  max-w-[700px]
-  mx-auto
-  pl-10
-  pr-10
-  whitespace-pre-line
-  text-[20px]
-  md:text-[22px]
-  font-semibold
-  leading-9
-  text-gray-800
-"
->
-  {block.content}
-</div>
+    className="
+      max-w-4xl
+      mx-auto
+      pl-2
+      pr-2
+      md:pl-8
+      md:pr-8
+      whitespace-pre-line
+      text-[20px]
+      md:text-[22px]
+      font-semibold
+      leading-9
+      md:leading-9
+      text-gray-800
+    "
+  >
+    {block.content}
+  </div>
 
 )}
 
@@ -293,8 +294,6 @@ console.log("firstBlockIndex =", firstBlockIndex);
     </div>
 )}
           </div>
-
-        </div>
 
         </div>
       ))}
@@ -333,7 +332,6 @@ console.log("firstBlockIndex =", firstBlockIndex);
             /{blocks.length}
           </span>
         </div>
-        
 
         <button
           disabled={page === pages.length - 1}
