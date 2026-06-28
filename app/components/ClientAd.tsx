@@ -45,7 +45,8 @@ return (
   <div className="my-6">
 
     {showLabel && (
-  className="
+  <div
+   className="
   w-screen
   md:w-full
   relative
@@ -54,10 +55,12 @@ return (
   -translate-x-1/2
   md:translate-x-0
   bg-gray-200
+  md:bg-transparent
   py-3
   mb-3
 "
   >
+  
     <div
       className="
         max-w-[900px]
