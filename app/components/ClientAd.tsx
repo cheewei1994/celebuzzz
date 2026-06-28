@@ -51,8 +51,8 @@ return (
       relative
       left-1/2
       -translate-x-1/2
-      bg-gray-100
-      py-2
+      bg-gray-300
+      py-3
       mb-3
     "
   >
@@ -71,9 +71,9 @@ return (
 
     <span
       className="
-        text-[11px]
-        font-medium
-        tracking-[5px]
+        text-[14px]
+        font-bold
+        tracking-[3px]
         uppercase
         text-gray-500
         whitespace-nowrap
