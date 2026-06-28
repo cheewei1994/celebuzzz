@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+
 declare global {
   interface Window {
     adsbygoogle: any[];
@@ -15,13 +16,13 @@ export default function AdRenderer({
   slot: string;
   position: string;
 }) {
-const [loaded, setLoaded] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!slot || !containerRef.current) return;
 
     // 清空舊廣告
     containerRef.current.innerHTML = "";
-    setLoaded(false);
 
     // 建立新的 ins
     const ins = document.createElement("ins");
@@ -67,21 +68,6 @@ const [loaded, setLoaded] = useState(false);
   }
 
   try {
-setTimeout(() => {
-  if (!containerRef.current) return;
-
-  const ad = containerRef.current.querySelector(
-    ".adsbygoogle"
-  ) as HTMLElement | null;
-
-  if (
-    ad &&
-    ad.offsetHeight > 0
-  ) {
-    setLoaded(true);
-  }
-}, 500);
-
     (window.adsbygoogle = window.adsbygoogle || []).push({});
 
   } catch (err) {
@@ -94,18 +80,12 @@ setTimeout(() => {
 
   return (
   <div
-    ref={containerRef}
-    className={`
-      transition-all
-      duration-300
-      overflow-hidden
-      ${loaded ? "my-6" : "my-0"}
-      ${
-        position === "article-auto"
-          ? "w-screen md:w-full relative left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0"
-          : ""
-      }
-    `}
-  />
+  ref={containerRef}
+  className={`my-6 ${
+    position === "article-auto"
+  ? "w-screen md:w-full relative left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0"
+  : ""
+  }`}
+/>
 );
 }

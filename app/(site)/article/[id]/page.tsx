@@ -4,7 +4,11 @@ import ArticleSlider from "./ArticleSlider";
 import { supabase } from "@/lib/supabase";
 import AdSlot from "@/app/components/AdSlot";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
-import { ImageIcon } from "lucide-react";
+import {
+  ImageIcon,
+  House,
+  CalendarDays,
+} from "lucide-react";
 
 
 export const dynamic = "force-dynamic";
@@ -67,17 +71,21 @@ const categoryName =
   .limit(15);
 
   return (
-    <main className="w-full py-10">
+    <main className="w-full pt-4 pb-10">
 
      <div className="max-w-[900px] mx-auto px-4">
       <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
 
         <Link
-          href="/"
-          className="hover:text-purple-600 hover:underline transition"
-        >
-          🏠 首頁
-        </Link>
+  href="/"
+  className="flex items-center gap-1 hover:text-purple-600 transition"
+>
+  <House
+  size={14}
+  className="relative top-[0px] left-[0px]"
+/>
+  <span>首頁</span>
+</Link>
 
         <span>＞</span>
 
@@ -101,8 +109,14 @@ const categoryName =
       </h1>
 
       <div className="flex items-center gap-3 text-sm text-gray-500 border-b border-gray-200 pb-3 mb-6">
-  <span>
-    📅 {new Date(article.created_at).toLocaleString("zh-TW", {
+  <span className="flex items-center gap-2">
+  <CalendarDays
+    size={14}
+    className="relative top-[0px] left-[0px]"
+  />
+
+  <span className="relative top-[0px] right-[3px]">
+    {new Date(article.created_at).toLocaleString("zh-TW", {
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -110,6 +124,7 @@ const categoryName =
       minute: "2-digit",
     })}
   </span>
+</span>
 </div>
 
 <div className="my-6">
@@ -121,17 +136,16 @@ const categoryName =
 
 <div className="max-w-[900px] mx-auto px-4">
 
-<hr className="my-10" />
-
 <ArticleSlider
   blocks={article.blocks || []}
 />
 
 <div className="px-4">
 
-<hr className="my-10" />
 
 <AdSlot position="article-bottom" />
+
+<div className="mt-12" />
 
 <h2 className="text-xl font-bold mb-5">
   🔥 推薦圖集

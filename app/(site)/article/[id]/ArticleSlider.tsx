@@ -142,7 +142,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
 <div
   className="
     absolute
-    left-
+    left-0
     top-3
     md:left-4
     md:top-4
@@ -157,7 +157,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
      h-6
      md:h-8
      bg-red-500
-     rotate-[22deg]
+     rotate-[26deg]
      rounded-full
     "
   />
@@ -168,7 +168,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
     h-5
     md:h-7
     bg-gray-500
-    rotate-[22deg]
+    rotate-[28deg]
     rounded-full
     -mt-1
     "
