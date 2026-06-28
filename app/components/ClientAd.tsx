@@ -57,7 +57,7 @@ return (
   bg-gray-200
   md:bg-transparent
   py-3
-  mb-3
+  mb-1
 "
   >
   
