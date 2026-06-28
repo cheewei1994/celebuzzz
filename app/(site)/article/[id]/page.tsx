@@ -140,7 +140,7 @@ const categoryName =
   blocks={article.blocks || []}
 />
 
-<div className="px-4">
+<div className="px-0 md:px-4">
 
 
 <AdSlot position="article-bottom" />
