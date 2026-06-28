@@ -45,16 +45,18 @@ return (
   <div className="my-6">
 
     {showLabel && (
-  <div
-    className="
-      w-screen
-      relative
-      left-1/2
-      -translate-x-1/2
-      bg-gray-300
-      py-3
-      mb-3
-    "
+  className="
+  w-screen
+  md:w-full
+  relative
+  left-1/2
+  md:left-0
+  -translate-x-1/2
+  md:translate-x-0
+  bg-gray-200
+  py-3
+  mb-3
+"
   >
     <div
       className="
