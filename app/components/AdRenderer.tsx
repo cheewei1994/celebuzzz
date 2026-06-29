@@ -81,7 +81,7 @@ export default function AdRenderer({
   return (
   <div
     ref={containerRef}
-    className={`mt-2 mb-2 md:my-6 ${
+    className={`mt-1 md:my-6 ${
       position === "article-auto"
         ? "w-screen md:w-full relative left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0"
         : ""
