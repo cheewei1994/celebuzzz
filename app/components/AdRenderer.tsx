@@ -80,12 +80,12 @@ export default function AdRenderer({
 
   return (
   <div
-  ref={containerRef}
-  className={`mt-1 mb-6 md:my-6 ${
-    position === "article-auto"
-  ? "w-screen md:w-full relative left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0"
-  : ""
-  }`}
-/>
+    ref={containerRef}
+    className={`mt-2 mb-0 md:my-6 ${
+      position === "article-auto"
+        ? "w-screen md:w-full relative left-1/2 md:left-0 -translate-x-1/2 md:translate-x-0"
+        : ""
+    }`}
+  />
 );
 }

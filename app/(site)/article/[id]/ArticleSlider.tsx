@@ -214,7 +214,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
       <div key={sectionIndex}>
 
         {section.hasAdBefore && (
-  <div className="my-6">
+   <div className="mt-6 mb-0 md:my-6">
     <ClientAd position="article-auto" />
   </div>
 )}
