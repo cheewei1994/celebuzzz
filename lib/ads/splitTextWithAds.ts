@@ -54,8 +54,8 @@ export function splitTextWithAds(
   start
 );
 
-    sections.push({
-  text: text.slice(start, end),
+   sections.push({
+  text: text.slice(start, end).trim(),
   hasAdBefore: sections.length > 0,
 });
 

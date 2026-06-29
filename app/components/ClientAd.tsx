@@ -42,7 +42,7 @@ setSlot(data.slot || "");
   position === "article-bottom";
 
 return (
-  <div className="my-6">
+  <div className="md:my-6">
 
     {showLabel && (
   <div
