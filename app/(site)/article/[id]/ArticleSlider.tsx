@@ -6,6 +6,7 @@ import ClientAd from "@/app/components/ClientAd";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 import { ADS_CONFIG } from "@/lib/ads/config";
 import { splitTextWithAds } from "@/lib/ads/splitTextWithAds";
+import ClientAd from "@/app/components/ClientAd";
 
 export default function ArticleSlider({
   blocks,
