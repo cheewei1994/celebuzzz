@@ -3,11 +3,9 @@
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import ClientAd from "@/app/components/ClientAd";
-import AdSlot from "@/app/components/AdSlot";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 import { ADS_CONFIG } from "@/lib/ads/config";
 import { splitTextWithAds } from "@/lib/ads/splitTextWithAds";
-
 
 export default function ArticleSlider({
   blocks,
@@ -358,12 +356,6 @@ console.log("firstBlockIndex =", firstBlockIndex);
         </button>
 
       </div>
-
-      {adEngine.isTextArticle && (
-  <div className="mt-8">
-    <AdSlot position="article-next-prev" />
-  </div>
-)}
 
     </div>
   );
