@@ -270,7 +270,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
             {/* 圖文文章：每個 Block 後都放廣告 */}
 {adEngine.isImageArticle &&
  pageAdMode === "normal" && (
-  <div className="mt-8">
+  <div className="mt-2">
     <ClientAd position="article-auto" />
   </div>
 )}
@@ -279,7 +279,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
 {adEngine.isImageArticle &&
   pageAdMode === "merged-split" &&
   idx === 0 && (
-    <div className="mt-8">
+    <div className="mt-2">
       <ClientAd position="article-auto" />
     </div>
 )}
@@ -289,7 +289,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
   (pageAdMode === "merged" ||
     pageAdMode === "merged-split") &&
   idx === pageBlocks.length - 1 && (
-    <div className="mt-8">
+    <div className="mt-2">
       <ClientAd position="article-auto" />
     </div>
 )}
