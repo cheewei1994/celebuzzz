@@ -79,7 +79,7 @@ return (
       className="
         text-[14px]
         font-bold
-        tracking-[3px]
+        tracking-[2px]
         uppercase
         text-gray-500
         whitespace-nowrap
