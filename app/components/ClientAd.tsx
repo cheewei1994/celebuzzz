@@ -56,7 +56,7 @@ return (
   md:translate-x-0
   bg-gray-200
   md:bg-transparent
-  py-3
+  py-2
   mb-1
 "
   >
