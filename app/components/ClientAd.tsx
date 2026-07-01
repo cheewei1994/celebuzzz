@@ -39,7 +39,10 @@ setSlot(data.slot || "");
   const showLabel =
   position === "article-top" ||
   position === "article-auto" ||
-  position === "article-bottom";
+  position === "article-bottom" ||
+  position === "article-next-prev";
+
+const isNextPrev =
   position === "article-next-prev";
 
 return (
