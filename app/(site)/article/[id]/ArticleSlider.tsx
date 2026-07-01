@@ -357,6 +357,16 @@ console.log("firstBlockIndex =", firstBlockIndex);
 
       </div>
 
+{adEngine.isTextArticle && (
+  <div className="mt-8 md:mt-10">
+    <div className="text-center text-[11px] uppercase tracking-wider text-gray-400 mb-2">
+      Advertisement
+    </div>
+
+    <ClientAd position="article-next-prev" />
+  </div>
+)}
+
     </div>
   );
 }

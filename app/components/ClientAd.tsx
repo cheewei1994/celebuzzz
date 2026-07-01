@@ -40,6 +40,7 @@ setSlot(data.slot || "");
   position === "article-top" ||
   position === "article-auto" ||
   position === "article-bottom";
+  position === "article-next-prev";
 
 return (
   <div className="md:my-6">
