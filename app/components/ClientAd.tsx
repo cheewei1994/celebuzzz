@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import AdRenderer from "./AdRenderer";
+import AdLabel from "./AdLabel";
 
 export default function ClientAd({
   position,
@@ -42,61 +43,11 @@ setSlot(data.slot || "");
   position === "article-bottom" ||
   position === "article-next-prev";
 
-const isNextPrev =
-  position === "article-next-prev";
 
 return (
   <div className="md:my-6">
 
-    {showLabel && (
-  <div
-   className="
-  w-screen
-  md:w-full
-  relative
-  left-1/2
-  md:left-0
-  -translate-x-1/2
-  md:translate-x-0
-  bg-gray-200
-  md:bg-transparent
-  py-2
-  mb-1
-"
-  >
-  
-    <div
-      className="
-        max-w-[900px]
-        md:max-w-[1200px]
-        mx-auto
-        px-4
-        flex
-        items-center
-        justify-center
-        gap-3
-      "
-    >
-    <div className="flex-1 h-px bg-gray-300" />
-
-    <span
-      className="
-        text-[14px]
-        font-bold
-        tracking-[2px]
-        uppercase
-        text-gray-500
-        whitespace-nowrap
-      "
-    >
-      ADVERTISEMENT
-    </span>
-
-    <div className="flex-1 h-px bg-gray-300" />
-  </div>
-  </div>
-)}
-
+    {showLabel && <AdLabel />}
     <AdRenderer
       code={code}
       slot={slot}

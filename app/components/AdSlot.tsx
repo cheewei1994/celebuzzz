@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import AdRenderer from "./AdRenderer";
+import AdLabel from "./AdLabel";
 
 export default async function AdSlot({
   position,
@@ -15,11 +16,19 @@ export default async function AdSlot({
 
   if (!data) return null;
 
-    return (
-  <AdRenderer
-    code={data.code}
-    slot={data.slot}
-    position={position}
-  />
+    const showLabel =
+  position === "article-top" ||
+  position === "article-bottom";
+
+return (
+  <div className="md:my-6">
+    {showLabel && <AdLabel />}
+
+    <AdRenderer
+      code={data.code}
+      slot={data.slot}
+      position={position}
+    />
+  </div>
 );
 }
