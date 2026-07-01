@@ -299,7 +299,7 @@ console.log("firstBlockIndex =", firstBlockIndex);
       ))}
 
       {/* 底部分页 */}
-      <div className="-mx-3 md:mx-0 flex justify-between items-center mt-8">
+      <div className="-mx-3 md:mx-0 flex justify-between items-center mt-8 relative z-20">
 
         <button
           disabled={page === 0}
@@ -360,6 +360,12 @@ console.log("firstBlockIndex =", firstBlockIndex);
 {adEngine.isTextArticle && (
   <div className="mt-8 md:mt-10">
    <ClientAd position="article-next-prev" />
+  </div>
+)}
+
+{adEngine.isImageArticle && (
+  <div className="mt-8 md:mt-10">
+    <ClientAd position="image-next-prev" />
   </div>
 )}
 
