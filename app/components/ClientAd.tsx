@@ -41,7 +41,8 @@ setSlot(data.slot || "");
   position === "article-top" ||
   position === "article-auto" ||
   position === "article-bottom" ||
-  position === "article-next-prev";
+  position === "article-next-prev" ||
+  position === "image-next-prev";
 
 
 return (

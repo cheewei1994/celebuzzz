@@ -363,6 +363,12 @@ console.log("firstBlockIndex =", firstBlockIndex);
   </div>
 )}
 
+{adEngine.isImageArticle && (
+  <div className="mt-8 md:mt-10">
+    <ClientAd position="image-next-prev" />
+  </div>
+)}
+
     </div>
   );
 }
