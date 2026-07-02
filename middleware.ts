@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host");
+const referer = request.headers.get("referer") || "";
 const pathname = request.nextUrl.pathname;
 
 if (
@@ -9,6 +10,12 @@ if (
     host === "www.miaodaily.com") &&
   pathname.startsWith("/article/")
 ) {
+  // 网站内部点击，不跳
+  if (referer.includes("miaodaily.com")) {
+    return NextResponse.next();
+  }
+
+  // 其他来源（Facebook、Google、直接访问等）跳转
   const url = request.nextUrl.clone();
   url.hostname = "celebuzzz.com";
   url.protocol = "https:";
