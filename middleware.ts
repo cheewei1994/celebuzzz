@@ -2,18 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
   const host = request.headers.get("host");
+const pathname = request.nextUrl.pathname;
 
-  // miaodaily.com -> celebuzzz.com
-  if (
-    host === "miaodaily.com" ||
-    host === "www.miaodaily.com"
-  ) {
-    const url = request.nextUrl.clone();
-    url.hostname = "celebuzzz.com";
-    url.protocol = "https:";
+if (
+  (host === "miaodaily.com" ||
+    host === "www.miaodaily.com") &&
+  pathname.startsWith("/article/")
+) {
+  const url = request.nextUrl.clone();
+  url.hostname = "celebuzzz.com";
+  url.protocol = "https:";
 
-    return NextResponse.redirect(url, 308);
-  }
+  return NextResponse.redirect(url, 308);
+}
 
   // Admin login protection
   if (request.nextUrl.pathname.startsWith("/admin")) {
