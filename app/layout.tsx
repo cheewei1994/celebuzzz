@@ -56,7 +56,23 @@ export default async function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5206647366547356"
           crossOrigin="anonymous"
         />
+
+<Script
+  src="https://www.googletagmanager.com/gtag/js?id=G-VE89R3TEMB"
+  strategy="afterInteractive"
+/>
+
+<Script id="google-analytics" strategy="afterInteractive">
+  {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-VE89R3TEMB');
+  `}
+</Script>
+
       </head>
+      
 
       <body className="min-h-screen flex flex-col">
 
@@ -67,6 +83,7 @@ export default async function RootLayout({
   <Toaster position="top-center" />
 
 </body>
+
     </html>
   );
 }
