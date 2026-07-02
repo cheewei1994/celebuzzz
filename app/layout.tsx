@@ -19,7 +19,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://celebuzzz.com"),
+
   title: "喵喵網 - 每天分享值得閱讀的好文章",
+
   description:
     "喵喵網提供情感、家庭、健康、奇聞、美食等優質內容，每天分享值得閱讀的文章。",
 
@@ -35,6 +38,21 @@ export const metadata: Metadata = {
     "美食分享",
     "喵喵網",
   ],
+
+  openGraph: {
+    title: "喵喵網 - 每天分享值得閱讀的好文章",
+    description:
+      "喵喵網提供情感、家庭、健康、奇聞、美食等優質內容，每天分享值得閱讀的文章。",
+    url: "https://celebuzzz.com",
+    siteName: "喵喵網",
+    locale: "zh_TW",
+    type: "website",
+    images: [
+      {
+        url: "/icon.png",
+      },
+    ],
+  },
 };
 
 export default async function RootLayout({

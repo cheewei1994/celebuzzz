@@ -9,9 +9,58 @@ import {
   House,
   CalendarDays,
 } from "lucide-react";
+import type { Metadata } from "next";
 
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+
+  const { data: article } = await supabase
+    .from("articles")
+    .select(`
+      title,
+      cover
+    `)
+    .eq("id", Number(id))
+    .single();
+
+  if (!article) {
+    return {
+      title: "文章不存在 - 喵喵網",
+    };
+  }
+
+  return {
+    title: article.title,
+
+    description: "喵喵網 - 每天分享值得閱讀的好文章",
+
+    alternates: {
+  canonical: `https://celebuzzz.com/article/${id}`,
+},
+
+    openGraph: {
+      title: article.title,
+      description: "喵喵網 - 每天分享值得閱讀的好文章",
+      url: `https://celebuzzz.com/article/${id}`,
+      siteName: "喵喵網",
+      type: "article",
+      images: article.cover
+        ? [
+            {
+              url: article.cover,
+            },
+          ]
+        : [],
+    },
+  };
+}
 
 export default async function ArticlePage({
   params,
@@ -25,6 +74,7 @@ export default async function ArticlePage({
     .select(`
       id,
       title,
+      cover,
       category,
       created_at,
       views,
