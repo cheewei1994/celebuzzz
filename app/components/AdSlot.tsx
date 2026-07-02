@@ -1,4 +1,6 @@
 import { supabase } from "@/lib/supabase";
+import { headers } from "next/headers";
+import { shouldShowAds } from "@/lib/ads";
 import AdRenderer from "./AdRenderer";
 import AdLabel from "./AdLabel";
 
@@ -15,6 +17,18 @@ export default async function AdSlot({
     .single();
 
   if (!data) return null;
+
+const headersList = await headers();
+
+const host = (
+  headersList.get("x-forwarded-host") ??
+  headersList.get("host") ??
+  ""
+).split(":")[0];
+
+if (!shouldShowAds(host)) {
+  return null;
+}  
 
     const showLabel =
   position === "article-top" ||

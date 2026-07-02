@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import AdRenderer from "./AdRenderer";
 import AdLabel from "./AdLabel";
+import { shouldShowAds } from "@/lib/ads";
 
 export default function ClientAd({
   position,
@@ -13,6 +14,13 @@ export default function ClientAd({
 const [slot, setSlot] = useState("");
 
   useEffect(() => {
+
+ const host = window.location.hostname;
+
+  if (!shouldShowAds(host)) {
+    return;
+  }
+
     console.log("ClientAd position =", position);
 
     async function load() {
