@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
+  console.log(
+  "User-Agent:",
+  request.headers.get("user-agent")
+);
   const host = request.headers.get("host");
 const referer = request.headers.get("referer") || "";
 const pathname = request.nextUrl.pathname;
