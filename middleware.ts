@@ -5,6 +5,9 @@ export function middleware(request: NextRequest) {
   "User-Agent:",
   request.headers.get("user-agent")
 );
+
+const userAgent =
+  request.headers.get("user-agent") || "";
   const host = request.headers.get("host");
 const referer = request.headers.get("referer") || "";
 const pathname = request.nextUrl.pathname;
@@ -14,10 +17,15 @@ if (
     host === "www.miaodaily.com") &&
   pathname.startsWith("/article/")
 ) {
-  // 网站内部点击，不跳
-  if (referer.includes("miaodaily.com")) {
-    return NextResponse.next();
-  }
+// Facebook Bot 不跳转（测试）
+if (userAgent.toLowerCase().includes("facebookexternalhit")) {
+  return NextResponse.next();
+}
+
+// 网站内部点击，不跳
+if (referer.includes("miaodaily.com")) {
+  return NextResponse.next();
+}
 
   // 其他来源（Facebook、Google、直接访问等）跳转
   const url = request.nextUrl.clone();
