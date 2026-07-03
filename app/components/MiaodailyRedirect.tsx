@@ -13,7 +13,7 @@ export default function MiaodailyRedirect() {
       url.hostname = "celebuzzz.com";
 
       window.location.replace(url.toString());
-    }, 500);
+    }, 0);
 
     return () => clearTimeout(timer);
   }, []);
