@@ -10,6 +10,7 @@ import {
   CalendarDays,
 } from "lucide-react";
 import type { Metadata } from "next";
+import MiaodailyRedirect from "@/app/components/MiaodailyRedirect";
 
 
 export const dynamic = "force-dynamic";
@@ -122,6 +123,8 @@ const categoryName =
 
   return (
     <main className="w-full pt-4 pb-10">
+      
+         <MiaodailyRedirect />
 
      <div className="max-w-[900px] mx-auto px-4">
       <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
