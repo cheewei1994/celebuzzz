@@ -10,7 +10,17 @@ if (
     host === "www.miaodaily.com") &&
   pathname.startsWith("/article/")
 ) {
-  return NextResponse.next();
+  // 网站内部点击，不跳
+  if (referer.includes("miaodaily.com")) {
+    return NextResponse.next();
+  }
+
+  // 其他来源（Facebook、Google、直接访问等）跳转
+  const url = request.nextUrl.clone();
+  url.hostname = "celebuzzz.com";
+  url.protocol = "https:";
+
+  return NextResponse.redirect(url, 308);
 }
 
   // Admin login protection
