@@ -20,7 +20,7 @@ if (
   url.hostname = "celebuzzz.com";
   url.protocol = "https:";
 
-  return NextResponse.redirect(url, 308);
+  return NextResponse.redirect(url, 302);
 }
 
   // Admin login protection
