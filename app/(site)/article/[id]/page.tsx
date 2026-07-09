@@ -4,11 +4,8 @@ import ArticleSlider from "./ArticleSlider";
 import { supabase } from "@/lib/supabase";
 import AdSlot from "@/app/components/AdSlot";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
-import {
-  ImageIcon,
-  House,
-  CalendarDays,
-} from "lucide-react";
+import {ImageIcon,House,CalendarDays,} from "lucide-react";
+import ViewTracker from "./ViewTracker";
 import type { Metadata } from "next";
 
 
@@ -89,14 +86,6 @@ export default async function ArticlePage({
 
   const adEngine = SmartAdEngine(article.blocks || []);
 
-  await supabase
-  .from("articles")
-  .update({
-    views: (article.views || 0) + 1,
-  })
-  .eq("id", article.id);
-
-
   const currentCategory = categories.find(
   (c) => c.name === article.category
 );
@@ -122,7 +111,7 @@ const categoryName =
 
   return (
     <main className="w-full pt-4 pb-10">
-
+  <ViewTracker articleId={article.id} />
          
      <div className="max-w-[900px] mx-auto px-4">
       <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">

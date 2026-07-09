@@ -2,29 +2,26 @@ import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
 
 export async function POST(req: Request) {
-  const { articleId } =
-    await req.json();
+  const { articleId } = await req.json();
 
-  const { data: article } =
-    await supabase
-      .from("articles")
-      .select("views")
-      .eq("id", articleId)
-      .single();
+  const { error } = await supabase.rpc(
+    "increment_article_views",
+    {
+      article_id: articleId,
+    }
+  );
 
-  if (!article) {
-    return NextResponse.json({
-      success: false,
-    });
+  if (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+      },
+      {
+        status: 500,
+      }
+    );
   }
-
-  await supabase
-    .from("articles")
-    .update({
-      views:
-        (article.views || 0) + 1,
-    })
-    .eq("id", articleId);
 
   return NextResponse.json({
     success: true,

@@ -8,12 +8,6 @@ export default function ViewTracker({
   articleId: number;
 }) {
   useEffect(() => {
-    const key = `viewed_${articleId}`;
-
-    const viewed = localStorage.getItem(key);
-
-    if (viewed) return;
-
     fetch("/api/view", {
       method: "POST",
       headers: {
@@ -22,12 +16,7 @@ export default function ViewTracker({
       body: JSON.stringify({
         articleId,
       }),
-    });
-
-    localStorage.setItem(
-      key,
-      Date.now().toString()
-    );
+    }).catch(() => {});
   }, [articleId]);
 
   return null;
