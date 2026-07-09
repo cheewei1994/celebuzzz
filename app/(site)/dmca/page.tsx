@@ -5,10 +5,7 @@ export default function DMCAPage() {
     <main className="max-w-4xl mx-auto px-4 py-10">
       <div className="bg-white rounded-3xl shadow-sm border p-8">
 
-        <div className="text-sm text-gray-500 mb-4">
-          首頁 / DMCA
-        </div>
-
+        
         <h1 className="text-4xl font-bold mb-6">
           DMCA 版權投訴
         </h1>
