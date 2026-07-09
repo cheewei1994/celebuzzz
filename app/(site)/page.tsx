@@ -1,6 +1,7 @@
 import { categories } from "@/lib/categories";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import Pagination from "@/app/components/Pagination";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage({
@@ -117,44 +118,11 @@ const to =
 ))}
         </div>
 
-       <div className="flex justify-center items-center gap-2 mt-12">
-
-  {currentPage > 1 && (
-    <Link
-      href={`/?page=${currentPage - 1}`}
-      className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-    >
-      ← 上一頁
-    </Link>
-  )}
-
-  {Array.from(
-    { length: totalPages },
-    (_, i) => i + 1
-  ).map((page) => (
-    <Link
-      key={page}
-      href={`/?page=${page}`}
-      className={`w-10 h-10 flex items-center justify-center rounded-lg border ${
-        currentPage === page
-          ? "bg-blue-600 text-white border-blue-600"
-          : "hover:bg-gray-100"
-      }`}
-    >
-      {page}
-    </Link>
-  ))}
-
-  {currentPage < totalPages && (
-    <Link
-      href={`/?page=${currentPage + 1}`}
-      className="px-4 py-2 border rounded-lg hover:bg-gray-100"
-    >
-      下一頁 →
-    </Link>
-  )}
-
-</div>
+       <Pagination
+  currentPage={currentPage}
+  totalPages={totalPages}
+  baseUrl="/"
+/>
       </section>
 
       

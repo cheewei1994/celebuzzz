@@ -1,13 +1,25 @@
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { categories } from "@/lib/categories";
+import Pagination from "@/app/components/Pagination";
 
 export default async function CategoryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{
+  page?: string;
+}>;
 }) {
   const { slug } = await params;
+  const { page } = await searchParams;
+
+const currentPage = Number(page ?? "1");
+
+const PAGE_SIZE = 16;
+const from = (currentPage - 1) * PAGE_SIZE;
+const to = from + PAGE_SIZE - 1;
 
   const currentCategory = categories.find(
   (item) => item.slug === slug
@@ -16,15 +28,19 @@ export default async function CategoryPage({
 const categoryName =
   currentCategory?.name;
 
-const { data: filteredArticles } =
-  await supabase
-    .from("articles")
-    .select("*")
-    .eq("category", categoryName)
-    .order("created_at", {
-      ascending: false,
-    });
+const {
+  data: filteredArticles,
+  count,
+} = await supabase
+  .from("articles")
+  .select("*", { count: "exact" })
+  .eq("category", categoryName)
+  .order("created_at", {
+    ascending: false,
+  })
+  .range(from, to);
 
+const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE);
   
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
@@ -46,7 +62,7 @@ mb-8
 
   <div className="mt-2 ml-[18px]">
     <p className="text-gray-500 text-sm">
-      共 {filteredArticles?.length || 0} 篇圖集
+      共 {count ?? 0} 篇圖集
     </p>
   </div>
 </div>
@@ -120,6 +136,12 @@ border-t
           </a>
         ))}
       </div>
+
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        baseUrl={`/category/${slug}`}
+      />
     </main>
   );
 }
