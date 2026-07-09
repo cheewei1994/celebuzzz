@@ -2,7 +2,7 @@ import { categories } from "@/lib/categories";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import Pagination from "@/app/components/Pagination";
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function HomePage({
   searchParams,
