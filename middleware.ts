@@ -9,9 +9,7 @@ export function middleware(request: NextRequest) {
   const userAgent =
     request.headers.get("user-agent") || "";
 
-  // ⭐ 改这里，不再使用 headers.get("host")
-  const host = request.nextUrl.hostname;
-
+  const host = request.headers.get("host");
   const referer =
     request.headers.get("referer") || "";
 
@@ -22,7 +20,7 @@ export function middleware(request: NextRequest) {
       host === "www.miaodaily.com") &&
     pathname.startsWith("/article/")
   ) {
-    // Facebook Bot 不跳转（保留）
+    // Facebook Bot 不跳转（测试）
     if (
       userAgent
         .toLowerCase()
@@ -31,30 +29,30 @@ export function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // 网站内部点击，不跳（保留）
+    // 网站内部点击，不跳
     if (referer.includes("miaodaily.com")) {
       return NextResponse.next();
     }
 
-    // ⭐ 保留你的原本逻辑
+    // 其他来源（Facebook、Google、直接访问等）跳转
     const url = request.nextUrl.clone();
 
     url.hostname = "celebuzzz.com";
     url.protocol = "https:";
 
-    // ⭐⭐⭐ Coolify 必须清掉 Port，否则会跳到 :3000
+    // ⭐ 新增这一行（解决 Coolify 带出 :3000）
     url.port = "";
 
     return NextResponse.redirect(url, 302);
   }
 
-  // Admin login protection（完全保留）
-  if (pathname.startsWith("/admin")) {
+  // Admin login protection
+  if (request.nextUrl.pathname.startsWith("/admin")) {
     const token =
       request.cookies.get("admin_token")?.value;
 
     const isLoginPage =
-      pathname === "/admin/login";
+      request.nextUrl.pathname === "/admin/login";
 
     if (!token && !isLoginPage) {
       return NextResponse.redirect(
