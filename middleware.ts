@@ -1,48 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-  console.log(
-  "User-Agent:",
-  request.headers.get("user-agent")
-);
+  const { pathname, hostname } = request.nextUrl;
 
-const userAgent =
-  request.headers.get("user-agent") || "";
-  const host = request.headers.get("host");
-const referer = request.headers.get("referer") || "";
-const pathname = request.nextUrl.pathname;
+  // miaodaily.com -> celebuzzz.com（仅文章）
+  if (
+    (hostname === "miaodaily.com" ||
+      hostname === "www.miaodaily.com") &&
+    pathname.startsWith("/article/")
+  ) {
+    const url = request.nextUrl.clone();
 
-if (
-  (host === "miaodaily.com" ||
-    host === "www.miaodaily.com") &&
-  pathname.startsWith("/article/")
-) {
-// Facebook Bot 不跳转（测试）
-if (userAgent.toLowerCase().includes("facebookexternalhit")) {
-  return NextResponse.next();
-}
+    url.hostname = "celebuzzz.com";
+    url.protocol = "https:";
+    url.port = ""; // ⭐ 防止 Coolify 带出 :3000
 
-// 网站内部点击，不跳
-if (referer.includes("miaodaily.com")) {
-  return NextResponse.next();
-}
+    return NextResponse.redirect(url, 301);
+  }
 
-  // 其他来源（Facebook、Google、直接访问等）跳转
-  const url = request.nextUrl.clone();
-  url.hostname = "celebuzzz.com";
-  url.protocol = "https:";
-
-  return NextResponse.redirect(url, 302);
-}
-
-  // Admin login protection
-  if (request.nextUrl.pathname.startsWith("/admin")) {
+  // Admin Login Protection
+  if (pathname.startsWith("/admin")) {
     const token = request.cookies.get("admin_token")?.value;
 
-    const isLoginPage =
-      request.nextUrl.pathname === "/admin/login";
-
-    if (!token && !isLoginPage) {
+    if (!token && pathname !== "/admin/login") {
       return NextResponse.redirect(
         new URL("/admin/login", request.url)
       );
