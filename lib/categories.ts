@@ -1,6 +1,8 @@
 export const categories = [
   { slug: "taiwan", name: "台灣" },
   { slug: "entertainment", name: "娛樂" },
+  { slug: "current-affairs", name: "時事" },
+  { slug: "society", name: "社會" },
   { slug: "relationships", name: "情感" },
   { slug: "fortune", name: "命理" },
   { slug: "health", name: "健康" },

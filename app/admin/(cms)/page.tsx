@@ -303,6 +303,8 @@ const publishArticle = async () => {
           >
             <option>台灣</option>
             <option>娛樂</option>
+            <option>時事</option>
+            <option>社會</option>
             <option>情感</option>
             <option>命理</option>
             <option>健康</option>
