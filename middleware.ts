@@ -37,7 +37,7 @@ export function middleware(request: NextRequest) {
     // 其他来源（Facebook、Google、直接访问等）跳转
     const url = request.nextUrl.clone();
 
-    url.hostname = "celebuzzz.com";
+    url.hostname = "www.celebuzzz.com";
     url.protocol = "https:";
 
     // ⭐ 新增这一行（解决 Coolify 带出 :3000）
