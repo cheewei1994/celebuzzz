@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
 export async function POST(req: Request) {
   const { articleId } = await req.json();
 
-  const { error } = await supabase.rpc(
-    "increment_article_views",
-    {
-      article_id: articleId,
-    }
-  );
+  const { error } = await supabaseAdmin.rpc("increment_article_views", {
+    article_id: articleId,
+  });
 
   if (error) {
     return NextResponse.json(
@@ -19,7 +16,7 @@ export async function POST(req: Request) {
       },
       {
         status: 500,
-      }
+      },
     );
   }
 

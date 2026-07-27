@@ -3,15 +3,14 @@
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 export default function AdminPage() {
-
   const [blocks, setBlocks] = useState([
-  {
-    id: 1,
-    preview: "",
-    imageUrl: "",
-    content: "",
-  },
-]);
+    {
+      id: 1,
+      preview: "",
+      imageUrl: "",
+      content: "",
+    },
+  ]);
 
   const [coverPreview, setCoverPreview] = useState("");
   const [longImage, setLongImage] = useState("");
@@ -20,251 +19,227 @@ export default function AdminPage() {
   const [summary, setSummary] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
 
-  const [showImageModal, setShowImageModal] =
-  useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
 
-const [currentIndex, setCurrentIndex] =
-  useState<number | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null);
 
-const [tempImageUrl, setTempImageUrl] =
-  useState("");
+  const [tempImageUrl, setTempImageUrl] = useState("");
 
-  const uploadImage = async (
-  file: File,
-  bucket: string
-) => {
+  const uploadImage = async (file: File, bucket: string) => {
+    const fileName = `${Date.now()}-${file.name}`;
 
-  const fileName =
-    `${Date.now()}-${file.name}`;
-
-  const { error } =
-    await supabase.storage
+    const { error } = await supabase.storage
       .from(bucket)
       .upload(fileName, file);
 
-  if (error) {
-    alert(error.message);
-    return "";
-  }
+    if (error) {
+      alert(error.message);
+      return "";
+    }
 
-  const { data } =
-    supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName);
+    const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
 
-  return data.publicUrl;
-};
-  
+    return data.publicUrl;
+  };
 
   const addBlock = () => {
-  setBlocks([
-    ...blocks,
-    {
-      id: Date.now(),
-      preview: "",
-      imageUrl: "",
-      content: "",
-    },
-  ]);
-};
+    setBlocks([
+      ...blocks,
+      {
+        id: Date.now(),
+        preview: "",
+        imageUrl: "",
+        content: "",
+      },
+    ]);
+  };
 
   const removeBlock = (blockId: number) => {
-  setBlocks(
-    blocks.filter((block) => block.id !== blockId)
-  );
-};
+    setBlocks(blocks.filter((block) => block.id !== blockId));
+  };
 
-const moveBlockUp = (index: number) => {
-  if (index === 0) return;
+  const moveBlockUp = (index: number) => {
+    if (index === 0) return;
 
-  const updated = [...blocks];
+    const updated = [...blocks];
 
-  [updated[index - 1], updated[index]] = [
-    updated[index],
-    updated[index - 1],
-  ];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
 
-  setBlocks(updated);
-};
+    setBlocks(updated);
+  };
 
-const moveBlockDown = (index: number) => {
-  if (index === blocks.length - 1) return;
+  const moveBlockDown = (index: number) => {
+    if (index === blocks.length - 1) return;
 
-  const updated = [...blocks];
+    const updated = [...blocks];
 
-  [updated[index], updated[index + 1]] = [
-    updated[index + 1],
-    updated[index],
-  ];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
 
-  setBlocks(updated);
-};
+    setBlocks(updated);
+  };
 
-const saveDraft = async () => {
-  const { error } = await supabase
-    .from("articles")
-    .insert([
-      {
+  const saveDraft = async () => {
+    const res = await fetch("/api/admin/articles/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         title,
         category,
         summary,
-        source_url: sourceUrl,
+        sourceUrl,
         cover: coverPreview,
-        long_image: longImage,
+        longImage,
         blocks,
         status: "draft",
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "保存失敗");
+      return;
+    }
+
+    alert("草稿已保存");
+  };
+
+  const handleScrape = async () => {
+    if (!sourceUrl) {
+      alert("請輸入文章網址");
+      return;
+    }
+
+    const res = await fetch("/api/scrape", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
       },
-    ]);
+      body: JSON.stringify({
+        url: sourceUrl,
+      }),
+    });
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    const data = await res.json();
 
-  alert("草稿已保存");
-};
+    console.log("COUNT =", data.blocks?.length);
+    console.log("BLOCKS =", data.blocks);
 
-const handleScrape = async () => {
-  if (!sourceUrl) {
-    alert("請輸入文章網址");
-    return;
-  }
+    if (!data.success) {
+      alert("採集失敗");
+      return;
+    }
 
-  const res = await fetch("/api/scrape", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      url: sourceUrl,
-    }),
-  });
+    setTitle(data.title || "");
+    setSummary(data.summary || "");
 
-  const data = await res.json();
+    if (data.image) {
+      setCoverPreview(data.image);
+    }
 
-console.log("COUNT =", data.blocks?.length);
-console.log("BLOCKS =", data.blocks);
+    if (data.longImage) {
+      setLongImage(data.longImage);
+    }
 
-  if (!data.success) {
-    alert("採集失敗");
-    return;
-  }
+    if (data.blocks?.length) {
+      setBlocks(
+        data.blocks.map((item: string, index: number) => {
+          try {
+            const block = JSON.parse(item);
 
-  setTitle(data.title || "");
-  setSummary(data.summary || "");
+            return {
+              id: Date.now() + index,
+              preview: block.imageUrl || "",
+              imageUrl: block.imageUrl || "",
+              content: block.content || "",
+            };
+          } catch {
+            return {
+              id: Date.now() + index,
+              preview: "",
+              imageUrl: "",
+              content: item,
+            };
+          }
+        }),
+      );
+    }
+    if (data.content) {
+      setBlocks([
+        {
+          id: Date.now(),
+          preview: "",
+          imageUrl: "",
+          content: data.content,
+        },
+      ]);
+    }
 
-  if (data.image) {
-  setCoverPreview(data.image);
-}
+    alert("採集成功");
+  };
 
-if (data.longImage) {
-  setLongImage(data.longImage);
-}
-
-if (data.blocks?.length) {
-  setBlocks(
-    data.blocks.map(
-      (item: string, index: number) => {
-        try {
-          const block = JSON.parse(item);
-
-          return {
-            id: Date.now() + index,
-            preview: block.imageUrl || "",
-            imageUrl: block.imageUrl || "",
-            content: block.content || "",
-          };
-        } catch {
-          return {
-            id: Date.now() + index,
-            preview: "",
-            imageUrl: "",
-            content: item,
-          };
-        }
-      }
-    )
-  );
-}
-if (data.content) {
-  setBlocks([
-    {
-      id: Date.now(),
-      preview: "",
-      imageUrl: "",
-      content: data.content,
-    },
-  ]);
-}
-
-alert("採集成功");
-};
-
-const publishArticle = async () => {
-  const { error } = await supabase
-    .from("articles")
-    .insert([
-      {
+  const publishArticle = async () => {
+    const res = await fetch("/api/admin/articles/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         title,
         category,
         summary,
-        source_url: sourceUrl,
+        sourceUrl,
         cover: coverPreview,
-        long_image: longImage,
+        longImage,
         blocks,
         status: "published",
-        views: 0,
-      },
-    ]);
+      }),
+    });
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+    const data = await res.json();
 
-  alert("文章發布成功");
+    if (!res.ok) {
+      alert(data.error || "發布失敗");
+      return;
+    }
 
-  window.location.href =
-    "/admin/articles";
-};
+    alert("文章發布成功");
+
+    window.location.href = "/admin/articles";
+  };
 
   return (
     <main className="max-w-5xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">
-        文章發布後台
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">文章發布後台</h1>
 
       <div className="bg-white rounded-2xl shadow p-8 space-y-5">
-
         <div>
-  <label className="block mb-2 font-medium">
-     原文網址
-  </label>
+          <label className="block mb-2 font-medium">原文網址</label>
 
-  <div className="flex gap-3 items-center">
-    <input
-      type="text"
-      value={sourceUrl}
-      onChange={(e) => setSourceUrl(e.target.value)}
-      className="flex-1 border rounded-lg px-4 py-2"
-      placeholder="https://example.com/article"
-    />
+          <div className="flex gap-3 items-center">
+            <input
+              type="text"
+              value={sourceUrl}
+              onChange={(e) => setSourceUrl(e.target.value)}
+              className="flex-1 border rounded-lg px-4 py-2"
+              placeholder="https://example.com/article"
+            />
 
-    <button
-      type="button"
-      onClick={handleScrape}
-      className="bg-blue-600 text-white px-4 py-2 rounded-lg whitespace-nowrap"
-    >
-      採集文章
-    </button>
-  </div>
-</div>
+            <button
+              type="button"
+              onClick={handleScrape}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg whitespace-nowrap"
+            >
+              採集文章
+            </button>
+          </div>
+        </div>
 
         {/* 標題 */}
         <div>
-          <label className="block mb-2 font-medium">
-            文章標題
-          </label>
+          <label className="block mb-2 font-medium">文章標題</label>
 
           <input
             type="text"
@@ -275,26 +250,21 @@ const publishArticle = async () => {
           />
         </div>
 
- {/* 摘要 */}
+        {/* 摘要 */}
         <div>
-          <label className="block mb-2 font-medium">
-            摘要
-          </label>
+          <label className="block mb-2 font-medium">摘要</label>
 
           <textarea
-  value={summary}
-  onChange={(e) => setSummary(e.target.value)}
-  className="w-full border rounded-lg p-3 resize-none"
-  rows={3}
-/>
+            value={summary}
+            onChange={(e) => setSummary(e.target.value)}
+            className="w-full border rounded-lg p-3 resize-none"
+            rows={3}
+          />
         </div>
-
 
         {/* 分類 */}
         <div>
-          <label className="block mb-2 font-medium">
-            分類
-          </label>
+          <label className="block mb-2 font-medium">分類</label>
 
           <select
             value={category}
@@ -317,34 +287,28 @@ const publishArticle = async () => {
 
         {/* 封面圖 */}
         <div>
-          <label className="block mb-2 font-medium">
-            封面圖
-          </label>
+          <label className="block mb-2 font-medium">封面圖</label>
 
           <p className="text-sm text-gray-500 mb-3">
             建議大小：
-            <span className="text-red-500 font-semibold">
-                800 × 417 px
-            </span>
+            <span className="text-red-500 font-semibold">800 × 417 px</span>
             ，選擇合適比例的圖片才能獲得更好的效果。
-        </p>
-<div className="flex gap-2 items-center">
-  <input
-    type="text"
-    placeholder="輸入封面圖片網址"
-    value={coverPreview}
-    onChange={(e) => {
-      setCoverPreview(e.target.value);
-    }}
-    className="w-[600px] h-11 border rounded-lg px-3"
-  />
+          </p>
+          <div className="flex gap-2 items-center">
+            <input
+              type="text"
+              placeholder="輸入封面圖片網址"
+              value={coverPreview}
+              onChange={(e) => {
+                setCoverPreview(e.target.value);
+              }}
+              className="w-[600px] h-11 border rounded-lg px-3"
+            />
 
-  <span className="text-gray-500">
-    或
-  </span>
+            <span className="text-gray-500">或</span>
 
-  <label
-  className="
+            <label
+              className="
     w-70
     h-11
     border
@@ -358,165 +322,139 @@ const publishArticle = async () => {
     cursor-pointer
     text-base
   "
->
-  上傳本地圖片
+            >
+              上傳本地圖片
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
 
-  <input
-    type="file"
-    accept="image/*"
-    className="hidden"
-    onChange={async (e) => {
-      const file = e.target.files?.[0];
+                  if (!file) return;
 
-      if (!file) return;
+                  const url = await uploadImage(file, "covers");
 
-      const url = await uploadImage(
-        file,
-        "covers"
-      );
+                  if (url) {
+                    setCoverPreview(url);
+                  }
+                }}
+              />
+            </label>
+          </div>
+          {coverPreview && (
+            <img
+              src={coverPreview}
+              alt="封面預覽"
+              className="mt-4 w-64 h-36 object-cover rounded-xl border"
+            />
+          )}
 
-      if (url) {
-        setCoverPreview(url);
-      }
-    }}
-  />
-</label>
-</div>
-{coverPreview && (
-  <img
-    src={coverPreview}
-    alt="封面預覽"
-    className="mt-4 w-64 h-36 object-cover rounded-xl border"
-  />
-)}
+          {/* 長圖 */}
+          <div className="mt-4">
+            <label className="block mb-2 font-medium">長圖</label>
 
-{/* 長圖 */}
-<div className="mt-4">
-  <label className="block mb-2 font-medium">
-    長圖
-  </label>
+            <p className="text-sm text-gray-500 mb-3">
+              建議大小：
+              <span className="text-red-500 font-semibold">516 × 640 px</span>
+              ，選擇合適比例的圖片才能獲得更好的效果。
+            </p>
 
-  <p className="text-sm text-gray-500 mb-3">
-    建議大小：
-    <span className="text-red-500 font-semibold">
-      516 × 640 px
-    </span>
-    ，選擇合適比例的圖片才能獲得更好的效果。
-  </p>
+            <div className="flex gap-2 items-center">
+              <input
+                type="text"
+                placeholder="輸入長圖網址"
+                value={longImage}
+                onChange={(e) => setLongImage(e.target.value)}
+                className="w-[600px] h-11 border rounded-lg px-3"
+              />
 
-<div className="flex gap-2 items-center">
-  <input
-    type="text"
-    placeholder="輸入長圖網址"
-    value={longImage}
-    onChange={(e) =>
-      setLongImage(e.target.value)
-    }
-    className="w-[600px] h-11 border rounded-lg px-3"
-  />
+              <span className="text-gray-500">或</span>
 
-  <span className="text-gray-500">
-  或
-</span>
+              <label className="w-70 h-11 border rounded-lg bg-white hover:bg-gray-50 text-gray-700 text-base flex items-center justify-center cursor-pointer">
+                上傳本地圖片
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
 
-<label
-  className="w-70 h-11 border rounded-lg bg-white hover:bg-gray-50 text-gray-700 text-base flex items-center justify-center cursor-pointer"
->
-  上傳本地圖片
+                    if (!file) return;
 
-  
-  <input
-  type="file"
-  accept="image/*"
-  className="hidden"
-  onChange={async (e) => {
+                    const fileName = `${Date.now()}-${file.name}`;
 
-    const file = e.target.files?.[0];
+                    const { error } = await supabase.storage
+                      .from("long-images")
+                      .upload(fileName, file);
 
-    if (!file) return;
+                    if (error) {
+                      alert(error.message);
+                      return;
+                    }
 
-    const fileName =
-      `${Date.now()}-${file.name}`;
+                    const { data } = supabase.storage
+                      .from("long-images")
+                      .getPublicUrl(fileName);
 
-    const { error } =
-      await supabase.storage
-        .from("long-images")
-        .upload(fileName, file);
+                    setLongImage(data.publicUrl);
+                  }}
+                />
+              </label>
+            </div>
 
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    const { data } =
-      supabase.storage
-        .from("long-images")
-        .getPublicUrl(fileName);
-
-    setLongImage(data.publicUrl);
-  }}
-/>
-</label>
-</div>
-
-  {longImage && (
-  <img
-    src={longImage}
-    alt=""
-    className="mt-4 w-38 h-50 object-cover rounded-xl border"
-  />
-)}
-</div>
-
+            {longImage && (
+              <img
+                src={longImage}
+                alt=""
+                className="mt-4 w-38 h-50 object-cover rounded-xl border"
+              />
+            )}
+          </div>
         </div>
 
-       {blocks.map((block, index) => (
-  <div
-    key={block.id}
-    className="border rounded-xl p-5 space-y-4 bg-white shadow-sm mb-4"
-  >
+        {blocks.map((block, index) => (
+          <div
+            key={block.id}
+            className="border rounded-xl p-5 space-y-4 bg-white shadow-sm mb-4"
+          >
+            <div>
+              <div className="grid grid-cols-12 gap-4 items-start">
+                <div className="col-span-2 flex items-center h-32">
+                  <div className="space-y-2 w-full">
+                    <button
+                      type="button"
+                      onClick={() => moveBlockUp(index)}
+                      className="w-full bg-slate-600 hover:bg-slate-700 text-white rounded-lg py-2 text-sm"
+                    >
+                      上移
+                    </button>
 
-    <div>
+                    <button
+                      type="button"
+                      onClick={() => moveBlockDown(index)}
+                      className="w-full bg-slate-600 hover:bg-slate-700 text-white rounded-lg py-2 text-sm"
+                    >
+                      下移
+                    </button>
 
-  <div className="grid grid-cols-12 gap-4 items-start">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (blocks.length > 1) {
+                          removeBlock(block.id);
+                        }
+                      }}
+                      className="w-full bg-slate-600 hover:bg-slate-700 text-white rounded-lg py-2 text-sm"
+                    >
+                      刪除
+                    </button>
+                  </div>
+                </div>
 
-    <div className="col-span-2 flex items-center h-32">
-  <div className="space-y-2 w-full">
-
-    <button
-      type="button"
-      onClick={() => moveBlockUp(index)}
-      className="w-full bg-slate-600 hover:bg-slate-700 text-white rounded-lg py-2 text-sm"
-    >
-      上移
-    </button>
-
-    <button
-      type="button"
-      onClick={() => moveBlockDown(index)}
-      className="w-full bg-slate-600 hover:bg-slate-700 text-white rounded-lg py-2 text-sm"
-    >
-      下移
-    </button>
-
-    <button
-      type="button"
-      onClick={() => {
-        if (blocks.length > 1) {
-          removeBlock(block.id);
-        }
-      }}
-      className="w-full bg-slate-600 hover:bg-slate-700 text-white rounded-lg py-2 text-sm"
-    >
-      刪除
-    </button>
-
-  </div>
-</div>
-
-   <div className="col-span-3">
-  <div
-  className="
+                <div className="col-span-3">
+                  <div
+                    className="
     relative
     w-48
     h-38
@@ -530,93 +468,80 @@ const publishArticle = async () => {
     cursor-pointer
     hover:border-blue-500
   "
-  onClick={() => {
+                    onClick={() => {
+                      setCurrentIndex(index);
 
-  setCurrentIndex(index);
+                      setTempImageUrl(block.imageUrl || "");
 
-  setTempImageUrl(
-    block.imageUrl || ""
-  );
+                      setShowImageModal(true);
+                    }}
+                  >
+                    <div className="absolute top-0 left-0 bg-gray-600 text-white text-xs w-5 h-5 rounded flex items-center justify-center z-10">
+                      {index + 1}
+                    </div>
 
-  setShowImageModal(true);
+                    {block.preview ? (
+                      <img
+                        src={block.preview}
+                        alt=""
+                        className="max-w-full max-h-full object-contain"
+                      />
+                    ) : (
+                      <span className="text-gray-400">圖片預覽</span>
+                    )}
+                  </div>
+                </div>
 
-}}
->
+                <div className="col-span-7 flex items-start">
+                  <textarea
+                    rows={8}
+                    className="w-full border rounded-lg p-3 h-38"
+                    value={block.content}
+                    onChange={(e) => {
+                      const updated = [...blocks];
 
-<div className="absolute top-0 left-0 bg-gray-600 text-white text-xs w-5 h-5 rounded flex items-center justify-center z-10">
-  {index + 1}
-</div>
+                      updated[index].content = e.target.value;
 
-    {block.preview ? (
-      <img
-        src={block.preview}
-        alt=""
-        className="max-w-full max-h-full object-contain"
-      />
-    ) : (
-      <span className="text-gray-400">
-        圖片預覽
-      </span>
-    )}
+                      setBlocks(updated);
+                    }}
+                    placeholder="請輸入段落內容..."
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
 
-  </div>
-</div>
-
-    <div className="col-span-7 flex items-start">
-      <textarea
-  rows={8}
-  className="w-full border rounded-lg p-3 h-38"
-        value={block.content}
-        onChange={(e) => {
-          const updated = [...blocks];
-
-          updated[index].content =
-            e.target.value;
-
-          setBlocks(updated);
-        }}
-        placeholder="請輸入段落內容..."
-      />
-    </div>
-
-  </div>
-
-</div>
-  </div>
-))}
-
-<button
-  type="button"
-  onClick={addBlock}
-  className="w-full border-2 border-dashed border-gray-300 rounded-xl py-4 text-gray-600 hover:bg-gray-50"
->
-  ＋ 新增區塊
-</button>
+        <button
+          type="button"
+          onClick={addBlock}
+          className="w-full border-2 border-dashed border-gray-300 rounded-xl py-4 text-gray-600 hover:bg-gray-50"
+        >
+          ＋ 新增區塊
+        </button>
 
         <div className="flex justify-center gap-3">
-  <button
-    type="button"
-    onClick={saveDraft}
-    className="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600"
-  >
-    保存草稿
-  </button>
+          <button
+            type="button"
+            onClick={saveDraft}
+            className="bg-gray-500 text-white px-8 py-3 rounded-lg hover:bg-gray-600"
+          >
+            保存草稿
+          </button>
 
-  <button
-    type="button"
-    onClick={publishArticle}
-    className="bg-violet-600 text-white px-8 py-3 rounded-lg hover:bg-violet-700"
-  >
-    發布文章
-</button>
-
-</div>
-
+          <button
+            type="button"
+            onClick={publishArticle}
+            className="bg-violet-600 text-white px-8 py-3 rounded-lg hover:bg-violet-700"
+          >
+            發布文章
+          </button>
+        </div>
       </div>
 
-{showImageModal && (
-  <div
-  className="
+      {showImageModal && (
+        <div
+          className="
     fixed inset-0
     bg-black/60
     flex
@@ -624,23 +549,18 @@ const publishArticle = async () => {
     justify-center
     z-50
   "
-  onClick={() => setShowImageModal(false)}
->
-    <div
-  className="bg-white rounded-xl p-6 w-[700px]"
-  onClick={(e) => e.stopPropagation()}
->
+          onClick={() => setShowImageModal(false)}
+        >
+          <div
+            className="bg-white rounded-xl p-6 w-[700px]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">新增圖片</h2>
 
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800">
-          新增圖片
-        </h2>
-
-        <button
-  onClick={() =>
-    setShowImageModal(false)
-  }
-  className="
+              <button
+                onClick={() => setShowImageModal(false)}
+                className="
     w-10
     h-10
     rounded-full
@@ -648,80 +568,63 @@ const publishArticle = async () => {
     text-gray-500
     text-xl
   "
->
-  ✕
-</button>
-      </div>
+              >
+                ✕
+              </button>
+            </div>
 
-      {/* 圖片網址 */}
+            {/* 圖片網址 */}
 
-      <div className="flex gap-2 mb-4">
-
-        <input
-          type="text"
-          value={tempImageUrl}
-          onChange={(e) =>
-            setTempImageUrl(
-              e.target.value
-            )
-          }
-          placeholder="輸入圖片網址"
-          className="
+            <div className="flex gap-2 mb-4">
+              <input
+                type="text"
+                value={tempImageUrl}
+                onChange={(e) => setTempImageUrl(e.target.value)}
+                placeholder="輸入圖片網址"
+                className="
             flex-1
             border
             rounded-lg
             px-3
             h-11
           "
-        />
+              />
 
-        <button
-          onClick={() => {
+              <button
+                onClick={() => {
+                  if (currentIndex === null) return;
 
-            if (
-              currentIndex === null
-            ) return;
+                  const updated = [...blocks];
 
-            const updated =
-              [...blocks];
+                  updated[currentIndex].imageUrl = tempImageUrl;
 
-            updated[currentIndex]
-              .imageUrl =
-              tempImageUrl;
+                  updated[currentIndex].preview = tempImageUrl;
 
-            updated[currentIndex]
-              .preview =
-              tempImageUrl;
+                  setBlocks(updated);
 
-            setBlocks(updated);
-
-            setShowImageModal(false);
-          }}
-          className="
+                  setShowImageModal(false);
+                }}
+                className="
             bg-sky-500
             text-white
             px-4
             rounded-lg
           "
-        >
-          保存圖片
-        </button>
+              >
+                保存圖片
+              </button>
+            </div>
 
-         </div>
+            {/* 圖片預覽 */}
 
-      {/* 圖片預覽 */}
+            <div className="mb-4">
+              <div className="text-sm font-medium mb-2">圖片預覽</div>
 
-      <div className="mb-4">
-
-        <div className="text-sm font-medium mb-2">
-          圖片預覽
-        </div>
-
-        {tempImageUrl ? (
-          <img
-            src={tempImageUrl}
-            alt=""
-            className="
+              {tempImageUrl ? (
+                <img
+                  src={tempImageUrl}
+                  alt=""
+                  className="
               w-full
               h-72
               object-contain
@@ -729,10 +632,10 @@ const publishArticle = async () => {
               rounded-lg
               bg-gray-50
             "
-          />
-        ) : (
-          <div
-            className="
+                />
+              ) : (
+                <div
+                  className="
               w-full
               h-72
               border
@@ -743,17 +646,16 @@ const publishArticle = async () => {
               justify-center
               text-gray-400
             "
-          >
-            尚未選擇圖片
-          </div>
-        )}
+                >
+                  尚未選擇圖片
+                </div>
+              )}
+            </div>
 
-      </div>
+            {/* 本地上傳 */}
 
-      {/* 本地上傳 */}
-
-      <label
-        className="
+            <label
+              className="
           h-12
           border
           rounded-lg
@@ -763,52 +665,36 @@ const publishArticle = async () => {
           cursor-pointer
           hover:bg-gray-50
         "
-      >
-        上傳本地圖片
+            >
+              上傳本地圖片
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
 
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={async (e) => {
+                  if (!file) return;
 
-            const file =
-              e.target.files?.[0];
+                  const url = await uploadImage(file, "article-images");
 
-            if (!file) return;
+                  if (!url || currentIndex === null) return;
 
-            const url =
-              await uploadImage(
-                file,
-                "article-images"
-              );
+                  const updated = [...blocks];
 
-            if (
-              !url ||
-              currentIndex === null
-            ) return;
+                  updated[currentIndex].imageUrl = url;
 
-            const updated =
-              [...blocks];
+                  updated[currentIndex].preview = url;
 
-            updated[currentIndex]
-              .imageUrl = url;
+                  setBlocks(updated);
 
-            updated[currentIndex]
-              .preview = url;
-
-            setBlocks(updated);
-
-            setShowImageModal(false);
-          }}
-        />
-      </label>
-
-    </div>
-  </div>
-)}
-
+                  setShowImageModal(false);
+                }}
+              />
+            </label>
+          </div>
+        </div>
+      )}
     </main>
   );
-  
 }

@@ -14,197 +14,163 @@ export async function POST(req: Request) {
     // LuckyElse
     // =====================
     if (url.includes("luckyelse.com")) {
+      console.log("LUCKYELSE DETECTED");
 
-  console.log("LUCKYELSE DETECTED");
+      for (let page = 1; page <= 50; page++) {
+        const pageUrl = page === 1 ? `${url}.html` : `${url}p${page}.html`;
 
-  for (let page = 1; page <= 50; page++) {
+        console.log("FETCH =", pageUrl);
 
-    const pageUrl =
-      page === 1
-        ? `${url}.html`
-        : `${url}p${page}.html`;
+        const response = await fetch(pageUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+          },
+        });
 
-    console.log("FETCH =", pageUrl);
+        if (!response.ok) {
+          break;
+        }
 
-    const response = await fetch(pageUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-      },
-    });
+        const html = await response.text();
 
-    if (!response.ok) {
-      break;
-    }
+        const $ = cheerio.load(html);
 
-    const html = await response.text();
+        if (page === 1) {
+          title =
+            $('meta[property="og:title"]').attr("content") ||
+            $("title").text().trim();
 
-    const $ = cheerio.load(html);
+          image = $('meta[property="og:image"]').attr("content") || "";
+        }
 
-    if (page === 1) {
-      title =
-        $('meta[property="og:title"]').attr("content") ||
-        $("title").text().trim();
+        const containers = $(".detail_imagesView .container");
 
-      image =
-        $('meta[property="og:image"]').attr("content") ||
-        "";
-    }
+        console.log("PAGE", page, "CONTAINERS", containers.length);
 
-    const containers =
-      $(".detail_imagesView .container");
+        containers.each((_, el) => {
+          const imageUrl = $(el).find("img").attr("src") || "";
 
-    console.log(
-      "PAGE",
-      page,
-      "CONTAINERS",
-      containers.length
-    );
+          let content = $(el).clone().find("img").remove().end().html() || "";
 
-    containers.each((_, el) => {
+          content = content
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<\/p>/gi, "\n\n")
+            .replace(/<[^>]+>/g, "")
+            .replace(/\b\d+\/\d+\b/g, "")
+            .trim();
 
-      const imageUrl =
-        $(el).find("img").attr("src") || "";
+          if (!imageUrl && !content) {
+            return;
+          }
 
-      let content =
-  $(el)
-    .clone()
-    .find("img")
-    .remove()
-    .end()
-    .html() || "";
-
-content = content
-  .replace(/<br\s*\/?>/gi, "\n")
-  .replace(/<\/p>/gi, "\n\n")
-  .replace(/<[^>]+>/g, "")
-  .replace(/\b\d+\/\d+\b/g, "")
-  .trim();
-
-      if (!imageUrl && !content) {
-        return;
+          blocks.push(
+            JSON.stringify({
+              imageUrl,
+              content,
+            }),
+          );
+        });
       }
 
-      blocks.push(
-        JSON.stringify({
-          imageUrl,
-          content,
-        })
-      );
-    });
-  }
+      console.log("FINAL BLOCKS =", blocks.length);
 
-  console.log(
-    "FINAL BLOCKS =",
-    blocks.length
-  );
+      const summary =
+        blocks.length > 0
+          ? JSON.parse(blocks[0])
+              .content?.replace(/\n/g, " ")
+              ?.replace(/\s+/g, " ")
+              ?.slice(0, 100)
+          : "";
 
-  const summary =
-  blocks.length > 0
-    ? JSON.parse(blocks[0]).content
-        ?.replace(/\n/g, " ")
-        ?.replace(/\s+/g, " ")
-        ?.slice(0, 100)
-    : "";
-
-return NextResponse.json({
-  success: true,
-  title,
-  image,
-  blocks,
-  summary,
-});
-}
-
-// =====================
-// KimiShare
-// =====================
-else if (url.includes("kimishare.org")) {
-
-  console.log("KIMISHARE DETECTED");
-
-  for (let page = 1; page <= 50; page++) {
-
-    const pageUrl =
-  page === 1
-    ? url
-    : `${url}/page/${page - 1}`;
-
-    console.log("FETCH =", pageUrl);
-
-    const response = await fetch(pageUrl, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-      },
-    });
-
-    console.log("STATUS =", response.status);
-
-    if (!response.ok) {
-      break;
+      return NextResponse.json({
+        success: true,
+        title,
+        image,
+        blocks,
+        summary,
+      });
     }
 
-    const html = await response.text();
+    // =====================
+    // KimiShare
+    // =====================
+    else if (url.includes("kimishare.org")) {
+      console.log("KIMISHARE DETECTED");
 
-    const $ = cheerio.load(html);
+      for (let page = 1; page <= 50; page++) {
+        const pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
 
-    if (page === 1) {
-      title =
-        $('meta[property="og:title"]').attr("content") ||
-        $("title").text().trim();
+        console.log("FETCH =", pageUrl);
 
-      image =
-        $('meta[property="og:image"]').attr("content") ||
-        $("#node-content img").first().attr("src") ||
-        "";
+        const response = await fetch(pageUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+          },
+        });
+
+        console.log("STATUS =", response.status);
+
+        if (!response.ok) {
+          break;
+        }
+
+        const html = await response.text();
+
+        const $ = cheerio.load(html);
+
+        if (page === 1) {
+          title =
+            $('meta[property="og:title"]').attr("content") ||
+            $("title").text().trim();
+
+          image =
+            $('meta[property="og:image"]').attr("content") ||
+            $("#node-content img").first().attr("src") ||
+            "";
+        }
+
+        const paragraphs = $("#node-content p")
+          .map((_, el) => $(el).text().trim())
+          .get()
+          .filter((p) => p.length > 3);
+
+        const content = paragraphs.join("\n\n");
+
+        if (!content.trim()) {
+          console.log("EMPTY PAGE =", page);
+          continue;
+        }
+
+        console.log("PAGE", page, "PARAGRAPHS", paragraphs.length);
+
+        blocks.push(
+          JSON.stringify({
+            imageUrl: "",
+            content,
+          }),
+        );
+      }
+
+      console.log("FINAL BLOCKS =", blocks.length);
+
+      const summary =
+        blocks.length > 0
+          ? JSON.parse(blocks[0])
+              .content?.replace(/\n/g, " ")
+              ?.replace(/\s+/g, " ")
+              ?.slice(0, 100)
+          : "";
+
+      return NextResponse.json({
+        success: true,
+        title,
+        image,
+        blocks,
+        summary,
+      });
     }
-
-    const paragraphs = $("#node-content p")
-      .map((_, el) => $(el).text().trim())
-      .get()
-      .filter((p) => p.length > 3);
-
-    const content = paragraphs.join("\n\n");
-
-    if (!content.trim()) {
-  console.log("EMPTY PAGE =", page);
-  continue;
-}
-
-console.log(
-  "PAGE",
-  page,
-  "PARAGRAPHS",
-  paragraphs.length
-);
-
-    blocks.push(
-      JSON.stringify({
-        imageUrl: "",
-        content,
-      })
-    );
-  }
-
-  console.log("FINAL BLOCKS =", blocks.length);
-
-  const summary =
-    blocks.length > 0
-      ? JSON.parse(blocks[0]).content
-          ?.replace(/\n/g, " ")
-          ?.replace(/\s+/g, " ")
-          ?.slice(0, 100)
-      : "";
-
-  return NextResponse.json({
-    success: true,
-    title,
-    image,
-    blocks,
-    summary,
-  });
-}
 
     // =====================
     // 其它网站
@@ -213,20 +179,16 @@ console.log(
     const seenContents = new Set<string>();
 
     for (let page = 1; page <= 50; page++) {
-
       let pageUrl = "";
 
       if (url.includes("limte.net")) {
-        pageUrl =
-          page === 1
-            ? url
-            : `${url}/page/${page - 1}`;
+        pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
       } else {
         pageUrl = url;
       }
 
       console.log("PAGE =", page);
-console.log("PAGE URL =", pageUrl);
+      console.log("PAGE URL =", pageUrl);
 
       const response = await fetch(pageUrl, {
         headers: {
@@ -248,36 +210,25 @@ console.log("PAGE URL =", pageUrl);
           $('meta[property="og:title"]').attr("content") ||
           $("title").text().trim();
 
-        image =
-          $('meta[property="og:image"]').attr("content") ||
-          "";
+        image = $('meta[property="og:image"]').attr("content") || "";
       }
 
       let pageContent = "";
 
       if (url.includes("limte.net")) {
-
         const paragraphs = $("#node-content p")
-          .map((_, el) =>
-            $(el).text().trim()
-          )
+          .map((_, el) => $(el).text().trim())
           .get()
           .filter(Boolean);
 
-        pageContent =
-          paragraphs.join("\n\n");
-
+        pageContent = paragraphs.join("\n\n");
       } else {
-
         const paragraphs = $("article p")
-          .map((_, el) =>
-            $(el).text().trim()
-          )
+          .map((_, el) => $(el).text().trim())
           .get()
           .filter(Boolean);
 
-        pageContent =
-          paragraphs.join("\n\n");
+        pageContent = paragraphs.join("\n\n");
       }
 
       if (!pageContent) {
@@ -293,24 +244,20 @@ console.log("PAGE URL =", pageUrl);
       blocks.push(pageContent);
     }
 
-    const summary =
-  (blocks[0] || "")
-    .replace(/\n/g, " ")
-    .replace(/\s+/g, " ")
-    .slice(0, 100);
+    const summary = (blocks[0] || "")
+      .replace(/\n/g, " ")
+      .replace(/\s+/g, " ")
+      .slice(0, 100);
 
-return NextResponse.json({
-  success: true,
-  title,
-  image,
-  blocks,
-  summary,
-  count: blocks.length,
-});
-
-
+    return NextResponse.json({
+      success: true,
+      title,
+      image,
+      blocks,
+      summary,
+      count: blocks.length,
+    });
   } catch (error) {
-
     console.error(error);
 
     return NextResponse.json({

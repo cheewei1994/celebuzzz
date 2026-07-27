@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 
 export default function NewAdPage() {
@@ -9,35 +9,28 @@ export default function NewAdPage() {
     const position = formData.get("position") as string;
     const code = formData.get("code") as string;
 
-    const active =
-      formData.get("active") === "on";
+    const active = formData.get("active") === "on";
 
-    await supabase
-      .from("ads")
-      .insert({
-        name,
-        position,
-        code,
-        active,
-      });
+    await supabaseAdmin.from("ads").insert({
+      name,
+      position,
+      code,
+      active,
+    });
 
     redirect("/admin/ads");
   }
 
   return (
     <main className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">
-        新增廣告
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">新增廣告</h1>
 
       <form
         action={createAd}
         className="space-y-4 bg-white p-6 rounded-xl shadow"
       >
         <div>
-          <label className="block mb-2 font-medium">
-            名稱
-          </label>
+          <label className="block mb-2 font-medium">名稱</label>
 
           <input
             name="name"
@@ -48,9 +41,7 @@ export default function NewAdPage() {
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">
-            Position
-          </label>
+          <label className="block mb-2 font-medium">Position</label>
 
           <input
             name="position"
@@ -61,9 +52,7 @@ export default function NewAdPage() {
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">
-            廣告代碼
-          </label>
+          <label className="block mb-2 font-medium">廣告代碼</label>
 
           <textarea
             name="code"
@@ -76,11 +65,7 @@ export default function NewAdPage() {
 
         <div>
           <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="active"
-              defaultChecked
-            />
+            <input type="checkbox" name="active" defaultChecked />
             啟用廣告
           </label>
         </div>

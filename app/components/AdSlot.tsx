@@ -1,15 +1,11 @@
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { headers } from "next/headers";
 import { shouldShowAds } from "@/lib/ads";
 import AdRenderer from "./AdRenderer";
 import AdLabel from "./AdLabel";
 
-export default async function AdSlot({
-  position,
-}: {
-  position: string;
-}) {
-  const { data } = await supabase
+export default async function AdSlot({ position }: { position: string }) {
+  const { data } = await supabaseAdmin
     .from("ads")
     .select("code, slot")
     .eq("position", position)
@@ -18,31 +14,25 @@ export default async function AdSlot({
 
   if (!data) return null;
 
-const headersList = await headers();
+  const headersList = await headers();
 
-const host = (
-  headersList.get("x-forwarded-host") ??
-  headersList.get("host") ??
-  ""
-).split(":")[0];
+  const host = (
+    headersList.get("x-forwarded-host") ??
+    headersList.get("host") ??
+    ""
+  ).split(":")[0];
 
-if (!shouldShowAds(host)) {
-  return null;
-}  
+  if (!shouldShowAds(host)) {
+    return null;
+  }
 
-    const showLabel =
-  position === "article-top" ||
-  position === "article-bottom";
+  const showLabel = position === "article-top" || position === "article-bottom";
 
-return (
-  <div className="md:my-6">
-    {showLabel && <AdLabel />}
+  return (
+    <div className="md:my-6">
+      {showLabel && <AdLabel />}
 
-    <AdRenderer
-      code={data.code}
-      slot={data.slot}
-      position={position}
-    />
-  </div>
-);
+      <AdRenderer code={data.code} slot={data.slot} position={position} />
+    </div>
+  );
 }

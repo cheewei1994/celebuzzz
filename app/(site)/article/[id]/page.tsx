@@ -1,13 +1,12 @@
 import { categories } from "@/lib/categories";
 import Link from "next/link";
 import ArticleSlider from "./ArticleSlider";
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import AdSlot from "@/app/components/AdSlot";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
-import {ImageIcon,House,CalendarDays,} from "lucide-react";
+import { ImageIcon, House, CalendarDays } from "lucide-react";
 import ViewTracker from "./ViewTracker";
 import type { Metadata } from "next";
-
 
 export const dynamic = "force-dynamic";
 
@@ -18,12 +17,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
 
-  const { data: article } = await supabase
+  const { data: article } = await supabaseAdmin
     .from("articles")
-    .select(`
+    .select(
+      `
       title,
       cover
-    `)
+    `,
+    )
     .eq("id", Number(id))
     .single();
 
@@ -39,8 +40,8 @@ export async function generateMetadata({
     description: "喵喵網 - 每天分享值得閱讀的好文章",
 
     alternates: {
-  canonical: `https://celebuzzz.com/article/${id}`,
-},
+      canonical: `https://celebuzzz.com/article/${id}`,
+    },
 
     openGraph: {
       title: article.title,
@@ -66,9 +67,10 @@ export default async function ArticlePage({
 }) {
   const { id } = await params;
 
-  const { data: article } = await supabase
+  const { data: article } = await supabaseAdmin
     .from("articles")
-    .select(`
+    .select(
+      `
       id,
       title,
       cover,
@@ -76,7 +78,8 @@ export default async function ArticlePage({
       created_at,
       views,
       blocks
-    `)
+    `,
+    )
     .eq("id", Number(id))
     .single();
 
@@ -86,122 +89,98 @@ export default async function ArticlePage({
 
   const adEngine = SmartAdEngine(article.blocks || []);
 
-  const currentCategory = categories.find(
-  (c) => c.name === article.category
-);
+  const currentCategory = categories.find((c) => c.name === article.category);
 
-const categoryName =
-  currentCategory?.name || article.category;
+  const categoryName = currentCategory?.name || article.category;
 
- const { data: relatedArticles } = await supabase
-  .from("articles")
-  .select(`
+  const { data: relatedArticles } = await supabaseAdmin
+    .from("articles")
+    .select(
+      `
     id,
     title,
     cover,
     created_at,
     views
-  `)
-  .eq("status", "published")
-  .neq("id", article.id)
-  .order("views", {
-    ascending: false,
-  })
-  .limit(15);
+  `,
+    )
+    .eq("status", "published")
+    .neq("id", article.id)
+    .order("views", {
+      ascending: false,
+    })
+    .limit(15);
 
   return (
     <main className="w-full pt-4 pb-10">
-  <ViewTracker articleId={article.id} />
-         
-     <div className="max-w-[900px] mx-auto px-4">
-      <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
+      <ViewTracker articleId={article.id} />
 
-        <Link
-  href="/"
-  className="flex items-center gap-1 hover:text-purple-600 transition"
->
-  <House
-  size={14}
-  className="relative top-[0px] left-[0px]"
-/>
-  <span>首頁</span>
-</Link>
+      <div className="max-w-[900px] mx-auto px-4">
+        <div className="text-sm text-gray-500 mb-4 flex items-center gap-2">
+          <Link
+            href="/"
+            className="flex items-center gap-1 hover:text-purple-600 transition"
+          >
+            <House size={14} className="relative top-[0px] left-[0px]" />
+            <span>首頁</span>
+          </Link>
 
-        <span>＞</span>
+          <span>＞</span>
 
-        <Link
-  href={`/category/${currentCategory?.slug}`}
-  className="hover:text-purple-600 hover:underline transition"
->
-  {categoryName}
-</Link>
+          <Link
+            href={`/category/${currentCategory?.slug}`}
+            className="hover:text-purple-600 hover:underline transition"
+          >
+            {categoryName}
+          </Link>
 
-        <span>＞</span>
+          <span>＞</span>
 
-        <span className="text-gray-700">
-          文章
-        </span>
+          <span className="text-gray-700">文章</span>
+        </div>
 
+        <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-4">
+          {article.title}
+        </h1>
+
+        <div className="flex items-center gap-3 text-sm text-gray-500 border-b border-gray-200 pb-3 mb-6">
+          <span className="flex items-center gap-2">
+            <CalendarDays size={14} className="relative top-[0px] left-[0px]" />
+
+            <span className="relative top-[0px] right-[3px]">
+              {new Date(article.created_at).toLocaleString("zh-TW", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </span>
+        </div>
+
+        <div className="my-6">
+          <AdSlot position="article-top" />
+        </div>
       </div>
 
-      <h1 className="text-2xl md:text-3xl font-bold leading-tight mb-4">
-        {article.title}
-      </h1>
+      <div className="max-w-[900px] mx-auto px-4">
+        <ArticleSlider blocks={article.blocks || []} />
 
-      <div className="flex items-center gap-3 text-sm text-gray-500 border-b border-gray-200 pb-3 mb-6">
-  <span className="flex items-center gap-2">
-  <CalendarDays
-    size={14}
-    className="relative top-[0px] left-[0px]"
-  />
+        <div className="px-0 md:px-4">
+          <AdSlot position="article-bottom" />
 
-  <span className="relative top-[0px] right-[3px]">
-    {new Date(article.created_at).toLocaleString("zh-TW", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    })}
-  </span>
-</span>
-</div>
+          <div className="mt-12" />
 
-<div className="my-6">
-  <AdSlot position="article-top" />
-</div>
+          <h2 className="text-xl font-bold mb-5">🔥 推薦圖集</h2>
 
-</div>
-
-
-<div className="max-w-[900px] mx-auto px-4">
-
-<ArticleSlider
-  blocks={article.blocks || []}
-/>
-
-<div className="px-0 md:px-4">
-
-
-<AdSlot position="article-bottom" />
-
-<div className="mt-12" />
-
-<h2 className="text-xl font-bold mb-5">
-  🔥 推薦圖集
-</h2>
-
-<div className="space-y-4 md:space-y-0">
-  {relatedArticles?.map((item, index) => (
-    <a
-  key={item.id}
-  href={`/article/${item.id}`}
-  className={`
-    ${
-      index >= 6
-        ? "hidden md:grid"
-        : ""
-    }
+          <div className="space-y-4 md:space-y-0">
+            {relatedArticles?.map((item, index) => (
+              <a
+                key={item.id}
+                href={`/article/${item.id}`}
+                className={`
+    ${index >= 6 ? "hidden md:grid" : ""}
 
     flex
     flex-col
@@ -216,10 +195,10 @@ const categoryName =
     hover:bg-gray-50
     transition-all
   `}
-    >
-      <div className="order-2 md:order-1 flex flex-col justify-between">
-        <h3
-  className="
+              >
+                <div className="order-2 md:order-1 flex flex-col justify-between">
+                  <h3
+                    className="
     text-lg
     md:text-lg
     font-semibold
@@ -229,22 +208,20 @@ const categoryName =
     hover:text-violet-900
     transition-colors
   "
->
+                  >
+                    {item.title}
+                  </h3>
 
-          {item.title}
-        </h3>
+                  <p className="hidden md:block text-sm text-gray-600 mt-8">
+                    {new Date(item.created_at).toLocaleDateString("zh-TW")}
+                  </p>
+                </div>
 
-        <p className="hidden md:block text-sm text-gray-600 mt-8">
-  {new Date(item.created_at).toLocaleDateString("zh-TW")}
-</p>
-      </div>
-
-      
-  <div className="order-1 md:order-2 relative">
-  <img
-  src={item.cover}
-  alt={item.title}
-  className="
+                <div className="order-1 md:order-2 relative">
+                  <img
+                    src={item.cover}
+                    alt={item.title}
+                    className="
     w-full
     h-[190px]
     md:w-[220px]
@@ -252,10 +229,10 @@ const categoryName =
     object-cover
     rounded-lg
   "
-/>
+                  />
 
- <div
-  className="
+                  <div
+                    className="
     absolute
     bottom-1
     right-1
@@ -268,19 +245,15 @@ const categoryName =
     items-center
     justify-center
   "
->
-    <ImageIcon
-  size={16}
-  className="text-white"
-/>
-  </div>
-</div>
-      
-    </a>
-  ))}
-</div>
-</div>
-</div> 
+                  >
+                    <ImageIcon size={16} className="text-white" />
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

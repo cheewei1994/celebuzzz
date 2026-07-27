@@ -2,11 +2,7 @@
 
 import { useEffect } from "react";
 
-export default function ViewTracker({
-  articleId,
-}: {
-  articleId: number;
-}) {
+export default function ViewTracker({ articleId }: { articleId: number }) {
   useEffect(() => {
     fetch("/api/view", {
       method: "POST",
@@ -16,7 +12,12 @@ export default function ViewTracker({
       body: JSON.stringify({
         articleId,
       }),
-    }).catch(() => {});
+    })
+      .then(async (res) => {
+        console.log("Status:", res.status);
+        console.log(await res.json());
+      })
+      .catch(console.error);
   }, [articleId]);
 
   return null;

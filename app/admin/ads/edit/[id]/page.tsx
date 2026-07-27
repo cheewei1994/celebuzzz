@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 import { redirect } from "next/navigation";
 
 export default async function EditAdPage({
@@ -8,7 +8,7 @@ export default async function EditAdPage({
 }) {
   const { id } = await params;
 
-  const { data: ad } = await supabase
+  const { data: ad } = await supabaseAdmin
     .from("ads")
     .select("*")
     .eq("id", Number(id))
@@ -25,10 +25,9 @@ export default async function EditAdPage({
     const position = formData.get("position") as string;
     const code = formData.get("code") as string;
 
-    const active =
-      formData.get("active") === "on";
+    const active = formData.get("active") === "on";
 
-    await supabase
+    await supabaseAdmin
       .from("ads")
       .update({
         name,
@@ -43,18 +42,14 @@ export default async function EditAdPage({
 
   return (
     <main className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">
-        編輯廣告
-      </h1>
+      <h1 className="text-3xl font-bold mb-6">編輯廣告</h1>
 
       <form
         action={updateAd}
         className="space-y-4 bg-white p-6 rounded-xl shadow"
       >
         <div>
-          <label className="block mb-2 font-medium">
-            名稱
-          </label>
+          <label className="block mb-2 font-medium">名稱</label>
 
           <input
             name="name"
@@ -64,9 +59,7 @@ export default async function EditAdPage({
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">
-            Position
-          </label>
+          <label className="block mb-2 font-medium">Position</label>
 
           <input
             name="position"
@@ -76,9 +69,7 @@ export default async function EditAdPage({
         </div>
 
         <div>
-          <label className="block mb-2 font-medium">
-            廣告代碼
-          </label>
+          <label className="block mb-2 font-medium">廣告代碼</label>
 
           <textarea
             name="code"
@@ -90,11 +81,7 @@ export default async function EditAdPage({
 
         <div>
           <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              name="active"
-              defaultChecked={ad.active}
-            />
+            <input type="checkbox" name="active" defaultChecked={ad.active} />
             啟用廣告
           </label>
         </div>
