@@ -12,6 +12,15 @@ export async function POST(req: Request) {
       .eq("username", username)
       .single();
 
+    console.log("========== ADMINS DEBUG ==========");
+    console.log(
+      "SERVICE ROLE EXISTS:",
+      !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    );
+    console.log("ADMIN:", admin);
+    console.log("ERROR:", error);
+    console.log("==================================");
+
     if (error || !admin) {
       return Response.json(
         {
