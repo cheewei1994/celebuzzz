@@ -6,6 +6,7 @@ import AdSlot from "@/app/components/AdSlot";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 import { ImageIcon, House, CalendarDays } from "lucide-react";
 import ViewTracker from "./ViewTracker";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
@@ -84,7 +85,7 @@ export default async function ArticlePage({
     .single();
 
   if (!article) {
-    return <div>文章不存在</div>;
+    notFound();
   }
 
   const adEngine = SmartAdEngine(article.blocks || []);
