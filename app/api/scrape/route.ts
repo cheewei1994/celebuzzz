@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       console.log("LUCKYELSE DETECTED");
 
       const isLocal = process.env.NODE_ENV === "development";
+      const debug: string[] = [];
 
       for (let page = 1; page <= 50; page++) {
         const pageUrl =
@@ -34,9 +35,7 @@ export async function POST(req: Request) {
           });
         } else {
           response = await fetch(
-            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(
-              pageUrl,
-            )}&_t=${Date.now()}`,
+            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(pageUrl)}&_t=${Date.now()}`,
             {
               cache: "no-store",
             },
@@ -44,6 +43,7 @@ export async function POST(req: Request) {
         }
 
         console.log("PAGE", page, "STATUS", response.status);
+        debug.push(`P${page}:STATUS=${response.status}`);
 
         if (!response.ok && page > 1 && !isLocal) {
           const lastUrl = `${url}p${page}.html?utm_term=l&utm_source=last`;
@@ -51,19 +51,19 @@ export async function POST(req: Request) {
           console.log("RETRY LAST =", lastUrl);
 
           response = await fetch(
-            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(
-              lastUrl,
-            )}&_t=${Date.now()}`,
+            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(lastUrl)}&_t=${Date.now()}`,
             {
               cache: "no-store",
             },
           );
 
           console.log("RETRY STATUS =", response.status);
+          debug.push(`P${page}:RETRY=${response.status}`);
         }
 
         if (!response.ok) {
           console.log("END OF ARTICLE =", pageUrl);
+          debug.push(`P${page}:END`);
           break;
         }
 
@@ -83,7 +83,13 @@ export async function POST(req: Request) {
         console.log("PAGE", page, "CONTAINERS", containers.length);
         console.log("PAGE", page, "BLOCKS BEFORE", blocks.length);
 
-        if (containers.length === 0) break;
+        debug.push(`P${page}:CONTAINERS=${containers.length}`);
+        debug.push(`P${page}:BEFORE=${blocks.length}`);
+
+        if (containers.length === 0) {
+          debug.push(`P${page}:EMPTY`);
+          break;
+        }
 
         containers.each((_, el) => {
           const imageUrl = $(el).find("img").attr("src") || "";
@@ -108,6 +114,7 @@ export async function POST(req: Request) {
         });
 
         console.log("PAGE", page, "BLOCKS AFTER", blocks.length);
+        debug.push(`P${page}:AFTER=${blocks.length}`);
       }
 
       console.log("FINAL BLOCKS =", blocks.length);
@@ -126,6 +133,7 @@ export async function POST(req: Request) {
         image,
         blocks,
         summary,
+        debug,
       });
     }
 
