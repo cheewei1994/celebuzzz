@@ -6,44 +6,34 @@ export async function POST(req: Request) {
     const { url } = await req.json();
 
     const blocks: string[] = [];
+
     let title = "";
     let image = "";
 
     // =====================
     // LuckyElse
     // =====================
-
     if (url.includes("luckyelse.com")) {
       console.log("LUCKYELSE DETECTED");
 
       for (let page = 1; page <= 50; page++) {
-        let pageUrl =
-          page === 1 ? `${url}.html` : `${url}p${page}.html?utm_term=l`;
+        const pageUrl = page === 1 ? `${url}.html` : `${url}p${page}.html`;
 
         console.log("FETCH =", pageUrl);
 
-        const workerUrl =
-          "https://luckyelse-worker.cheewei3388.workers.dev?url=" +
-          encodeURIComponent(pageUrl);
+        const response = await fetch(pageUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+          },
+        });
 
-        let response = await fetch(workerUrl);
-
-        if (!response.ok && page > 1) {
-          const lastUrl = `${url}p${page}.html?utm_term=l&utm_source=last`;
-
-          console.log("RETRY LAST =", lastUrl);
-
-          response = await fetch(
-            "https://luckyelse-worker.cheewei3388.workers.dev?url=" +
-              encodeURIComponent(lastUrl),
-          );
-
-          if (!response.ok) break;
-        } else if (!response.ok) {
+        if (!response.ok) {
           break;
         }
 
         const html = await response.text();
+
         const $ = cheerio.load(html);
 
         if (page === 1) {
@@ -58,8 +48,6 @@ export async function POST(req: Request) {
 
         console.log("PAGE", page, "CONTAINERS", containers.length);
 
-        if (containers.length === 0) break;
-
         containers.each((_, el) => {
           const imageUrl = $(el).find("img").attr("src") || "";
 
@@ -72,7 +60,9 @@ export async function POST(req: Request) {
             .replace(/\b\d+\/\d+\b/g, "")
             .trim();
 
-          if (!imageUrl && !content) return;
+          if (!imageUrl && !content) {
+            return;
+          }
 
           blocks.push(
             JSON.stringify({
@@ -122,9 +112,12 @@ export async function POST(req: Request) {
 
         console.log("STATUS =", response.status);
 
-        if (!response.ok) break;
+        if (!response.ok) {
+          break;
+        }
 
         const html = await response.text();
+
         const $ = cheerio.load(html);
 
         if (page === 1) {
@@ -204,9 +197,12 @@ export async function POST(req: Request) {
         },
       });
 
-      if (!response.ok) break;
+      if (!response.ok) {
+        break;
+      }
 
       const html = await response.text();
+
       const $ = cheerio.load(html);
 
       if (page === 1) {
@@ -235,10 +231,16 @@ export async function POST(req: Request) {
         pageContent = paragraphs.join("\n\n");
       }
 
-      if (!pageContent) break;
-      if (seenContents.has(pageContent)) continue;
+      if (!pageContent) {
+        break;
+      }
+
+      if (seenContents.has(pageContent)) {
+        continue;
+      }
 
       seenContents.add(pageContent);
+
       blocks.push(pageContent);
     }
 
