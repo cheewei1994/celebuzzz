@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
         console.log("FETCH =", pageUrl);
 
-        let response;
+        let response: Response;
 
         if (isLocal) {
           response = await fetch(pageUrl, {
@@ -34,14 +34,16 @@ export async function POST(req: Request) {
           });
         } else {
           response = await fetch(
-            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(pageUrl)}&_t=${Date.now()}`,
+            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(
+              pageUrl,
+            )}&_t=${Date.now()}`,
             {
               cache: "no-store",
             },
           );
         }
 
-        console.log("FIRST STATUS =", response.status);
+        console.log("PAGE", page, "STATUS", response.status);
 
         if (!response.ok && page > 1 && !isLocal) {
           const lastUrl = `${url}p${page}.html?utm_term=l&utm_source=last`;
@@ -49,7 +51,12 @@ export async function POST(req: Request) {
           console.log("RETRY LAST =", lastUrl);
 
           response = await fetch(
-            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(lastUrl)}`,
+            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(
+              lastUrl,
+            )}&_t=${Date.now()}`,
+            {
+              cache: "no-store",
+            },
           );
 
           console.log("RETRY STATUS =", response.status);
@@ -74,6 +81,7 @@ export async function POST(req: Request) {
         const containers = $(".detail_imagesView .container");
 
         console.log("PAGE", page, "CONTAINERS", containers.length);
+        console.log("PAGE", page, "BLOCKS BEFORE", blocks.length);
 
         if (containers.length === 0) break;
 
@@ -98,6 +106,8 @@ export async function POST(req: Request) {
             }),
           );
         });
+
+        console.log("PAGE", page, "BLOCKS AFTER", blocks.length);
       }
 
       console.log("FINAL BLOCKS =", blocks.length);
@@ -203,13 +213,11 @@ export async function POST(req: Request) {
     const seenContents = new Set<string>();
 
     for (let page = 1; page <= 50; page++) {
-      let pageUrl = "";
-
-      if (url.includes("limte.net")) {
-        pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
-      } else {
-        pageUrl = url;
-      }
+      const pageUrl = url.includes("limte.net")
+        ? page === 1
+          ? url
+          : `${url}/page/${page - 1}`
+        : url;
 
       console.log("PAGE =", page);
       console.log("PAGE URL =", pageUrl);
@@ -237,23 +245,20 @@ export async function POST(req: Request) {
       let pageContent = "";
 
       if (url.includes("limte.net")) {
-        const paragraphs = $("#node-content p")
+        pageContent = $("#node-content p")
           .map((_, el) => $(el).text().trim())
           .get()
-          .filter(Boolean);
-
-        pageContent = paragraphs.join("\n\n");
+          .filter(Boolean)
+          .join("\n\n");
       } else {
-        const paragraphs = $("article p")
+        pageContent = $("article p")
           .map((_, el) => $(el).text().trim())
           .get()
-          .filter(Boolean);
-
-        pageContent = paragraphs.join("\n\n");
+          .filter(Boolean)
+          .join("\n\n");
       }
 
       if (!pageContent) break;
-
       if (seenContents.has(pageContent)) continue;
 
       seenContents.add(pageContent);
