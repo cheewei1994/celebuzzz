@@ -6,51 +6,34 @@ export async function POST(req: Request) {
     const { url } = await req.json();
 
     const blocks: string[] = [];
+
     let title = "";
     let image = "";
 
     // =====================
     // LuckyElse
     // =====================
-
     if (url.includes("luckyelse.com")) {
       console.log("LUCKYELSE DETECTED");
 
-      const isLocal = process.env.NODE_ENV === "development";
-      const debug: string[] = [];
-
-      let pageUrl = `${url}.html`;
-
       for (let page = 1; page <= 50; page++) {
+        const pageUrl = page === 1 ? `${url}.html` : `${url}p${page}.html`;
+
         console.log("FETCH =", pageUrl);
 
-        let response: Response;
-
-        if (isLocal) {
-          response = await fetch(pageUrl, {
-            headers: {
-              "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-            },
-          });
-        } else {
-          response = await fetch(
-            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(pageUrl)}&_t=${Date.now()}`,
-            {
-              cache: "no-store",
-            },
-          );
-        }
-
-        console.log("PAGE", page, "STATUS", response.status);
-        debug.push(`P${page}:STATUS=${response.status}`);
+        const response = await fetch(pageUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+          },
+        });
 
         if (!response.ok) {
-          debug.push(`P${page}:END`);
           break;
         }
 
         const html = await response.text();
+
         const $ = cheerio.load(html);
 
         if (page === 1) {
@@ -63,13 +46,7 @@ export async function POST(req: Request) {
 
         const containers = $(".detail_imagesView .container");
 
-        debug.push(`P${page}:CONTAINERS=${containers.length}`);
-        debug.push(`P${page}:BEFORE=${blocks.length}`);
-
-        if (containers.length === 0) {
-          debug.push(`P${page}:EMPTY`);
-          break;
-        }
+        console.log("PAGE", page, "CONTAINERS", containers.length);
 
         containers.each((_, el) => {
           const imageUrl = $(el).find("img").attr("src") || "";
@@ -83,7 +60,9 @@ export async function POST(req: Request) {
             .replace(/\b\d+\/\d+\b/g, "")
             .trim();
 
-          if (!imageUrl && !content) return;
+          if (!imageUrl && !content) {
+            return;
+          }
 
           blocks.push(
             JSON.stringify({
@@ -92,24 +71,9 @@ export async function POST(req: Request) {
             }),
           );
         });
-
-        debug.push(`P${page}:AFTER=${blocks.length}`);
-
-        const nextHref = $(".page_btn .right").attr("href");
-
-        if (!nextHref) {
-          debug.push(`P${page}:LAST`);
-          break;
-        }
-
-        const nextUrl = new URL(nextHref, "https://luckyelse.com");
-
-        // LuckyElse 的 utm_source=last 會讓 Browser Run 某些頁回 500
-        nextUrl.searchParams.delete("utm_source");
-
-        pageUrl = nextUrl.toString();
-        debug.push(`P${page}:NEXT=${pageUrl}`);
       }
+
+      console.log("FINAL BLOCKS =", blocks.length);
 
       const summary =
         blocks.length > 0
@@ -125,19 +89,19 @@ export async function POST(req: Request) {
         image,
         blocks,
         summary,
-        debug,
       });
     }
 
     // =====================
     // KimiShare
     // =====================
-
-    if (url.includes("kimishare.org")) {
+    else if (url.includes("kimishare.org")) {
       console.log("KIMISHARE DETECTED");
 
       for (let page = 1; page <= 50; page++) {
         const pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
+
+        console.log("FETCH =", pageUrl);
 
         const response = await fetch(pageUrl, {
           headers: {
@@ -146,9 +110,14 @@ export async function POST(req: Request) {
           },
         });
 
-        if (!response.ok) break;
+        console.log("STATUS =", response.status);
+
+        if (!response.ok) {
+          break;
+        }
 
         const html = await response.text();
+
         const $ = cheerio.load(html);
 
         if (page === 1) {
@@ -169,7 +138,12 @@ export async function POST(req: Request) {
 
         const content = paragraphs.join("\n\n");
 
-        if (!content.trim()) continue;
+        if (!content.trim()) {
+          console.log("EMPTY PAGE =", page);
+          continue;
+        }
+
+        console.log("PAGE", page, "PARAGRAPHS", paragraphs.length);
 
         blocks.push(
           JSON.stringify({
@@ -178,6 +152,8 @@ export async function POST(req: Request) {
           }),
         );
       }
+
+      console.log("FINAL BLOCKS =", blocks.length);
 
       const summary =
         blocks.length > 0
@@ -197,17 +173,22 @@ export async function POST(req: Request) {
     }
 
     // =====================
-    // 其它網站
+    // 其它网站
     // =====================
 
     const seenContents = new Set<string>();
 
     for (let page = 1; page <= 50; page++) {
-      const pageUrl = url.includes("limte.net")
-        ? page === 1
-          ? url
-          : `${url}/page/${page - 1}`
-        : url;
+      let pageUrl = "";
+
+      if (url.includes("limte.net")) {
+        pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
+      } else {
+        pageUrl = url;
+      }
+
+      console.log("PAGE =", page);
+      console.log("PAGE URL =", pageUrl);
 
       const response = await fetch(pageUrl, {
         headers: {
@@ -216,9 +197,12 @@ export async function POST(req: Request) {
         },
       });
 
-      if (!response.ok) break;
+      if (!response.ok) {
+        break;
+      }
 
       const html = await response.text();
+
       const $ = cheerio.load(html);
 
       if (page === 1) {
@@ -232,23 +216,31 @@ export async function POST(req: Request) {
       let pageContent = "";
 
       if (url.includes("limte.net")) {
-        pageContent = $("#node-content p")
+        const paragraphs = $("#node-content p")
           .map((_, el) => $(el).text().trim())
           .get()
-          .filter(Boolean)
-          .join("\n\n");
+          .filter(Boolean);
+
+        pageContent = paragraphs.join("\n\n");
       } else {
-        pageContent = $("article p")
+        const paragraphs = $("article p")
           .map((_, el) => $(el).text().trim())
           .get()
-          .filter(Boolean)
-          .join("\n\n");
+          .filter(Boolean);
+
+        pageContent = paragraphs.join("\n\n");
       }
 
-      if (!pageContent) break;
-      if (seenContents.has(pageContent)) continue;
+      if (!pageContent) {
+        break;
+      }
+
+      if (seenContents.has(pageContent)) {
+        continue;
+      }
 
       seenContents.add(pageContent);
+
       blocks.push(pageContent);
     }
 
