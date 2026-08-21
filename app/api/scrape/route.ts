@@ -102,7 +102,13 @@ export async function POST(req: Request) {
           break;
         }
 
-        pageUrl = new URL(nextHref, "https://luckyelse.com").toString();
+        const nextUrl = new URL(nextHref, "https://luckyelse.com");
+
+        // LuckyElse 的 utm_source=last 會讓 Browser Run 某些頁回 500
+        nextUrl.searchParams.delete("utm_source");
+
+        pageUrl = nextUrl.toString();
+        debug.push(`P${page}:NEXT=${pageUrl}`);
       }
 
       const summary =
