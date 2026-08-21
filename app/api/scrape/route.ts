@@ -11,77 +11,63 @@ export async function POST(req: Request) {
     let image = "";
 
     // =====================
-    // LuckyElse
+    // LuckyElse（services.orgs.live）
     // =====================
     if (url.includes("luckyelse.com")) {
-      console.log("LUCKYELSE DETECTED");
+      console.log("LUCKYELSE VIA SERVICES");
 
-      for (let page = 1; page <= 50; page++) {
-        const pageUrl = page === 1 ? `${url}.html` : `${url}p${page}.html`;
-
-        console.log("FETCH =", pageUrl);
-
-        const response = await fetch(pageUrl, {
+      const response = await fetch(
+        `https://services.orgs.live/collect/extract?url=${encodeURIComponent(url)}`,
+        {
           headers: {
+            Accept: "application/json",
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+            Referer: "https://limte.net/",
           },
-        });
+          cache: "no-store",
+        },
+      );
 
-        if (!response.ok) {
-          break;
-        }
-
-        const html = await response.text();
-
-        const $ = cheerio.load(html);
-
-        if (page === 1) {
-          title =
-            $('meta[property="og:title"]').attr("content") ||
-            $("title").text().trim();
-
-          image = $('meta[property="og:image"]').attr("content") || "";
-        }
-
-        const containers = $(".detail_imagesView .container");
-
-        console.log("PAGE", page, "CONTAINERS", containers.length);
-
-        containers.each((_, el) => {
-          const imageUrl = $(el).find("img").attr("src") || "";
-
-          let content = $(el).clone().find("img").remove().end().html() || "";
-
-          content = content
-            .replace(/<br\s*\/?>/gi, "\n")
-            .replace(/<\/p>/gi, "\n\n")
-            .replace(/<[^>]+>/g, "")
-            .replace(/\b\d+\/\d+\b/g, "")
-            .trim();
-
-          if (!imageUrl && !content) {
-            return;
-          }
-
-          blocks.push(
-            JSON.stringify({
-              imageUrl,
-              content,
-            }),
-          );
-        });
+      if (!response.ok) {
+        throw new Error(`Extract failed: ${response.status}`);
       }
 
-      console.log("FINAL BLOCKS =", blocks.length);
+      const result = await response.json();
+
+      title = result.data.title || "";
+      image = result.data.image || "";
+
+      const $ = cheerio.load(result.data.content || "");
+
+      $(".container").each((_, el) => {
+        const imageUrl = $(el).find("img").attr("src") || "";
+
+        let content =
+          $(el).find(".text").html() ||
+          $(el).clone().find("img").remove().end().html() ||
+          "";
+
+        content = content
+          .replace(/<br\s*\/?>/gi, "\n")
+          .replace(/<\/p>/gi, "\n\n")
+          .replace(/<[^>]+>/g, "")
+          .replace(/\b\d+\/\d+\b/g, "")
+          .replace(/\s+/g, " ")
+          .trim();
+
+        if (!imageUrl && !content) return;
+
+        blocks.push(
+          JSON.stringify({
+            imageUrl,
+            content,
+          }),
+        );
+      });
 
       const summary =
-        blocks.length > 0
-          ? JSON.parse(blocks[0])
-              .content?.replace(/\n/g, " ")
-              ?.replace(/\s+/g, " ")
-              ?.slice(0, 100)
-          : "";
+        blocks.length > 0 ? JSON.parse(blocks[0]).content.slice(0, 100) : "";
 
       return NextResponse.json({
         success: true,
@@ -93,7 +79,7 @@ export async function POST(req: Request) {
     }
 
     // =====================
-    // NovelBulk
+    // NovelBulk（測試）
     // =====================
     else if (url.includes("novelbulk.top")) {
       console.log("NOVELBULK DETECTED");
@@ -101,20 +87,12 @@ export async function POST(req: Request) {
       for (let page = 1; page <= 50; page++) {
         const pageUrl = page === 1 ? `${url}.html` : `${url}p${page}.html`;
 
-        console.log("FETCH =", pageUrl);
-
         const response = await fetch(pageUrl, {
           headers: {
             "User-Agent":
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-            Accept:
-              "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-            "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
-            Referer: "https://novelbulk.top/",
           },
         });
-
-        console.log("STATUS =", response.status);
 
         if (!response.ok) break;
 
@@ -130,10 +108,6 @@ export async function POST(req: Request) {
         }
 
         const containers = $(".detail_imagesView .container");
-
-        console.log("PAGE", page, "CONTAINERS", containers.length);
-
-        if (containers.length === 0) break;
 
         containers.each((_, el) => {
           const imageUrl = $(el).find("img").attr("src") || "";
@@ -158,15 +132,8 @@ export async function POST(req: Request) {
         });
       }
 
-      console.log("FINAL BLOCKS =", blocks.length);
-
       const summary =
-        blocks.length > 0
-          ? JSON.parse(blocks[0])
-              .content?.replace(/\n/g, " ")
-              ?.replace(/\s+/g, " ")
-              ?.slice(0, 100)
-          : "";
+        blocks.length > 0 ? JSON.parse(blocks[0]).content.slice(0, 100) : "";
 
       return NextResponse.json({
         success: true,
@@ -186,8 +153,6 @@ export async function POST(req: Request) {
       for (let page = 1; page <= 50; page++) {
         const pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
 
-        console.log("FETCH =", pageUrl);
-
         const response = await fetch(pageUrl, {
           headers: {
             "User-Agent":
@@ -195,14 +160,9 @@ export async function POST(req: Request) {
           },
         });
 
-        console.log("STATUS =", response.status);
-
-        if (!response.ok) {
-          break;
-        }
+        if (!response.ok) break;
 
         const html = await response.text();
-
         const $ = cheerio.load(html);
 
         if (page === 1) {
@@ -223,12 +183,7 @@ export async function POST(req: Request) {
 
         const content = paragraphs.join("\n\n");
 
-        if (!content.trim()) {
-          console.log("EMPTY PAGE =", page);
-          continue;
-        }
-
-        console.log("PAGE", page, "PARAGRAPHS", paragraphs.length);
+        if (!content.trim()) continue;
 
         blocks.push(
           JSON.stringify({
@@ -238,15 +193,8 @@ export async function POST(req: Request) {
         );
       }
 
-      console.log("FINAL BLOCKS =", blocks.length);
-
       const summary =
-        blocks.length > 0
-          ? JSON.parse(blocks[0])
-              .content?.replace(/\n/g, " ")
-              ?.replace(/\s+/g, " ")
-              ?.slice(0, 100)
-          : "";
+        blocks.length > 0 ? JSON.parse(blocks[0]).content.slice(0, 100) : "";
 
       return NextResponse.json({
         success: true,
@@ -258,22 +206,17 @@ export async function POST(req: Request) {
     }
 
     // =====================
-    // 其它网站
+    // 其它網站
     // =====================
 
     const seenContents = new Set<string>();
 
     for (let page = 1; page <= 50; page++) {
-      let pageUrl = "";
-
-      if (url.includes("limte.net")) {
-        pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
-      } else {
-        pageUrl = url;
-      }
-
-      console.log("PAGE =", page);
-      console.log("PAGE URL =", pageUrl);
+      const pageUrl = url.includes("limte.net")
+        ? page === 1
+          ? url
+          : `${url}/page/${page - 1}`
+        : url;
 
       const response = await fetch(pageUrl, {
         headers: {
@@ -282,12 +225,9 @@ export async function POST(req: Request) {
         },
       });
 
-      if (!response.ok) {
-        break;
-      }
+      if (!response.ok) break;
 
       const html = await response.text();
-
       const $ = cheerio.load(html);
 
       if (page === 1) {
@@ -301,31 +241,24 @@ export async function POST(req: Request) {
       let pageContent = "";
 
       if (url.includes("limte.net")) {
-        const paragraphs = $("#node-content p")
+        pageContent = $("#node-content p")
           .map((_, el) => $(el).text().trim())
           .get()
-          .filter(Boolean);
-
-        pageContent = paragraphs.join("\n\n");
+          .filter(Boolean)
+          .join("\n\n");
       } else {
-        const paragraphs = $("article p")
+        pageContent = $("article p")
           .map((_, el) => $(el).text().trim())
           .get()
-          .filter(Boolean);
-
-        pageContent = paragraphs.join("\n\n");
+          .filter(Boolean)
+          .join("\n\n");
       }
 
-      if (!pageContent) {
-        break;
-      }
+      if (!pageContent) break;
 
-      if (seenContents.has(pageContent)) {
-        continue;
-      }
+      if (seenContents.has(pageContent)) continue;
 
       seenContents.add(pageContent);
-
       blocks.push(pageContent);
     }
 
