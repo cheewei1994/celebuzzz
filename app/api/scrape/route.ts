@@ -17,81 +17,29 @@ export async function POST(req: Request) {
       console.log("LUCKYELSE DETECTED");
 
       for (let page = 1; page <= 50; page++) {
-        let pageUrl = "";
-
-        if (page === 1) {
-          pageUrl = `${url}.html`;
-        } else {
-          pageUrl = `${url}p${page}.html?utm_term=l`;
-        }
+        let pageUrl =
+          page === 1 ? `${url}.html` : `${url}p${page}.html?utm_term=l`;
 
         console.log("FETCH =", pageUrl);
 
-        const response = await fetch(pageUrl, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-          },
-        });
+        const workerUrl =
+          "https://luckyelse-worker.cheewei3388.workers.dev?url=" +
+          encodeURIComponent(pageUrl);
 
-        // 如果一般頁失敗，再試最後一頁格式
+        let response = await fetch(workerUrl);
+
         if (!response.ok && page > 1) {
           const lastUrl = `${url}p${page}.html?utm_term=l&utm_source=last`;
 
           console.log("RETRY LAST =", lastUrl);
 
-          const retry = await fetch(lastUrl, {
-            headers: {
-              "User-Agent":
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-            },
-          });
+          response = await fetch(
+            "https://luckyelse-worker.cheewei3388.workers.dev?url=" +
+              encodeURIComponent(lastUrl),
+          );
 
-          if (!retry.ok) {
-            break;
-          }
-
-          const html = await retry.text();
-          const $ = cheerio.load(html);
-
-          if (page === 1) {
-            title =
-              $('meta[property="og:title"]').attr("content") ||
-              $("title").text().trim();
-
-            image = $('meta[property="og:image"]').attr("content") || "";
-          }
-
-          const containers = $(".detail_imagesView .container");
-
-          console.log("PAGE", page, "CONTAINERS", containers.length);
-
-          containers.each((_, el) => {
-            const imageUrl = $(el).find("img").attr("src") || "";
-
-            let content = $(el).clone().find("img").remove().end().html() || "";
-
-            content = content
-              .replace(/<br\s*\/?>/gi, "\n")
-              .replace(/<\/p>/gi, "\n\n")
-              .replace(/<[^>]+>/g, "")
-              .replace(/\b\d+\/\d+\b/g, "")
-              .trim();
-
-            if (!imageUrl && !content) return;
-
-            blocks.push(
-              JSON.stringify({
-                imageUrl,
-                content,
-              }),
-            );
-          });
-
-          continue;
-        }
-
-        if (!response.ok) {
+          if (!response.ok) break;
+        } else if (!response.ok) {
           break;
         }
 
@@ -110,6 +58,8 @@ export async function POST(req: Request) {
 
         console.log("PAGE", page, "CONTAINERS", containers.length);
 
+        if (containers.length === 0) break;
+
         containers.each((_, el) => {
           const imageUrl = $(el).find("img").attr("src") || "";
 
@@ -122,9 +72,7 @@ export async function POST(req: Request) {
             .replace(/\b\d+\/\d+\b/g, "")
             .trim();
 
-          if (!imageUrl && !content) {
-            return;
-          }
+          if (!imageUrl && !content) return;
 
           blocks.push(
             JSON.stringify({
@@ -288,7 +236,6 @@ export async function POST(req: Request) {
       }
 
       if (!pageContent) break;
-
       if (seenContents.has(pageContent)) continue;
 
       seenContents.add(pageContent);
