@@ -93,6 +93,91 @@ export async function POST(req: Request) {
     }
 
     // =====================
+    // NovelBulk
+    // =====================
+    else if (url.includes("novelbulk.top")) {
+      console.log("NOVELBULK DETECTED");
+
+      for (let page = 1; page <= 50; page++) {
+        const pageUrl = page === 1 ? `${url}.html` : `${url}p${page}.html`;
+
+        console.log("FETCH =", pageUrl);
+
+        const response = await fetch(pageUrl, {
+          headers: {
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+            Accept:
+              "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
+            Referer: "https://novelbulk.top/",
+          },
+        });
+
+        console.log("STATUS =", response.status);
+
+        if (!response.ok) break;
+
+        const html = await response.text();
+        const $ = cheerio.load(html);
+
+        if (page === 1) {
+          title =
+            $('meta[property="og:title"]').attr("content") ||
+            $("title").text().trim();
+
+          image = $('meta[property="og:image"]').attr("content") || "";
+        }
+
+        const containers = $(".detail_imagesView .container");
+
+        console.log("PAGE", page, "CONTAINERS", containers.length);
+
+        if (containers.length === 0) break;
+
+        containers.each((_, el) => {
+          const imageUrl = $(el).find("img").attr("src") || "";
+
+          let content = $(el).clone().find("img").remove().end().html() || "";
+
+          content = content
+            .replace(/<br\s*\/?>/gi, "\n")
+            .replace(/<\/p>/gi, "\n\n")
+            .replace(/<[^>]+>/g, "")
+            .replace(/\b\d+\/\d+\b/g, "")
+            .trim();
+
+          if (!imageUrl && !content) return;
+
+          blocks.push(
+            JSON.stringify({
+              imageUrl,
+              content,
+            }),
+          );
+        });
+      }
+
+      console.log("FINAL BLOCKS =", blocks.length);
+
+      const summary =
+        blocks.length > 0
+          ? JSON.parse(blocks[0])
+              .content?.replace(/\n/g, " ")
+              ?.replace(/\s+/g, " ")
+              ?.slice(0, 100)
+          : "";
+
+      return NextResponse.json({
+        success: true,
+        title,
+        image,
+        blocks,
+        summary,
+      });
+    }
+
+    // =====================
     // KimiShare
     // =====================
     else if (url.includes("kimishare.org")) {
