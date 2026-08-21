@@ -12,16 +12,16 @@ export async function POST(req: Request) {
     // =====================
     // LuckyElse
     // =====================
+
     if (url.includes("luckyelse.com")) {
       console.log("LUCKYELSE DETECTED");
 
       const isLocal = process.env.NODE_ENV === "development";
       const debug: string[] = [];
 
-      for (let page = 1; page <= 50; page++) {
-        const pageUrl =
-          page === 1 ? `${url}.html` : `${url}p${page}.html?utm_term=l`;
+      let pageUrl = `${url}.html`;
 
+      for (let page = 1; page <= 50; page++) {
         console.log("FETCH =", pageUrl);
 
         let response: Response;
@@ -45,24 +45,7 @@ export async function POST(req: Request) {
         console.log("PAGE", page, "STATUS", response.status);
         debug.push(`P${page}:STATUS=${response.status}`);
 
-        if (!response.ok && page > 1 && !isLocal) {
-          const lastUrl = `${url}p${page}.html?utm_term=l&utm_source=last`;
-
-          console.log("RETRY LAST =", lastUrl);
-
-          response = await fetch(
-            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(lastUrl)}&_t=${Date.now()}`,
-            {
-              cache: "no-store",
-            },
-          );
-
-          console.log("RETRY STATUS =", response.status);
-          debug.push(`P${page}:RETRY=${response.status}`);
-        }
-
         if (!response.ok) {
-          console.log("END OF ARTICLE =", pageUrl);
           debug.push(`P${page}:END`);
           break;
         }
@@ -79,9 +62,6 @@ export async function POST(req: Request) {
         }
 
         const containers = $(".detail_imagesView .container");
-
-        console.log("PAGE", page, "CONTAINERS", containers.length);
-        console.log("PAGE", page, "BLOCKS BEFORE", blocks.length);
 
         debug.push(`P${page}:CONTAINERS=${containers.length}`);
         debug.push(`P${page}:BEFORE=${blocks.length}`);
@@ -113,11 +93,17 @@ export async function POST(req: Request) {
           );
         });
 
-        console.log("PAGE", page, "BLOCKS AFTER", blocks.length);
         debug.push(`P${page}:AFTER=${blocks.length}`);
-      }
 
-      console.log("FINAL BLOCKS =", blocks.length);
+        const nextHref = $(".page_btn .right").attr("href");
+
+        if (!nextHref) {
+          debug.push(`P${page}:LAST`);
+          break;
+        }
+
+        pageUrl = new URL(nextHref, "https://luckyelse.com").toString();
+      }
 
       const summary =
         blocks.length > 0
@@ -140,13 +126,12 @@ export async function POST(req: Request) {
     // =====================
     // KimiShare
     // =====================
-    else if (url.includes("kimishare.org")) {
+
+    if (url.includes("kimishare.org")) {
       console.log("KIMISHARE DETECTED");
 
       for (let page = 1; page <= 50; page++) {
         const pageUrl = page === 1 ? url : `${url}/page/${page - 1}`;
-
-        console.log("FETCH =", pageUrl);
 
         const response = await fetch(pageUrl, {
           headers: {
@@ -154,8 +139,6 @@ export async function POST(req: Request) {
               "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
           },
         });
-
-        console.log("STATUS =", response.status);
 
         if (!response.ok) break;
 
@@ -180,12 +163,7 @@ export async function POST(req: Request) {
 
         const content = paragraphs.join("\n\n");
 
-        if (!content.trim()) {
-          console.log("EMPTY PAGE =", page);
-          continue;
-        }
-
-        console.log("PAGE", page, "PARAGRAPHS", paragraphs.length);
+        if (!content.trim()) continue;
 
         blocks.push(
           JSON.stringify({
@@ -194,8 +172,6 @@ export async function POST(req: Request) {
           }),
         );
       }
-
-      console.log("FINAL BLOCKS =", blocks.length);
 
       const summary =
         blocks.length > 0
@@ -226,9 +202,6 @@ export async function POST(req: Request) {
           ? url
           : `${url}/page/${page - 1}`
         : url;
-
-      console.log("PAGE =", page);
-      console.log("PAGE URL =", pageUrl);
 
       const response = await fetch(pageUrl, {
         headers: {
