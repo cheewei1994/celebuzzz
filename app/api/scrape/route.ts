@@ -34,7 +34,10 @@ export async function POST(req: Request) {
           });
         } else {
           response = await fetch(
-            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(pageUrl)}`,
+            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(pageUrl)}&_t=${Date.now()}`,
+            {
+              cache: "no-store",
+            },
           );
         }
 
