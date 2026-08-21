@@ -6,7 +6,6 @@ export async function POST(req: Request) {
     const { url } = await req.json();
 
     const blocks: string[] = [];
-
     let title = "";
     let image = "";
 
@@ -16,24 +15,49 @@ export async function POST(req: Request) {
     if (url.includes("luckyelse.com")) {
       console.log("LUCKYELSE DETECTED");
 
+      const isLocal = process.env.NODE_ENV === "development";
+
       for (let page = 1; page <= 50; page++) {
-        const pageUrl = page === 1 ? `${url}.html` : `${url}p${page}.html`;
+        const pageUrl =
+          page === 1 ? `${url}.html` : `${url}p${page}.html?utm_term=l`;
 
         console.log("FETCH =", pageUrl);
 
-        const response = await fetch(pageUrl, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
-          },
-        });
+        let response;
+
+        if (isLocal) {
+          response = await fetch(pageUrl, {
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/137.0.0.0 Safari/537.36",
+            },
+          });
+        } else {
+          response = await fetch(
+            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(pageUrl)}`,
+          );
+        }
+
+        console.log("FIRST STATUS =", response.status);
+
+        if (!response.ok && page > 1 && !isLocal) {
+          const lastUrl = `${url}p${page}.html?utm_term=l&utm_source=last`;
+
+          console.log("RETRY LAST =", lastUrl);
+
+          response = await fetch(
+            `https://luckyelse-worker.cheewei3388.workers.dev?url=${encodeURIComponent(lastUrl)}`,
+          );
+
+          console.log("RETRY STATUS =", response.status);
+        }
 
         if (!response.ok) {
+          console.log("END OF ARTICLE =", pageUrl);
           break;
         }
 
         const html = await response.text();
-
         const $ = cheerio.load(html);
 
         if (page === 1) {
@@ -48,6 +72,8 @@ export async function POST(req: Request) {
 
         console.log("PAGE", page, "CONTAINERS", containers.length);
 
+        if (containers.length === 0) break;
+
         containers.each((_, el) => {
           const imageUrl = $(el).find("img").attr("src") || "";
 
@@ -60,9 +86,7 @@ export async function POST(req: Request) {
             .replace(/\b\d+\/\d+\b/g, "")
             .trim();
 
-          if (!imageUrl && !content) {
-            return;
-          }
+          if (!imageUrl && !content) return;
 
           blocks.push(
             JSON.stringify({
@@ -112,12 +136,9 @@ export async function POST(req: Request) {
 
         console.log("STATUS =", response.status);
 
-        if (!response.ok) {
-          break;
-        }
+        if (!response.ok) break;
 
         const html = await response.text();
-
         const $ = cheerio.load(html);
 
         if (page === 1) {
@@ -173,7 +194,7 @@ export async function POST(req: Request) {
     }
 
     // =====================
-    // 其它网站
+    // 其它網站
     // =====================
 
     const seenContents = new Set<string>();
@@ -197,12 +218,9 @@ export async function POST(req: Request) {
         },
       });
 
-      if (!response.ok) {
-        break;
-      }
+      if (!response.ok) break;
 
       const html = await response.text();
-
       const $ = cheerio.load(html);
 
       if (page === 1) {
@@ -231,16 +249,11 @@ export async function POST(req: Request) {
         pageContent = paragraphs.join("\n\n");
       }
 
-      if (!pageContent) {
-        break;
-      }
+      if (!pageContent) break;
 
-      if (seenContents.has(pageContent)) {
-        continue;
-      }
+      if (seenContents.has(pageContent)) continue;
 
       seenContents.add(pageContent);
-
       blocks.push(pageContent);
     }
 
