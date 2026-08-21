@@ -49,11 +49,24 @@ export async function POST(req: Request) {
           "";
 
         content = content
+          // 保留 <br> 換行
           .replace(/<br\s*\/?>/gi, "\n")
+          // 段落之間保留一個空白行
+          .replace(/<\/p>\s*<p[^>]*>/gi, "\n\n")
           .replace(/<\/p>/gi, "\n\n")
+          .replace(/<p[^>]*>/gi, "")
+          // 移除其它 HTML
           .replace(/<[^>]+>/g, "")
+          // HTML 空白字元
+          .replace(/&nbsp;/gi, " ")
+          // 移除頁碼 (1/6、2/6...)
           .replace(/\b\d+\/\d+\b/g, "")
-          .replace(/\s+/g, " ")
+          // 保留空行，只修剪每行尾端空白
+          .split("\n")
+          .map((line) => line.trimEnd())
+          .join("\n")
+          // 三個以上空行縮成兩個
+          .replace(/\n{3,}/g, "\n\n")
           .trim();
 
         if (!imageUrl && !content) return;
