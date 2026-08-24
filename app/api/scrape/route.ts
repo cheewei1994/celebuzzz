@@ -36,8 +36,13 @@ export async function POST(req: Request) {
       const result = await response.json();
 
       title = result.data.title || "";
-      image = result.data.image || "";
 
+      // 移除 LuckyElse 網站名稱後綴
+      title = title
+        .replace(/\s*-\s*luckyelse\.com\s*-\s*美食記\s*$/i, "")
+        .trim();
+
+      image = result.data.image || "";
       const $ = cheerio.load(result.data.content || "");
 
       $(".container").each((_, el) => {
