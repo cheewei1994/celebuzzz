@@ -3,7 +3,7 @@ export default function AboutPage() {
     <main className="max-w-4xl mx-auto px-4 py-10">
       <div className="bg-white rounded-3xl shadow-sm border p-8">
         <h1 className="text-4xl font-bold mb-6">
-          關於我們
+          認識喵喵網
         </h1>
 
         <div className="space-y-6 text-gray-700 leading-8">
