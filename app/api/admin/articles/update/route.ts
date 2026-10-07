@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       sourceUrl,
       cover,
       longImage,
-      blocks,
+      JSON.stringify(blocks),
     ];
 
     if (status) {

@@ -28,7 +28,7 @@ export async function POST(req: Request) {
         sourceUrl,
         cover,
         longImage,
-        blocks,
+        JSON.stringify(blocks),
         status,
         status === "published" ? 0 : null,
       ],
