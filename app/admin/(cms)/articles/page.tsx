@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import DeleteButton from "./DeleteButton";
 import CopyButtons from "./CopyButtons";
 
@@ -46,38 +46,61 @@ export default async function ArticlesPage({
     filterStart = d.toISOString().split("T")[0];
   }
 
-  let query = supabaseAdmin
-    .from("articles")
-    .select("*")
-    .eq("status", "published");
+  const from = (currentPage - 1) * pageSize;
+
+  const conditions = ["status = $1"];
+  const values: unknown[] = ["published"];
+  let paramIndex = 2;
 
   if (search) {
-    query = query.or(`id.eq.${Number(search) || 0},title.ilike.%${search}%`);
+    const searchNumber = Number(search);
+
+    if (Number.isFinite(searchNumber) && searchNumber > 0) {
+      conditions.push(`(id = $${paramIndex} OR title ILIKE $${paramIndex + 1})`);
+      values.push(searchNumber, `%${search}%`);
+      paramIndex += 2;
+    } else {
+      conditions.push(`title ILIKE $${paramIndex}`);
+      values.push(`%${search}%`);
+      paramIndex += 1;
+    }
   }
 
   if (filterStart) {
-    query = query.gte("created_at", `${filterStart}T00:00:00`);
+    conditions.push(`created_at >= $${paramIndex}`);
+    values.push(`${filterStart}T00:00:00`);
+    paramIndex += 1;
   }
 
   if (filterEnd) {
-    query = query.lte("created_at", `${filterEnd}T23:59:59`);
+    conditions.push(`created_at <= $${paramIndex}`);
+    values.push(`${filterEnd}T23:59:59`);
+    paramIndex += 1;
   }
 
-  const from = (currentPage - 1) * pageSize;
-  const to = from + pageSize - 1;
+  const whereClause = conditions.join(" AND ");
 
-  const { count } = await supabaseAdmin
-    .from("articles")
-    .select("*", { count: "exact", head: true })
-    .eq("status", "published");
+  const countResult = await db.query(
+    `SELECT COUNT(*)::int AS count
+     FROM public.articles
+     WHERE ${whereClause}`,
+    values,
+  );
 
-  const totalPages = Math.ceil((count || 0) / pageSize);
+  const count = countResult.rows[0]?.count ?? 0;
+  const totalPages = Math.ceil(count / pageSize);
 
-  const { data: articles } = await query
-    .order("created_at", {
-      ascending: false,
-    })
-    .range(from, to);
+  const articlesResult = await db.query(
+    `SELECT *
+     FROM public.articles
+     WHERE ${whereClause}
+     ORDER BY created_at DESC
+     LIMIT $${paramIndex}
+     OFFSET $${paramIndex + 1}`,
+    [...values, pageSize, from],
+  );
+
+  const articles = articlesResult.rows;
 
   return (
     <main className="max-w-6xl mx-auto p-6">

@@ -1,6 +1,5 @@
 "use client";
 
-import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 export default function AdminPage() {
   const [blocks, setBlocks] = useState([
@@ -26,18 +25,22 @@ export default function AdminPage() {
   const [tempImageUrl, setTempImageUrl] = useState("");
 
   const uploadImage = async (file: File, bucket: string) => {
-    const fileName = `${Date.now()}-${file.name}`;
+    const formData = new FormData();
 
-    const { error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, file);
+    formData.append("file", file);
+    formData.append("bucket", bucket);
 
-    if (error) {
-      alert(error.message);
+    const res = await fetch("/api/upload-image", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "圖片上傳失敗");
       return "";
     }
-
-    const { data } = supabase.storage.from(bucket).getPublicUrl(fileName);
 
     return data.publicUrl;
   };
@@ -382,22 +385,11 @@ export default function AdminPage() {
 
                     if (!file) return;
 
-                    const fileName = `${Date.now()}-${file.name}`;
+                    const url = await uploadImage(file, "long-images");
 
-                    const { error } = await supabase.storage
-                      .from("long-images")
-                      .upload(fileName, file);
-
-                    if (error) {
-                      alert(error.message);
-                      return;
+                    if (url) {
+                      setLongImage(url);
                     }
-
-                    const { data } = supabase.storage
-                      .from("long-images")
-                      .getPublicUrl(fileName);
-
-                    setLongImage(data.publicUrl);
                   }}
                 />
               </label>

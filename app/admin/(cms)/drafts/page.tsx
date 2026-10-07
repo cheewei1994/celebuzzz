@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import DeleteButton from "../articles/DeleteButton";
 
 export default async function DraftsPage({
@@ -10,26 +10,38 @@ export default async function DraftsPage({
   }>;
 }) {
   const { search = "" } = await searchParams;
-  let query = supabaseAdmin
-    .from("articles")
-    .select(
-      `
-    id,
-    title,
-    category,
-    status,
-    created_at
-  `,
-    )
-    .eq("status", "draft");
+  const conditions = ["status = $1"];
+  const values: unknown[] = ["draft"];
+  let paramIndex = 2;
 
   if (search) {
-    query = query.or(`id.eq.${Number(search) || 0},title.ilike.%${search}%`);
+    const searchNumber = Number(search);
+
+    if (Number.isFinite(searchNumber) && searchNumber > 0) {
+      conditions.push(`(id = $${paramIndex} OR title ILIKE $${paramIndex + 1})`);
+      values.push(searchNumber, `%${search}%`);
+    } else {
+      conditions.push(`title ILIKE $${paramIndex}`);
+      values.push(`%${search}%`);
+    }
   }
 
-  const { data: drafts } = await query.order("created_at", {
-    ascending: false,
-  });
+  const whereClause = conditions.join(" AND ");
+
+  const result = await db.query(
+    `SELECT
+       id,
+       title,
+       category,
+       status,
+       created_at
+     FROM public.articles
+     WHERE ${whereClause}
+     ORDER BY created_at DESC`,
+    values,
+  );
+
+  const drafts = result.rows;
 
   return (
     <main className="max-w-6xl mx-auto p-6">

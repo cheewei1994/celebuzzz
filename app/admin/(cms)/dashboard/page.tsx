@@ -1,53 +1,57 @@
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 
 export default async function DashboardPage() {
-  const { count: totalArticles } = await supabaseAdmin
-    .from("articles")
-    .select("*", {
-      count: "exact",
-      head: true,
-    });
+  const [
+    totalArticlesResult,
+    publishedArticlesResult,
+    draftArticlesResult,
+    recentArticlesResult,
+    topArticlesResult,
+    totalViewsResult,
+  ] = await Promise.all([
+    db.query(
+      `SELECT COUNT(*)::int AS count
+       FROM public.articles`,
+    ),
+    db.query(
+      `SELECT COUNT(*)::int AS count
+       FROM public.articles
+       WHERE status = $1`,
+      ["published"],
+    ),
+    db.query(
+      `SELECT COUNT(*)::int AS count
+       FROM public.articles
+       WHERE status = $1`,
+      ["draft"],
+    ),
+    db.query(
+      `SELECT *
+       FROM public.articles
+       ORDER BY created_at DESC
+       LIMIT 5`,
+    ),
+    db.query(
+      `SELECT *
+       FROM public.articles
+       WHERE status = $1
+       ORDER BY views DESC
+       LIMIT 5`,
+      ["published"],
+    ),
+    db.query(
+      `SELECT COALESCE(SUM(views), 0)::int AS total
+       FROM public.articles`,
+    ),
+  ]);
 
-  const { count: publishedArticles } = await supabaseAdmin
-    .from("articles")
-    .select("*", {
-      count: "exact",
-      head: true,
-    })
-    .eq("status", "published");
-
-  const { count: draftArticles } = await supabaseAdmin
-    .from("articles")
-    .select("*", {
-      count: "exact",
-      head: true,
-    })
-    .eq("status", "draft");
-
-  const { data: recentArticles } = await supabaseAdmin
-    .from("articles")
-    .select("*")
-    .order("created_at", {
-      ascending: false,
-    })
-    .limit(5);
-
-  const { data: topArticles } = await supabaseAdmin
-    .from("articles")
-    .select("*")
-    .eq("status", "published")
-    .order("views", {
-      ascending: false,
-    })
-    .limit(5);
-
-  const { data: allArticles } = await supabaseAdmin
-    .from("articles")
-    .select("views");
-
-  const totalViews =
-    allArticles?.reduce((sum, article) => sum + (article.views || 0), 0) || 0;
+  const totalArticles = totalArticlesResult.rows[0]?.count ?? 0;
+  const publishedArticles = publishedArticlesResult.rows[0]?.count ?? 0;
+  const draftArticles = draftArticlesResult.rows[0]?.count ?? 0;
+  const recentArticles = recentArticlesResult.rows;
+  const topArticles = topArticlesResult.rows;
+  const totalViews = totalViewsResult.rows[0]?.total ?? 0;
 
   return (
     <main className="max-w-5xl mx-auto p-10">

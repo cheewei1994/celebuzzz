@@ -1,16 +1,20 @@
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import { headers } from "next/headers";
 import { shouldShowAds } from "@/lib/ads";
 import AdRenderer from "./AdRenderer";
 import AdLabel from "./AdLabel";
 
 export default async function AdSlot({ position }: { position: string }) {
-  const { data } = await supabaseAdmin
-    .from("ads")
-    .select("code, slot")
-    .eq("position", position)
-    .eq("active", true)
-    .single();
+  const result = await db.query(
+    `SELECT code, slot
+     FROM public.ads
+     WHERE position = $1
+       AND active = true
+     LIMIT 1`,
+    [position],
+  );
+
+  const data = result.rows[0] ?? null;
 
   if (!data) return null;
 

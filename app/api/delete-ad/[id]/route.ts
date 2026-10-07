@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 
 export async function DELETE(
   req: Request,
@@ -7,13 +7,19 @@ export async function DELETE(
 ) {
   const { id } = await params;
 
-  const { error } = await supabaseAdmin
-    .from("ads")
-    .delete()
-    .eq("id", Number(id));
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  try {
+    await db.query(
+      `DELETE FROM public.ads
+       WHERE id = $1`,
+      [Number(id)],
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "刪除廣告失敗",
+      },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 
 export default async function TopArticlesPage({
   searchParams,
@@ -13,10 +13,9 @@ export default async function TopArticlesPage({
 }) {
   const { search = "", start = "", end = "", period = "" } = await searchParams;
 
-  let query = supabaseAdmin
-    .from("articles")
-    .select("*")
-    .eq("status", "published");
+  const conditions: string[] = ["status = $1"];
+  const params: unknown[] = ["published"];
+  let paramIndex = 2;
 
   let filterStart = start;
   let filterEnd = end;
@@ -45,22 +44,41 @@ export default async function TopArticlesPage({
   }
 
   if (filterStart) {
-    query = query.gte("created_at", `${filterStart}T00:00:00`);
+    conditions.push(`created_at >= $${paramIndex}`);
+    params.push(`${filterStart}T00:00:00`);
+    paramIndex++;
   }
 
   if (filterEnd) {
-    query = query.lte("created_at", `${filterEnd}T23:59:59`);
+    conditions.push(`created_at <= $${paramIndex}`);
+    params.push(`${filterEnd}T23:59:59`);
+    paramIndex++;
   }
 
   if (search) {
-    query = query.or(`id.eq.${Number(search) || 0},title.ilike.%${search}%`);
+    const searchId = Number(search);
+
+    if (Number.isInteger(searchId) && searchId > 0) {
+      conditions.push(
+        `(id = $${paramIndex} OR title ILIKE $${paramIndex + 1})`,
+      );
+      params.push(searchId, `%${search}%`);
+      paramIndex += 2;
+    } else {
+      conditions.push(`title ILIKE $${paramIndex}`);
+      params.push(`%${search}%`);
+      paramIndex++;
+    }
   }
 
-  const { data: articles } = await query
-    .order("views", {
-      ascending: false,
-    })
-    .limit(10);
+  const { rows: articles } = await db.query(
+    `SELECT *
+     FROM public.articles
+     WHERE ${conditions.join(" AND ")}
+     ORDER BY views DESC
+     LIMIT 10`,
+    params,
+  );
 
   return (
     <main className="max-w-5xl mx-auto p-6">

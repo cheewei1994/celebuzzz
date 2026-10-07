@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 
 export default async function EditAdPage({
@@ -8,11 +8,15 @@ export default async function EditAdPage({
 }) {
   const { id } = await params;
 
-  const { data: ad } = await supabaseAdmin
-    .from("ads")
-    .select("*")
-    .eq("id", Number(id))
-    .single();
+  const { rows } = await db.query(
+    `SELECT *
+     FROM public.ads
+     WHERE id = $1
+     LIMIT 1`,
+    [Number(id)],
+  );
+
+  const ad = rows[0];
 
   if (!ad) {
     return <div>廣告不存在</div>;
@@ -27,15 +31,15 @@ export default async function EditAdPage({
 
     const active = formData.get("active") === "on";
 
-    await supabaseAdmin
-      .from("ads")
-      .update({
-        name,
-        position,
-        code,
-        active,
-      })
-      .eq("id", Number(id));
+    await db.query(
+      `UPDATE public.ads
+       SET name = $1,
+           position = $2,
+           code = $3,
+           active = $4
+       WHERE id = $5`,
+      [name, position, code, active, Number(id)],
+    );
 
     redirect("/admin/ads");
   }

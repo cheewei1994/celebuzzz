@@ -1,5 +1,5 @@
 import EditForm from "./EditForm";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 
 export default async function EditPage({
   params,
@@ -10,11 +10,24 @@ export default async function EditPage({
 
   console.log("Edit ID =", id);
 
-  const { data: article, error } = await supabaseAdmin
-    .from("articles")
-    .select("*")
-    .eq("id", Number(id))
-    .single();
+  let article = null;
+  let error: { message: string } | null = null;
+
+  try {
+    const result = await db.query(
+      `SELECT *
+       FROM public.articles
+       WHERE id = $1
+       LIMIT 1`,
+      [Number(id)],
+    );
+
+    article = result.rows[0] ?? null;
+  } catch (err) {
+    error = {
+      message: err instanceof Error ? err.message : "讀取文章失敗",
+    };
+  }
 
   console.log("Article =", article);
   console.log("Error =", error);

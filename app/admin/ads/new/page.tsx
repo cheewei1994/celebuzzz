@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 
 export default function NewAdPage() {
@@ -11,12 +11,13 @@ export default function NewAdPage() {
 
     const active = formData.get("active") === "on";
 
-    await supabaseAdmin.from("ads").insert({
-      name,
-      position,
-      code,
-      active,
-    });
+    await db.query(
+      `INSERT INTO public.ads
+        (name, position, code, active)
+       VALUES
+        ($1, $2, $3, $4)`,
+      [name, position, code, active],
+    );
 
     redirect("/admin/ads");
   }

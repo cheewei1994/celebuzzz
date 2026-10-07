@@ -1,6 +1,6 @@
 import { categories } from "@/lib/categories";
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import Pagination from "@/app/components/Pagination";
 export const dynamic = "force-dynamic";
 export default async function HomePage({
@@ -20,23 +20,28 @@ export default async function HomePage({
 
   const to = from + pageSize - 1;
 
-  const {
-    data: articles,
-    count,
-    error,
-  } = await supabaseAdmin
-    .from("articles")
-    .select("*", {
-      count: "exact",
-    })
+  const [articlesResult, countResult] = await Promise.all([
+    db.query(
+      `SELECT *
+       FROM public.articles
+       WHERE status = $1
+       ORDER BY created_at DESC
+       LIMIT $2
+       OFFSET $3`,
+      ["published", pageSize, from],
+    ),
+    db.query(
+      `SELECT COUNT(*)::int AS count
+       FROM public.articles
+       WHERE status = $1`,
+      ["published"],
+    ),
+  ]);
 
-    .eq("status", "published")
-    .order("created_at", {
-      ascending: false,
-    })
-    .range(from, to);
+  const articles = articlesResult.rows;
+  const count = countResult.rows[0]?.count ?? 0;
 
-  const totalPages = Math.ceil((count || 0) / pageSize);
+  const totalPages = Math.ceil(count / pageSize);
 
   return (
     <main className="bg-gray-50">

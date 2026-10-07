@@ -1,10 +1,14 @@
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import DeleteAdButton from "./DeleteAdButton";
 import ToggleActiveButton from "./ToggleActiveButton";
 
 export default async function AdsPage() {
-  const { data: ads } = await supabaseAdmin.from("ads").select("*").order("id");
+  const { rows: ads } = await db.query(
+    `SELECT *
+     FROM public.ads
+     ORDER BY id`,
+  );
 
   return (
     <main className="max-w-6xl mx-auto p-6">

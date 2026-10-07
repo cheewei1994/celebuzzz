@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
@@ -6,22 +6,17 @@ export async function POST(req: Request) {
   try {
     const { username, password } = await req.json();
 
-    const { data: admin, error } = await supabaseAdmin
-      .from("admins")
-      .select("*")
-      .eq("username", username)
-      .single();
-
-    console.log("========== ADMINS DEBUG ==========");
-    console.log(
-      "SERVICE ROLE EXISTS:",
-      !!process.env.SUPABASE_SERVICE_ROLE_KEY,
+    const result = await db.query(
+      `SELECT *
+       FROM public.admins
+       WHERE username = $1
+       LIMIT 1`,
+      [username],
     );
-    console.log("ADMIN:", admin);
-    console.log("ERROR:", error);
-    console.log("==================================");
 
-    if (error || !admin) {
+    const admin = result.rows[0] ?? null;
+
+    if (!admin) {
       return Response.json(
         {
           error: "帳號不存在",
@@ -33,12 +28,6 @@ export async function POST(req: Request) {
     }
 
     const valid = await bcrypt.compare(password, admin.password_hash);
-
-    console.log("===== LOGIN DEBUG =====");
-    console.log("username:", username);
-    console.log("password:", password);
-    console.log("db hash:", admin.password_hash);
-    console.log("valid:", valid);
 
     if (!valid) {
       return Response.json(

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 
 export default function EditForm(props: any) {
   const article = props.article;
@@ -20,27 +19,74 @@ export default function EditForm(props: any) {
 
   const [tempImageUrl, setTempImageUrl] = useState("");
 
-  const uploadLongImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const uploadImage = async (file: File, bucket: string) => {
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("bucket", bucket);
+
+    const res = await fetch("/api/upload-image", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "圖片上傳失敗");
+      return "";
+    }
+
+    return data.publicUrl;
+  };
+
+
+  const uploadLongImage = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
 
     if (!file) return;
 
-    const fileName = Date.now() + "-" + file.name;
+    const url = await uploadImage(file, "article-images");
 
-    const { error } = await supabase.storage
-      .from("article-images")
-      .upload(fileName, file);
-
-    if (error) {
-      alert(error.message);
-      return;
+    if (url) {
+      setLongImage(url);
     }
+  };
 
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("article-images").getPublicUrl(fileName);
+  const uploadCover = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0];
 
-    setLongImage(publicUrl);
+    if (!file) return;
+
+    const url = await uploadImage(file, "article-images");
+
+    if (url) {
+      setCover(url);
+    }
+  };
+
+  const uploadBlockImage = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    const url = await uploadImage(file, "article-images");
+
+    if (!url) return;
+
+    const updated = [...blocks];
+
+    updated[index].imageUrl = url;
+    updated[index].preview = url;
+
+    setBlocks(updated);
   };
 
   const [blocks, setBlocks] = useState(
@@ -84,60 +130,6 @@ export default function EditForm(props: any) {
     const updated = [...blocks];
 
     [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
-
-    setBlocks(updated);
-  };
-
-  const uploadCover = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-
-    if (!file) return;
-
-    const fileName = Date.now() + "-" + file.name;
-
-    const { error } = await supabase.storage
-      .from("article-images")
-      .upload(fileName, file);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("article-images").getPublicUrl(fileName);
-
-    setCover(publicUrl);
-  };
-
-  const uploadBlockImage = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    index: number,
-  ) => {
-    const file = e.target.files?.[0];
-
-    if (!file) return;
-
-    const fileName = Date.now() + "-" + file.name;
-
-    const { error } = await supabase.storage
-      .from("article-images")
-      .upload(fileName, file);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("article-images").getPublicUrl(fileName);
-
-    const updated = [...blocks];
-
-    updated[index].imageUrl = publicUrl;
-    updated[index].preview = publicUrl;
 
     setBlocks(updated);
   };
@@ -710,20 +702,11 @@ export default function EditForm(props: any) {
 
                   const fileName = `${Date.now()}-${file.name}`;
 
-                  const { error } = await supabase.storage
-                    .from("article-images")
-                    .upload(fileName, file);
+                  const url = await uploadImage(file, "article-images");
 
-                  if (error) {
-                    alert(error.message);
-                    return;
-                  }
+                  if (!url) return;
 
-                  const { data } = supabase.storage
-                    .from("article-images")
-                    .getPublicUrl(fileName);
-
-                  setTempImageUrl(data.publicUrl);
+                  setTempImageUrl(url);
                 }}
               />
             </label>

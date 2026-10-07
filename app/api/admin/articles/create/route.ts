@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -15,20 +15,31 @@ export async function POST(req: Request) {
     status,
   } = body;
 
-  const { error } = await supabaseAdmin.from("articles").insert({
-    title,
-    category,
-    summary,
-    source_url: sourceUrl,
-    cover,
-    long_image: longImage,
-    blocks,
-    status,
-    views: status === "published" ? 0 : undefined,
-  });
-
-  if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  try {
+    await db.query(
+      `INSERT INTO public.articles
+        (title, category, summary, source_url, cover, long_image, blocks, status, views)
+       VALUES
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      [
+        title,
+        category,
+        summary,
+        sourceUrl,
+        cover,
+        longImage,
+        blocks,
+        status,
+        status === "published" ? 0 : null,
+      ],
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        error: error instanceof Error ? error.message : "建立文章失敗",
+      },
+      { status: 500 },
+    );
   }
 
   return NextResponse.json({

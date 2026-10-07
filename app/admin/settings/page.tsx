@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import { redirect } from "next/navigation";
 
 export default async function SettingsPage({
@@ -9,11 +9,13 @@ export default async function SettingsPage({
   }>;
 }) {
   const { saved } = await searchParams;
-  const { data: setting } = await supabaseAdmin
-    .from("settings")
-    .select("*")
-    .limit(1)
-    .maybeSingle();
+  const { rows: settingRows } = await db.query(
+    `SELECT *
+     FROM public.settings
+     LIMIT 1`,
+  );
+
+  const setting = settingRows[0] ?? null;
 
   async function saveSettings(formData: FormData) {
     "use server";
@@ -24,27 +26,31 @@ export default async function SettingsPage({
 
     const logo_url = formData.get("logo_url") as string;
 
-    const { data: existing } = await supabaseAdmin
-      .from("settings")
-      .select("id")
-      .limit(1)
-      .maybeSingle();
+    const { rows: existingRows } = await db.query(
+      `SELECT id
+       FROM public.settings
+       LIMIT 1`,
+    );
+
+    const existing = existingRows[0];
 
     if (existing) {
-      await supabaseAdmin
-        .from("settings")
-        .update({
-          site_name,
-          site_description,
-          logo_url,
-        })
-        .eq("id", existing.id);
+      await db.query(
+        `UPDATE public.settings
+         SET site_name = $1,
+             site_description = $2,
+             logo_url = $3
+         WHERE id = $4`,
+        [site_name, site_description, logo_url, existing.id],
+      );
     } else {
-      await supabaseAdmin.from("settings").insert({
-        site_name,
-        site_description,
-        logo_url,
-      });
+      await db.query(
+        `INSERT INTO public.settings
+          (site_name, site_description, logo_url)
+         VALUES
+          ($1, $2, $3)`,
+        [site_name, site_description, logo_url],
+      );
     }
 
     redirect("/admin/settings?saved=1");

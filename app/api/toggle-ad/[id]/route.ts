@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 
 export async function POST(
   req: Request,
@@ -7,22 +7,26 @@ export async function POST(
 ) {
   const { id } = await params;
 
-  const { data } = await supabaseAdmin
-    .from("ads")
-    .select("active")
-    .eq("id", Number(id))
-    .single();
+  const result = await db.query(
+    `SELECT active
+     FROM public.ads
+     WHERE id = $1
+     LIMIT 1`,
+    [Number(id)],
+  );
+
+  const data = result.rows[0];
 
   if (!data) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  await supabaseAdmin
-    .from("ads")
-    .update({
-      active: !data.active,
-    })
-    .eq("id", Number(id));
+  await db.query(
+    `UPDATE public.ads
+     SET active = $1
+     WHERE id = $2`,
+    [!data.active, Number(id)],
+  );
 
   return NextResponse.json({
     success: true,

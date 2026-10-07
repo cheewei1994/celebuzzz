@@ -1,7 +1,7 @@
 import { categories } from "@/lib/categories";
 import Link from "next/link";
 import ArticleSlider from "./ArticleSlider";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import AdSlot from "@/app/components/AdSlot";
 import { SmartAdEngine } from "@/lib/ads/SmartAdEngine";
 import { ImageIcon, House, CalendarDays } from "lucide-react";
@@ -18,16 +18,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
 
-  const { data: article } = await supabaseAdmin
-    .from("articles")
-    .select(
-      `
-      title,
-      cover
-    `,
-    )
-    .eq("id", Number(id))
-    .single();
+  const result = await db.query(
+    `SELECT title, cover
+     FROM public.articles
+     WHERE id = $1
+     LIMIT 1`,
+    [Number(id)],
+  );
+
+  const article = result.rows[0] ?? null;
 
   if (!article) {
     return {
@@ -68,21 +67,22 @@ export default async function ArticlePage({
 }) {
   const { id } = await params;
 
-  const { data: article } = await supabaseAdmin
-    .from("articles")
-    .select(
-      `
-      id,
-      title,
-      cover,
-      category,
-      created_at,
-      views,
-      blocks
-    `,
-    )
-    .eq("id", Number(id))
-    .single();
+  const articleResult = await db.query(
+    `SELECT
+       id,
+       title,
+       cover,
+       category,
+       created_at,
+       views,
+       blocks
+     FROM public.articles
+     WHERE id = $1
+     LIMIT 1`,
+    [Number(id)],
+  );
+
+  const article = articleResult.rows[0] ?? null;
 
   if (!article) {
     notFound();
@@ -94,23 +94,22 @@ export default async function ArticlePage({
 
   const categoryName = currentCategory?.name || article.category;
 
-  const { data: relatedArticles } = await supabaseAdmin
-    .from("articles")
-    .select(
-      `
-    id,
-    title,
-    cover,
-    created_at,
-    views
-  `,
-    )
-    .eq("status", "published")
-    .neq("id", article.id)
-    .order("views", {
-      ascending: false,
-    })
-    .limit(15);
+  const relatedResult = await db.query(
+    `SELECT
+       id,
+       title,
+       cover,
+       created_at,
+       views
+     FROM public.articles
+     WHERE status = $1
+       AND id <> $2
+     ORDER BY views DESC
+     LIMIT 15`,
+    ["published", article.id],
+  );
+
+  const relatedArticles = relatedResult.rows;
 
   return (
     <main className="w-full pt-4 pb-10">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { supabaseAdmin } from "@/lib/supabase-admin";
+import { db } from "@/lib/db";
 import { categories } from "@/lib/categories";
 import Pagination from "@/app/components/Pagination";
 
@@ -25,16 +25,28 @@ export default async function CategoryPage({
 
   const categoryName = currentCategory?.name;
 
-  const { data: filteredArticles, count } = await supabaseAdmin
-    .from("articles")
-    .select("*", { count: "exact" })
-    .eq("category", categoryName)
-    .order("created_at", {
-      ascending: false,
-    })
-    .range(from, to);
+  const [articlesResult, countResult] = await Promise.all([
+    db.query(
+      `SELECT *
+       FROM public.articles
+       WHERE category = $1
+       ORDER BY created_at DESC
+       LIMIT $2
+       OFFSET $3`,
+      [categoryName, PAGE_SIZE, from],
+    ),
+    db.query(
+      `SELECT COUNT(*)::int AS count
+       FROM public.articles
+       WHERE category = $1`,
+      [categoryName],
+    ),
+  ]);
 
-  const totalPages = Math.ceil((count ?? 0) / PAGE_SIZE);
+  const filteredArticles = articlesResult.rows;
+  const count = countResult.rows[0]?.count ?? 0;
+
+  const totalPages = Math.ceil(count / PAGE_SIZE);
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
