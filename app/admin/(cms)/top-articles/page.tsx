@@ -173,7 +173,7 @@ export default async function TopArticlesPage({
               <div className="text-sm text-gray-500 flex gap-4">
                 <span>👁️ {article.views || 0} 次閱讀</span>
 
-                <span>📅 {article.created_at.slice(0, 10)}</span>
+                <span>📅 {article.created_at instanceof Date ? article.created_at.toISOString().slice(0, 10) : article.created_at.slice(0, 10)}</span>
               </div>
             </div>
 
